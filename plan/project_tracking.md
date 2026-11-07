@@ -1,6 +1,8 @@
 # Tracking Plan
-> Last Updated: 2026-07-12
+> Last Updated: 2026-11-07
 > Maintained by: Claude (update this file as setup progresses)
+
+> **2026-11-07: the GTM and Meta Pixel scripts were removed from `src/app/layout.tsx`.** The redesigned product has no tracking (owner decision, see `project_structure.md`), and the new website would otherwise have sent the old product's page views. Everything below describes the old setup and is deleted in Phase 1; the unused files are `components/TrackingScripts.tsx`, `components/MetaPixelTracker.tsx`, `lib/gtm.ts`, `lib/tracking.ts`.
 
 > **Phase 2 note (2026-07-12):** the quiz page is now server-rendered (quiz JSON no longer fetched client-side), so `quiz_started` / the first `quiz_step_view` fire earlier in wall-clock time — right after hydration instead of after two data fetches. Event names, params, order, guards, and once-per-session semantics are unchanged (verified byte-for-byte against the pre-change build with the Playwright walkthrough harness).
 

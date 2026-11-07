@@ -1,5 +1,5 @@
 # Project Overview
-> Last Updated: 2026-11-07 (added "Redesign in progress" section; the rest of this file still describes the OLD svelteplus-based app)
+> Last Updated: 2026-11-07 (added "Redesign in progress" and "New website and sign-in screens" sections; the rest of this file still describes the OLD svelteplus-based app)
 > Maintained by: Claude (update this file whenever structure or major systems change)
 
 ---
@@ -40,6 +40,36 @@ Everything below this section describes the old app (BodyReset, GTM/pixel tracki
 3. Build plan: data model, API routes, and the order of work (auth, then quiz editor, then respondent view, then responses/export, then Edit with AI, then admin).
 4. Decide how an account is marked as admin (set directly in the database at first).
 5. Remove the old features listed above from the existing code.
+
+---
+
+## New website and sign-in screens (built 2026-11-07, Phase 2.3 + 2.4)
+
+The pages of the design tab "Website" are built, on mock data. They sit **next to** the old app, which is still in the repo until Phase 1 deletes it (the old `/dashboard`, `/quiz`, `/members`, `/editor`, steps, stores and libs below are untouched). Removed so far: the old home page (`src/app/page.tsx`, `src/components/home/**`), the old `/login`, and the GTM + Meta Pixel scripts in `src/app/layout.tsx` (tracking is being removed; the files `TrackingScripts.tsx`, `MetaPixelTracker.tsx`, `lib/gtm.ts`, `lib/tracking.ts` are now unused and go in Phase 1).
+
+**Routes** (all URLs come from `src/lib/routes.ts`)
+
+| Path | What | Where |
+|---|---|---|
+| `/` `/pricing` `/contact` `/terms` `/privacy` `/maintenance` | website pages | `src/app/(site)/` |
+| not found, error | `not-found.tsx`, `error.tsx`, `global-error.tsx` | `src/app/` |
+| `/register` `/login` `/forgot-password` (+ `/sent`) `/reset-password` (+ `/done`, `/expired`) `/verify-email` (+ `/done`, `/expired`) `/goodbye` | sign-in screens, one split layout | `src/app/(auth)/` |
+| `/dev`, `/dev/session`, `/dev/500` | **dev only** (404 in production): list of every test link, switch who is logged in, preview the 500 screen | `src/app/dev/` |
+
+Screens with several states open directly through a query: `/login?state=error|unverified|too-many|suspended|google-exists|google-cancelled`, `/contact?state=error|sent`, `/verify-email?state=resent`.
+
+**Folders**
+- `src/app/design-system.css` (imported by `globals.css`): design tokens in `@theme` (colors `ink slate mute ink-2 ctrl line line-strong soft dash page tint steel danger*`, the `nav` breakpoint = 900 px) and the motion layer (keyframes, `.enter`, `.scroll-rise`, `.stagger`, `.bg-dots`, `.blob`, `.orb`, `.lift` (smooth hover lift, no flicker), `.shine` (button light), `.ping`, `.count-up`, smooth anchor scroll). Everything stops under `prefers-reduced-motion`. Rules for hover and motion are in `project_handover.md` section 3 (Motion).
+- `src/components/ui/`: `button` (Button, ButtonLink, DisabledButton, Spinner), `field` (Input, Textarea, Field), `banner`, `card` (Card, IconBadge, StepNumber), `chip` (ToggleChip), `rich-text` (`**bold**`, `[text](page:name)` links in content files), `link-styles` (`textLink` fading underline, `softHover`), `icons`.
+- `src/components/layout/`: `logo`, `site-nav` (one client component: computer bar, phone bar + full-screen menu, logged-in variant), `account-menu`, `site-footer`, `cta-band`, `site-frame` (nav + page + footer, also used by error screens), `site-shell` (async: looks up the session).
+- `src/components/marketing/`: page sections (`home/`, `pricing/`, `contact/`, `legal/`, `status/`) plus shared `container`, `section-heading`, `hero-backdrop`, `faq` (client component: full-width accordion with a slide transition).
+- `src/components/auth/`: `auth-layout` (+ `AuthStack`, `AuthHeading`), `auth-panel` (right-hand dark panel, hidden below 900 px), forms.
+- `src/content/`: all page copy (`home`, `pricing`, `contact`, `status`, `auth`, `site`) and `legal/` (terms, privacy generated from the design boards; inline format in `rich-text`).
+- `src/lib/`: `routes.ts`, `utils.ts` (`cn`), `env.ts` (only `isProduction` so far), `validation.ts`.
+- `src/server/`: `session.ts` (**mock** session cookie `mock_session` and the short-lived `pending_email` cookie), `actions/` (`auth`, `contact`, `session`: mock behavior, Phase 4/12 replace the insides).
+- `src/data/mock/accounts.ts`: made-up test accounts (password `password123`): `demo@quiz.test`, `admin@quiz.test`, `unverified@`, `suspended@`, `locked@`.
+
+**Known gaps and not-yet-done items** are in `project_handover.md` section 13.1 (G9 to G12) and section 12 (2.0b, 2.1, 2.2, 2.3, 2.4).
 
 ---
 
