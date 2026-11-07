@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import { onVercel, publicEnv } from "@/lib/env";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -18,8 +20,10 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(publicEnv.siteUrl),
   title: "Quiz",
   description: "Make a quiz people actually finish. Free to start, simple to share.",
+  openGraph: { siteName: "Quiz", type: "website" },
 };
 
 export default function RootLayout({
@@ -33,6 +37,8 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} antialiased`}
       >
         {children}
+        {/* Counts visitors without cookies (decision D6). Only on Vercel, so local, test and staging-by-hand runs send nothing. */}
+        {onVercel ? <Analytics /> : null}
       </body>
     </html>
   );

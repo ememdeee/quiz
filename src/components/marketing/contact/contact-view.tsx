@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useState, type CSSProperties } from "react";
+import { TurnstileWidget } from "@/components/auth/turnstile";
 import { Banner } from "@/components/ui/banner";
 import { Button } from "@/components/ui/button";
 import { ToggleChip } from "@/components/ui/chip";
@@ -99,6 +100,7 @@ export function ContactView({ initialState }: { initialState: ContactFormState }
               />
             </Field>
 
+            <TurnstileWidget />
             <Button type="submit" size="lg" loading={pending} className="self-start">
               {pending ? contact.form.sending : contact.form.send}
               {pending ? null : <ArrowRightIcon />}

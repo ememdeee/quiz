@@ -8,7 +8,7 @@ import { canFinish, cleanProgress, type CleanProgress } from "@/lib/quiz/progres
 import { quizDocumentSchema, type QuizDocument } from "@/lib/quiz/schema";
 import type { QuizTheme } from "@/lib/quiz/theme";
 import type { StoredAnswer } from "@/lib/responses/types";
-import { ipHash } from "@/server/auth/lockout";
+import { rateAllowed } from "@/server/rate-limit";
 import { overridesOf } from "@/server/auth/guards";
 import type { PublicLoad, SavedRun } from "@/server/repos/ports";
 import { createAdminClient } from "@/server/supabase/admin";
@@ -28,12 +28,7 @@ const themeSchema = z.object({ primary: z.string(), onPrimary: z.string(), backg
 
 export type Answered = "ok" | "closed" | "not_found" | "bad_token" | "invalid" | "rate_limited" | "already_finished" | "failed";
 
-/** Lets a person do this at most `limit` times in `seconds`. */
-async function allowed(action: string, limit: number, seconds: number): Promise<boolean> {
-  const key = `${action}:${await ipHash()}`;
-  const { data, error } = await createAdminClient().rpc("rate_limit_hit", { p_key: key, p_limit: limit, p_window_seconds: seconds });
-  return error ? true : data === true;
-}
+const allowed = rateAllowed;
 
 async function quizBySlug(slug: string): Promise<{ quiz: Quiz; owner: Profile } | null> {
   const db = createAdminClient();

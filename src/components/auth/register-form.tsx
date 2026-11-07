@@ -6,6 +6,7 @@ import { registerAction } from "@/server/actions/auth";
 import { AuthHeading, authLink, authStack } from "./auth-layout";
 import { GoogleButton, OrDivider } from "./google-button";
 import { SubmitButton } from "./submit-button";
+import { TurnstileWidget } from "./turnstile";
 
 export function RegisterForm() {
   const { register } = auth;
@@ -32,6 +33,7 @@ export function RegisterForm() {
         />
         <FieldHint id="register-password-hint">{auth.passwordHint}</FieldHint>
       </Field>
+      <TurnstileWidget />
       <SubmitButton>{register.submit}</SubmitButton>
       <p className="m-0 text-sm leading-[21px] text-mute">
         <RichText text={register.agree} linkClassName={authLink} />

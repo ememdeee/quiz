@@ -6,7 +6,9 @@ import { routes, type LoginState } from "@/lib/routes";
 import { isValidEmail, PASSWORD_MIN_LENGTH } from "@/lib/validation";
 import { setPendingEmail } from "@/server/session";
 import { createClient } from "@/server/supabase/server";
+import { rateAllowed } from "@/server/rate-limit";
 import { clearFailures, recentFailures, recordFailure } from "./lockout";
+import { turnstilePassed } from "./turnstile";
 
 /**
  * Sign-in with Supabase Auth (handover 7.1). Every function answers the way the screens expect, and none of them says whether
@@ -57,6 +59,7 @@ export async function registerReal(formData: FormData) {
   const email = text(formData, "email").trim().toLowerCase();
   const password = text(formData, "password");
   if (!name || !isValidEmail(email) || password.length < PASSWORD_MIN_LENGTH) redirect(routes.register);
+  if (!(await turnstilePassed(formData)) || !(await rateAllowed("register", 10, 3600))) redirect(routes.register);
 
   const supabase = await createClient();
   // The answer is the same whether or not the address already has an account
@@ -75,6 +78,7 @@ export async function resendVerificationReal(email: string): Promise<{ ok: boole
 export async function forgotPasswordReal(formData: FormData) {
   const email = text(formData, "email").trim().toLowerCase();
   if (!isValidEmail(email)) redirect(routes.forgotPassword);
+  if (!(await turnstilePassed(formData)) || !(await rateAllowed("forgot", 5, 3600))) redirect(routes.forgotPassword);
   const supabase = await createClient();
   await supabase.auth.resetPasswordForEmail(email, { redirectTo: callback(`/auth/confirm?next=${routes.resetPassword}`) });
   await setPendingEmail(email);

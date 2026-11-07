@@ -9,6 +9,7 @@ const channel = process.env.QC_BROWSER ?? (process.env.CI ? undefined : "msedge"
 
 const links = 3100;
 const real = 3200;
+const prod = 3300;
 
 export default defineConfig({
   testDir: "tests/qc",
@@ -22,6 +23,8 @@ export default defineConfig({
     { name: "links", testMatch: /link-audit/, use: { baseURL: `http://localhost:${links}` } },
     // The app on the real Supabase dev project: sign-in and everything after it
     { name: "real", testMatch: /real-.*.spec.ts/, fullyParallel: false, workers: 1, timeout: 120_000, use: { baseURL: `http://localhost:${real}` } },
+    // The production build with the real data: headers, the content security policy, robots, icons, and that dev tools are gone
+    { name: "prod", testMatch: /prod-.*.spec.ts/, fullyParallel: false, workers: 1, timeout: 120_000, use: { baseURL: `http://localhost:${prod}` } },
   ],
   webServer: [
     { command: `npx next dev -p ${links}`, url: `http://localhost:${links}`, reuseExistingServer: true, timeout: 5 * 60_000, env: { NEXT_DIST_DIR: ".next-qc-links" } },
@@ -31,6 +34,13 @@ export default defineConfig({
       reuseExistingServer: true,
       timeout: 5 * 60_000,
       env: { NEXT_DIST_DIR: ".next-qc-real", NEXT_PUBLIC_DATA_MODE: "supabase", NEXT_PUBLIC_SITE_URL: `http://localhost:${real}` },
+    },
+    {
+      command: `npx next build && npx next start -p ${prod}`,
+      url: `http://localhost:${prod}`,
+      reuseExistingServer: true,
+      timeout: 10 * 60_000,
+      env: { NEXT_DIST_DIR: ".next-qc-prod", NEXT_PUBLIC_DATA_MODE: "supabase", NEXT_PUBLIC_SITE_URL: `http://localhost:${prod}` },
     },
   ],
 });

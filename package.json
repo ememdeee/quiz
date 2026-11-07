@@ -15,7 +15,8 @@
     "qc:links": "playwright test link-audit",
     "typecheck": "tsc --noEmit",
     "qc:real": "playwright test --project=real",
-    "release-check": "npm run lint && npm run typecheck && npm test && npm run build"
+    "release-check": "npm run lint && npm run typecheck && npm test && npm run build",
+    "qc:prod": "playwright test --project=prod"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -30,8 +31,10 @@
     "@radix-ui/react-switch": "^1.4.1",
     "@radix-ui/react-tabs": "^1.2.1",
     "@react-email/components": "^1.0.12",
+    "@sentry/nextjs": "^11.11.0",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.119.0",
+    "@vercel/analytics": "^2.0.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "exceljs": "^4.4.0",

@@ -7,6 +7,7 @@ import { dataMode } from "@/lib/env";
 import { CONTACT_EMAIL } from "@/lib/routes";
 import { isValidEmail } from "@/lib/validation";
 import { ipHash } from "@/server/auth/lockout";
+import { turnstilePassed } from "@/server/auth/turnstile";
 import { sendEmail } from "@/server/email/send";
 import { createAdminClient } from "@/server/supabase/admin";
 
@@ -41,6 +42,8 @@ export async function sendContactMessage(_previous: ContactFormState, formData: 
     return { status: "sent" };
   }
 
+  // A failed bot check looks like it worked and sends nothing
+  if (!(await turnstilePassed(formData))) return { status: "sent" };
   const db = createAdminClient();
   const hash = await ipHash();
   const { data: allowed } = await db.rpc("rate_limit_hit", { p_key: `contact:${hash}`, p_limit: 5, p_window_seconds: 3600 });

@@ -36,9 +36,10 @@
     "**/*.ts",
     "**/*.tsx",
     ".next-qc-links/types/**/*.ts",
+    ".next-qc-real/types/**/*.ts",
     ".next/types/**/*.ts",
     "next-env.d.ts",
-    ".next-qc-real/types/**/*.ts"
+    ".next-qc-prod/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"
