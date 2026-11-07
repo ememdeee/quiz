@@ -39,7 +39,7 @@ export function PageRow({ page, position, selected }: { page: Page; position: nu
         <button
           type="button"
           aria-label={pageList.dragHandle}
-          className="grid size-7 flex-none cursor-grab touch-none place-items-center rounded-md text-ctrl focus-visible:outline-[3px] focus-visible:outline-slate active:cursor-grabbing"
+          className="-mx-2 grid size-11 flex-none cursor-grab touch-none place-items-center rounded-md text-ctrl focus-visible:outline-[3px] focus-visible:outline-slate active:cursor-grabbing"
           {...sortable.attributes}
           {...sortable.listeners}
         >

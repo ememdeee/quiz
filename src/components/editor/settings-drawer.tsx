@@ -106,7 +106,7 @@ export function SettingsDrawer({
         <label htmlFor="settings-slug" className="text-[15px] font-semibold">
           {settings.address}
         </label>
-        <div className={problem ? "flex min-h-12 items-center overflow-hidden rounded-[10px] border-2 border-danger" : "flex min-h-12 items-center overflow-hidden rounded-[10px] border border-ctrl"}>
+        <div className={problem ? "flex min-h-12 items-center overflow-hidden rounded-[10px] border-2 border-danger focus-within:outline-[3px] focus-within:outline-offset-2 focus-within:outline-slate" : "flex min-h-12 items-center overflow-hidden rounded-[10px] border border-ctrl focus-within:outline-[3px] focus-within:outline-offset-2 focus-within:outline-slate"}>
           <span className="whitespace-nowrap pl-3.5 text-[15px] text-mute">{settings.addressPrefix}</span>
           <input
             id="settings-slug"

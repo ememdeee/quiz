@@ -69,7 +69,7 @@ export function PageList({ maxPages }: { maxPages: number }) {
         <SparklesIcon size={22} />
         <span>
           <span className="block text-[15px] font-semibold">{pageList.ai.title}</span>
-          <span className="block text-[13px] text-mute">{pageList.ai.text}</span>
+          <span className="block text-[13px] text-mute">{noQuestions ? pageList.ai.textEmpty : pageList.ai.text}</span>
         </span>
       </button>
     </aside>

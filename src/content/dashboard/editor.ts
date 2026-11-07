@@ -30,7 +30,7 @@ export const pageList = {
   dragHandle: "Drag to move this page",
   options: "Page options",
   untitled: "Untitled",
-  ai: { title: "Edit with AI", text: "Change many pages at once" },
+  ai: { title: "Edit with AI", text: "Change many pages at once", textEmpty: "Let an AI write the questions for you" },
 } as const;
 
 export const canvas = {
@@ -41,6 +41,7 @@ export const canvas = {
   typeAnswer: "Type your answer",
   pickDate: "Day / Month / Year",
   yourPicture: "Your picture",
+  sharedNote: "Your answers are shared with the quiz owner.",
 } as const;
 
 export const addPageDialog = {
@@ -107,6 +108,7 @@ export const panel = {
   optional: "(optional)",
   addPicture: "Add a picture",
   required: "People must answer to continue",
+  firstQuestion: { label: "Next:", text: "add your first question. You can’t publish until the quiz has at least one." },
   welcomeNote: "The line “Takes about 1 minute” and the button are added for you. The time comes from how many questions the quiz has.",
   choice: {
     answers: "Answers people can pick",

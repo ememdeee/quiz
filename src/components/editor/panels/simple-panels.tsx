@@ -2,18 +2,20 @@
 
 import { panel } from "@/content/dashboard/editor";
 import type { PageOf } from "@/lib/quiz/schema";
-import { useFieldProps, usePageEdit } from "../editor-context";
+import { pageTypes } from "@/lib/quiz/page-types";
+import { useEditor, useFieldProps, usePageEdit } from "../editor-context";
 import { AreaField, ChipGroup, Note, PictureField, RequiredRow, TextField } from "./fields";
 
 export function WelcomePanel({ page }: { page: PageOf<"welcome"> }) {
   const edit = usePageEdit(page);
   const field = useFieldProps(page.id);
+  const hasQuestion = useEditor((s) => s.doc.pages.some((p) => pageTypes[p.type].isQuestion));
   return (
     <>
       <TextField id={`${page.id}-title`} label={panel.title1} value={page.title} onChange={(v) => edit("title", (d) => void (d.title = v))} {...field("title")} />
       <AreaField id={`${page.id}-text`} label={panel.shortText} rows={3} value={page.text} onChange={(v) => edit("text", (d) => void (d.text = v))} />
       <PictureField value={page.picture} onChange={(id) => edit(undefined, (d) => void (d.picture = id))} />
-      <Note>{panel.welcomeNote}</Note>
+      {hasQuestion ? <Note>{panel.welcomeNote}</Note> : <Note><strong>{panel.firstQuestion.label}</strong> {panel.firstQuestion.text}</Note>}
     </>
   );
 }

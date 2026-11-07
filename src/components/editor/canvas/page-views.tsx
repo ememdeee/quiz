@@ -3,6 +3,7 @@
 import type { ComponentType, ReactNode } from "react";
 import { CheckIcon } from "@/components/ui/icons";
 import { canvas } from "@/content/dashboard/editor";
+import { pageTypes } from "@/lib/quiz/page-types";
 import { estimateMinutes, takesAbout } from "@/lib/quiz/time-estimate";
 import type { Page, PageOf, PageType, QuizDocument } from "@/lib/quiz/schema";
 import { cn } from "@/lib/utils";
@@ -40,7 +41,7 @@ function WelcomeView({ page, doc }: ViewProps<"welcome">) {
       <Title size="lg">{page.title}</Title>
       {page.text ? <Text>{page.text}</Text> : null}
       <Cta>{canvas.startQuiz}</Cta>
-      <Hint>{takesAbout(estimateMinutes(doc))}</Hint>
+      <Hint>{doc.pages.some((p) => pageTypes[p.type].isQuestion) ? takesAbout(estimateMinutes(doc)) : canvas.sharedNote}</Hint>
     </>
   );
 }

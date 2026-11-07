@@ -1,6 +1,6 @@
 import { pagesWithBrokenRules } from "./conditions";
 import { pageTypes, type FieldProblem, type PageTypeDefinition, type ProblemCode } from "./page-types";
-import type { Page, PageType, QuizDocument } from "./schema";
+import type { PageType, QuizDocument } from "./schema";
 
 export type QuizProblemCode = ProblemCode | "shape_invalid" | "no_question" | "too_many_pages" | "rule_invalid";
 
@@ -33,7 +33,3 @@ export function validateQuiz(doc: QuizDocument, context: { maxPages: number }): 
   for (const pageId of pagesWithBrokenRules(doc)) problems.push({ pageId, field: "show", code: "rule_invalid" });
   return problems;
 }
-
-/** The first page that has a problem, for "Go to page". */
-export const firstProblemPage = (doc: QuizDocument, problems: Problem[]): Page | undefined =>
-  doc.pages.find((page) => problems.some((problem) => problem.pageId === page.id));
