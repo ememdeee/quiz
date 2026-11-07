@@ -1,0 +1,53 @@
+/** Every URL in the app lives here. No hard-coded href strings anywhere else (rule R2). */
+export const routes = {
+  home: "/",
+  howItWorks: "/#how",
+  features: "/#features",
+  pricing: "/pricing",
+  contact: "/contact",
+  terms: "/terms",
+  privacy: "/privacy",
+  maintenance: "/maintenance",
+
+  register: "/register",
+  login: "/login",
+  forgotPassword: "/forgot-password",
+  forgotPasswordSent: "/forgot-password/sent",
+  resetPassword: "/reset-password",
+  resetPasswordDone: "/reset-password/done",
+  resetPasswordExpired: "/reset-password/expired",
+  verifyEmail: "/verify-email",
+  verifyEmailDone: "/verify-email/done",
+  verifyEmailExpired: "/verify-email/expired",
+  goodbye: "/goodbye",
+
+  dashboard: "/dashboard",
+  account: "/account",
+  admin: "/admin",
+
+  dev: "/dev",
+  devSession: "/dev/session",
+  dev500: "/dev/500",
+} as const;
+
+export const CONTACT_EMAIL = "basurah@basrh.com";
+export const mailto = (address: string = CONTACT_EMAIL) => `mailto:${address}`;
+
+/** Where "Create your quiz" goes: people without an account register first. */
+export const createQuizHref = (loggedIn: boolean) => (loggedIn ? routes.dashboard : routes.register);
+
+/** Login screens that can be opened directly (redirects, the dev link list). */
+export const loginStates = [
+  "error",
+  "unverified",
+  "too-many",
+  "suspended",
+  "google-exists",
+  "google-cancelled",
+] as const;
+export type LoginState = (typeof loginStates)[number];
+export const loginHref = (state?: LoginState) => (state ? `${routes.login}?state=${state}` : routes.login);
+
+/** Result screens of the contact form and the verify-email screen, opened directly. */
+export const contactHref = (state: "error" | "sent") => `${routes.contact}?state=${state}`;
+export const verifyEmailHref = (state: "resent") => `${routes.verifyEmail}?state=${state}`;
