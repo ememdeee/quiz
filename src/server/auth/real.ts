@@ -76,7 +76,7 @@ export async function forgotPasswordReal(formData: FormData) {
   const email = text(formData, "email").trim().toLowerCase();
   if (!isValidEmail(email)) redirect(routes.forgotPassword);
   const supabase = await createClient();
-  await supabase.auth.resetPasswordForEmail(email, { redirectTo: callback("/auth/confirm") });
+  await supabase.auth.resetPasswordForEmail(email, { redirectTo: callback(`/auth/confirm?next=${routes.resetPassword}`) });
   await setPendingEmail(email);
   redirect(routes.forgotPasswordSent);
 }

@@ -43,7 +43,8 @@ export function SettingsDrawer({
 
   // Check the address a moment after typing stops, and use it as soon as it is free
   useEffect(() => {
-    if (slug === quiz.slug) return setSlugState({ status: "idle" });
+    // Once the new address is saved the field matches the quiz again: keep saying it is free instead of going quiet
+    if (slug === quiz.slug) return setSlugState((current) => (current.status === "ok" ? current : { status: "idle" }));
     setSlugState({ status: "checking" });
     let cancelled = false;
     const timer = setTimeout(async () => {
