@@ -45,3 +45,4 @@ qc-run.log
 test-results/
 playwright-report/
 .next-qc-*/
+qc-*.log
