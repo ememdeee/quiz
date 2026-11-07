@@ -3,7 +3,8 @@ import { fail, ok, type ActionResult, type ErrorCode } from "@/lib/errors";
 import { getLimits, hasReachedQuizLimit } from "@/lib/plan/limits";
 import { quizDocumentSchema, type QuizDocument } from "@/lib/quiz/schema";
 import { blankQuiz, templateQuiz } from "@/lib/quiz/templates";
-import { makeSlug } from "@/lib/slug";
+import { validateQuiz } from "@/lib/quiz/validate";
+import { checkSlug, makeSlug } from "@/lib/slug";
 import { documentFacts } from "@/lib/quizzes/summary";
 import type { Profile, QuizBundle, QuizStart, QuizSummary } from "@/lib/quizzes/types";
 import type { ProfilesRepo, QuizzesRepo } from "../ports";
@@ -121,7 +122,33 @@ export const mockQuizzes: QuizzesRepo = {
     const blocked = await gate();
     if (blocked) return fail(blocked);
     if (!quizDocumentSchema.safeParse(draft).success) return fail("load_failed");
-    return summaryOf(replace(id, (bundle) => touched({ ...bundle, draft })));
+    return summaryOf(replace(id, (bundle) => touched({ ...bundle, draft }, { name: draft.name })));
+  },
+
+  async publish(id, draft) {
+    const blocked = await gate();
+    if (blocked) return fail(blocked);
+    if (validateQuiz(draft, { maxPages: getLimits(mockProfile).pagesPerQuiz }).length > 0) return fail("publish_blocked");
+    return replace(id, (bundle) =>
+      touched({ ...bundle, draft, published: structuredClone(draft) }, { firstPublishedAt: bundle.quiz.firstPublishedAt ?? new Date().toISOString() }),
+    );
+  },
+
+  async slugAvailable(id, slug) {
+    const blocked = await gate();
+    if (blocked) return fail(blocked);
+    const problem = checkSlug(slug);
+    if (problem) return ok({ available: false, reason: problem });
+    const taken = loadBundles().some((b) => b.quiz.slug === slug && b.quiz.id !== id);
+    return ok(taken ? { available: false, reason: "taken" } : { available: true });
+  },
+
+  async setSlug(id, slug) {
+    const blocked = await gate();
+    if (blocked) return fail(blocked);
+    if (checkSlug(slug)) return fail("slug_invalid");
+    if (loadBundles().some((b) => b.quiz.slug === slug && b.quiz.id !== id)) return fail("slug_taken");
+    return summaryOf(replace(id, (bundle) => touched(bundle, { slug })));
   },
 
   async remove(id) {

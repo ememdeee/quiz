@@ -4,6 +4,7 @@ import type { ComponentType } from "react";
 import { panel } from "@/content/dashboard/editor";
 import { pageTypes } from "@/lib/quiz/page-types";
 import type { Page, PageOf, PageType } from "@/lib/quiz/schema";
+import { ConditionsSection } from "./conditions-section";
 import { ChoicePanel } from "./choice-panel";
 import { EndPanel, LoadingPanel } from "./loading-end-panels";
 import { NumberPanel } from "./number-panel";
@@ -29,6 +30,7 @@ export function PagePanel({ page, position }: { page: Page; position: number }) 
         <span className="text-sm text-mute">{pageTypes[page.type].label}</span>
       </div>
       <Fields key={page.id} page={page} />
+      {page.type === "welcome" || page.type === "end" ? null : <ConditionsSection key={`${page.id}-show`} page={page} />}
     </section>
   );
 }

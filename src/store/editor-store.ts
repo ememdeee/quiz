@@ -20,6 +20,10 @@ export type EditorState = {
   /** Pages whose answers show picture slots. A screen setting, not part of the quiz document. */
   answerPictures: Record<string, boolean>;
   lastGroup: { key: string; at: number } | null;
+  /** Fields the person has left (`pageId:field`): only then does their error show. */
+  touched: Record<string, true>;
+  /** After Publish was pressed every error shows, even on fields nobody touched. */
+  revealAll: boolean;
 };
 
 export type EditorActions = {
@@ -34,6 +38,10 @@ export type EditorActions = {
   remove: (pageId: string) => void;
   removeAnswer: (pageId: string, answerId: string) => void;
   setAnswerPictures: (pageId: string, on: boolean) => void;
+  /** The private quiz name (set in Quiz settings). Saved with the quiz, but not an Undo step. */
+  setName: (name: string) => void;
+  touch: (pageId: string, field: string) => void;
+  revealProblems: () => void;
   undo: () => void;
   canUndo: () => boolean;
 };
@@ -66,6 +74,8 @@ export function createEditorStore(initial: QuizDocument, now: () => number = Dat
         initial.pages.filter((p) => p.type === "choice" && p.answers.some((a) => a.picture)).map((p) => [p.id, true]),
       ),
       lastGroup: null,
+      touched: {},
+      revealAll: false,
 
       select: (pageId) => set({ selectedId: pageId }),
 
@@ -110,6 +120,12 @@ export function createEditorStore(initial: QuizDocument, now: () => number = Dat
       removeAnswer: (pageId, answerId) => commit(removeAnswer(get().doc, pageId, answerId)),
 
       setAnswerPictures: (pageId, on) => set((state) => ({ answerPictures: { ...state.answerPictures, [pageId]: on } })),
+
+      setName: (name) => set((state) => ({ doc: { ...state.doc, name }, revision: state.revision + 1 })),
+
+      touch: (pageId, field) => set((state) => (state.touched[`${pageId}:${field}`] ? state : { touched: { ...state.touched, [`${pageId}:${field}`]: true } })),
+
+      revealProblems: () => set({ revealAll: true }),
 
       undo: () =>
         set((state) => {

@@ -6,6 +6,10 @@ export const errorCodes = [
   "not_found",
   "limit_quizzes",
   "name_required",
+  "slug_taken",
+  "slug_invalid",
+  "publish_blocked",
+  "picture_rejected",
 ] as const;
 export type ErrorCode = (typeof errorCodes)[number];
 

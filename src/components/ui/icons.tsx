@@ -304,3 +304,8 @@ export const GripIcon = (p: IconProps) => (
     <circle cx="15" cy="18" r="1.6" />
   </Svg>
 );
+export const UploadIcon = (p: IconProps) => (
+  <Svg size={32} {...p}>
+    <path d="M12 15V3M7 8l5-5 5 5M5 21h14" />
+  </Svg>
+);

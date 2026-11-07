@@ -68,7 +68,7 @@ const dashboardGroup = {
     { label: "Editor: published with 3 changes waiting (Body Reset)", href: quizHref.edit("quiz-body-reset") },
     { label: "Editor: published and up to date, closed (Debug quiz)", href: quizHref.edit("quiz-debug") },
     { label: "Editor: never published, no question yet (Customer feedback)", href: quizHref.edit("quiz-customer-feedback") },
-    { label: "Quiz settings (placeholder until the next slice)", href: quizHref.settings("quiz-body-reset") },
+    { label: "Editor with the Quiz settings panel open", href: quizHref.settings("quiz-body-reset") },
     { label: "Quiz not found", href: quizHref.edit("does-not-exist") },
     { label: "UI kit: every component", href: routes.devUi },
     { label: "What each template contains", href: routes.devTemplates },

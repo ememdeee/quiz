@@ -15,11 +15,25 @@ export interface QuizzesRepo {
   rename(id: string, name: string): Promise<ActionResult<QuizSummary>>;
   duplicate(id: string): Promise<ActionResult<QuizSummary>>;
   setAcceptingResponses(id: string, accepting: boolean): Promise<ActionResult<QuizSummary>>;
+  /** Makes the draft what people see. Refused when the draft still has problems. */
+  publish(id: string, draft: QuizDocument): Promise<ActionResult<QuizBundle>>;
+  /** Changes the web address (the name is renamed with `rename`). */
+  setSlug(id: string, slug: string): Promise<ActionResult<QuizSummary>>;
+  /** Live check while typing the web address. */
+  slugAvailable(id: string, slug: string): Promise<ActionResult<{ available: true } | { available: false; reason: "taken" | "invalid" | "reserved" }>>;
   remove(id: string): Promise<ActionResult<{ id: string }>>;
+}
+
+/** The owner's picture library. Newest first. */
+export type MediaItem = { id: string; src: string; name: string };
+
+export interface MediaRepo {
+  list(): Promise<ActionResult<MediaItem[]>>;
+  add(input: { src: string; name: string }): Promise<ActionResult<MediaItem>>;
 }
 
 export interface ProfilesRepo {
   getCurrent(): Promise<ActionResult<Profile>>;
 }
 
-export type Repos = { quizzes: QuizzesRepo; profiles: ProfilesRepo };
+export type Repos = { quizzes: QuizzesRepo; profiles: ProfilesRepo; media: MediaRepo };

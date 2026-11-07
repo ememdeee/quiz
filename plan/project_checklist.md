@@ -43,7 +43,8 @@
 - [ ] **Phase 1** Clean-up and foundation (tooling, tokens, shared logic with unit tests)
 - [ ] **Phase 2** Whole UI with dummy data, all links connected, owner says "UI approved"
   - [x] UI kit  - [ ] layouts and shared components (site and sign-in done, dashboard/admin/quiz not)  - [x] website  - [x] auth screens  - [x] quiz list and new quiz (Slice A, 2026-11-07; "Full" card state waits for design G8)
-  - [ ] editor (Slice B done 2026-11-07: shell, page list, all 7 page types, autosave, Undo; left for Slice C: conditions, publish, share, settings, media dialog, Edit with AI)  - [ ] quiz runtime
+  - [x] editor (Slices B and C, 2026-11-07: all page types, conditions, publish, share, settings, pictures, Edit with AI)
+  - [ ] quiz runtime
   - [ ] responses (summary, individual, export, delete)  - [ ] account  - [ ] admin  - [ ] email templates
   - [ ] link audit passes  - [ ] staging preview deployed
 - [ ] **Phase 3** Supabase, database, security rules, tests: database, RLS, storage and 115 tests DONE (2026-11-07, branch `phase-3-supabase`); left: `repos/supabase` skeletons, optional dev seed

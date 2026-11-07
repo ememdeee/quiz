@@ -7,6 +7,7 @@ import { estimateMinutes, takesAbout } from "@/lib/quiz/time-estimate";
 import type { Page, PageOf, PageType, QuizDocument } from "@/lib/quiz/schema";
 import { cn } from "@/lib/utils";
 import { useEditor } from "../editor-context";
+import { useMedia } from "../media-context";
 
 /**
  * What a person sees on each kind of page, drawn still (the live quiz comes with the quiz-runtime slice).
@@ -22,12 +23,20 @@ const Cta = ({ children, className }: { children: ReactNode; className?: string 
   <div className={cn("flex min-h-[52px] items-center justify-center rounded-[14px] bg-slate text-[17px] font-semibold text-white", className)}>{children}</div>
 );
 const Hint = ({ children }: { children: ReactNode }) => <span className="text-center text-sm text-mute">{children}</span>;
-const Picture = () => <div className="grid h-[150px] place-items-center rounded-2xl bg-soft text-sm text-mute">{canvas.yourPicture}</div>;
+function Picture({ id }: { id: string | null }) {
+  const src = useMedia().srcOf(id);
+  return src ? (
+    // eslint-disable-next-line @next/next/no-img-element -- library pictures are small data URLs or static files
+    <img src={src} alt="" className="h-[150px] w-full rounded-2xl object-cover" />
+  ) : (
+    <div className="grid h-[150px] place-items-center rounded-2xl bg-soft text-sm text-mute">{canvas.yourPicture}</div>
+  );
+}
 
 function WelcomeView({ page, doc }: ViewProps<"welcome">) {
   return (
     <>
-      {page.picture ? <Picture /> : null}
+      {page.picture ? <Picture id={page.picture} /> : null}
       <Title size="lg">{page.title}</Title>
       {page.text ? <Text>{page.text}</Text> : null}
       <Cta>{canvas.startQuiz}</Cta>
@@ -36,16 +45,23 @@ function WelcomeView({ page, doc }: ViewProps<"welcome">) {
   );
 }
 
+function AnswerPicture({ id }: { id: string | null }) {
+  const src = useMedia().srcOf(id);
+  // eslint-disable-next-line @next/next/no-img-element -- library pictures are small data URLs or static files
+  return src ? <img src={src} alt="" className="h-24 w-full object-cover" /> : <div className="h-24 bg-soft" />;
+}
+
 function ChoiceView({ page }: ViewProps<"choice">) {
   const withPictures = useEditor((s) => s.answerPictures[page.id] === true);
   return (
     <>
+      {page.picture ? <Picture id={page.picture} /> : null}
       <Title>{page.question}</Title>
       {withPictures ? (
         <div className="grid grid-cols-2 gap-3">
           {page.answers.map((answer) => (
             <div key={answer.id} className="overflow-hidden rounded-[14px] border-2 border-line">
-              <div className="h-24 bg-soft" />
+              <AnswerPicture id={answer.picture} />
               <div className="px-3 py-2.5 text-center text-[15px] font-semibold">{answer.text}</div>
             </div>
           ))}
@@ -94,7 +110,7 @@ function NumberView({ page }: ViewProps<"number">) {
 function InfoView({ page }: ViewProps<"info">) {
   return (
     <>
-      {page.picture ? <Picture /> : null}
+      {page.picture ? <Picture id={page.picture} /> : null}
       <Title>{page.title}</Title>
       {page.text ? <Text>{page.text}</Text> : null}
       <Cta>{canvas.continue}</Cta>

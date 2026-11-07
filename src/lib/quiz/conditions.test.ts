@@ -4,8 +4,11 @@ import {
   dependentsOfAnswer,
   dependentsOfPage,
   pagesWithBrokenRules,
+  defaultRule,
+  opsFor,
   removeAnswerDependencies,
   removePageDependencies,
+  ruleSources,
   visiblePages,
 } from "./conditions";
 import type { QuizDocument } from "./schema";
@@ -68,8 +71,44 @@ describe("visiblePages", () => {
 
 describe("describeShowRule", () => {
   it("says the condition in plain words", () => {
-    expect(describeShowRule(doc, doc.pages[3])).toBe("Show this page only when “How was your experience?” is “Poor”.");
+    expect(describeShowRule(doc, doc.pages[3])).toBe("people see “What went wrong?” only if they answered “Poor”. Everyone else skips it.");
     expect(describeShowRule(doc, doc.pages[1])).toBe("");
+  });
+
+  it("joins several rules with and, or with or", () => {
+    const two = (match: "all" | "any"): QuizDocument => ({
+      ...doc,
+      pages: doc.pages.map((p) =>
+        p.id === "why" ? { ...p, show: { match, rules: [{ page: "experience", op: "is not", value: "great" }, { page: "recommend", op: "more than", value: 6 }] } } : p,
+      ),
+    });
+    expect(describeShowRule(two("all"), two("all").pages[3])).toBe("people see “What went wrong?” only if they didn’t answer “Great” and their answer to “How likely are you to recommend us?” is more than 6. Everyone else skips it.");
+    expect(describeShowRule(two("any"), two("any").pages[3])).toContain(" or ");
+  });
+
+  it("names age, height and weight", () => {
+    const age: QuizDocument = { ...doc, pages: doc.pages.map((p) => (p.id === "recommend" ? { ...p, kind: "age" as const } : p)) };
+    const rule = { match: "all" as const, rules: [{ page: "recommend", op: "more than" as const, value: 40 }] };
+    const withRule = { ...age, pages: age.pages.map((p) => (p.id === "why" ? { ...p, show: rule } : p)) };
+    expect(describeShowRule(withRule, withRule.pages[3])).toContain("their age is more than 40");
+  });
+});
+
+describe("ruleSources, opsFor and defaultRule", () => {
+  it("lists only earlier choice and number pages", () => {
+    expect(ids(ruleSources(doc, "why"))).toEqual(["experience", "recommend"]);
+    expect(ids(ruleSources(doc, "experience"))).toEqual([]);
+    expect(ids(ruleSources(doc, "start"))).toEqual([]);
+  });
+
+  it("offers more than and less than only for numbers", () => {
+    expect(opsFor(doc.pages[1])).toEqual(["is", "is not"]);
+    expect(opsFor(doc.pages[2])).toEqual(["is", "is not", "more than", "less than"]);
+  });
+
+  it("starts a rule on the first answer or the smallest number", () => {
+    expect(defaultRule(doc.pages[1])).toEqual({ page: "experience", op: "is", value: "great" });
+    expect(defaultRule(doc.pages[2])).toEqual({ page: "recommend", op: "is", value: 0 });
   });
 });
 

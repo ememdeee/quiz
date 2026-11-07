@@ -5,7 +5,9 @@ import { panel } from "@/content/dashboard/editor";
 import { dependentsOfAnswer } from "@/lib/quiz/conditions";
 import { newId } from "@/lib/quiz/ids";
 import { MAX_ANSWERS, MIN_ANSWERS, type PageOf } from "@/lib/quiz/schema";
-import { useEditor, useEditorActions, useEditorUi, usePageEdit } from "../editor-context";
+import { useEditor, useEditorActions, useEditorUi, useFieldProps, usePageEdit } from "../editor-context";
+import { pictureDialog } from "@/content/dashboard/settings";
+import { useMedia } from "../media-context";
 import { PictureField, RequiredRow, RowList, TextField } from "./fields";
 
 function Toggle({ id, label, checked, onChange }: { id: string; label: string; checked: boolean; onChange: (checked: boolean) => void }) {
@@ -19,10 +21,12 @@ function Toggle({ id, label, checked, onChange }: { id: string; label: string; c
 
 export function ChoicePanel({ page }: { page: PageOf<"choice"> }) {
   const edit = usePageEdit(page);
+  const field = useFieldProps(page.id);
   const doc = useEditor((s) => s.doc);
   const withPictures = useEditor((s) => s.answerPictures[page.id] === true);
   const { setAnswerPictures } = useEditorActions();
-  const { requestRemoveAnswer } = useEditorUi();
+  const { requestRemoveAnswer, requestPicture } = useEditorUi();
+  const { srcOf } = useMedia();
 
   const remove = (index: number) => {
     const answer = page.answers[index];
@@ -32,7 +36,7 @@ export function ChoicePanel({ page }: { page: PageOf<"choice"> }) {
 
   return (
     <>
-      <TextField id={`${page.id}-question`} label={panel.question} value={page.question} onChange={(v) => edit("question", (d) => void (d.question = v))} />
+      <TextField id={`${page.id}-question`} label={panel.question} value={page.question} onChange={(v) => edit("question", (d) => void (d.question = v))} {...field("question")} />
       <RowList
         label={withPictures ? "Answers" : panel.choice.answers}
         rows={page.answers.map((a) => ({ id: a.id, value: a.text }))}
@@ -43,10 +47,29 @@ export function ChoicePanel({ page }: { page: PageOf<"choice"> }) {
         canRemove={page.answers.length > MIN_ANSWERS}
         onChange={(index, v) => edit(`answer-${page.answers[index].id}`, (d) => void (d.answers[index].text = v))}
         onRemove={remove}
+        error={field("answers").error}
+        rowError={(index) => field(`answers.${page.answers[index].id}`).error}
+        onRowBlur={(index) => field(`answers.${page.answers[index].id}`).onBlur()}
         onAdd={() => edit(undefined, (d) => void d.answers.push({ id: newId(), text: "", picture: null }))}
-        leading={withPictures ? () => <span aria-hidden="true" className="size-11 flex-none rounded-lg border border-line bg-soft" /> : undefined}
+        leading={
+          withPictures
+            ? (index) => (
+                <button
+                  type="button"
+                  aria-label={pictureDialog.change}
+                  onClick={() => requestPicture((id) => edit(undefined, (d) => void (d.answers[index].picture = id)))}
+                  className="size-11 flex-none overflow-hidden rounded-lg border border-line bg-soft focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-slate"
+                >
+                  {srcOf(page.answers[index].picture) ? (
+                    // eslint-disable-next-line @next/next/no-img-element -- library pictures are small data URLs or static files
+                    <img src={srcOf(page.answers[index].picture) ?? ""} alt="" className="size-full object-cover" />
+                  ) : null}
+                </button>
+              )
+            : undefined
+        }
       />
-      {withPictures ? null : <PictureField />}
+      {withPictures ? null : <PictureField value={page.picture} onChange={(id) => edit(undefined, (d) => void (d.picture = id))} />}
       <div className="flex flex-col">
         <Toggle id={`${page.id}-multiple`} label={panel.choice.multiple} checked={page.multiple} onChange={(v) => edit(undefined, (d) => void (d.multiple = v))} />
         <Toggle id={`${page.id}-pictures`} label={panel.choice.pictures} checked={withPictures} onChange={(v) => setAnswerPictures(page.id, v)} />

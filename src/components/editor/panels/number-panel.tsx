@@ -1,11 +1,11 @@
 "use client";
 
 import { Segmented } from "@/components/ui/controls";
-import { Field, FieldHint, Input } from "@/components/ui/field";
+import { Field, FieldError, FieldHint, Input } from "@/components/ui/field";
 import { panel } from "@/content/dashboard/editor";
 import type { PageOf } from "@/lib/quiz/schema";
 import { defaultsFor, unitChoices, type NumberKind } from "@/lib/quiz/units";
-import { usePageEdit } from "../editor-context";
+import { useFieldProps, usePageEdit } from "../editor-context";
 import { ChipGroup, RequiredRow, Sub, TextField } from "./fields";
 
 const kinds: readonly { value: NumberKind; label: string }[] = [
@@ -21,6 +21,7 @@ const asNumber = (value: string) => (value.trim() === "" ? null : Number(value))
 /** "Number or date" (boards TypeNumber and TypeNumberKinds): what changes depends on which kind is chosen. */
 export function NumberPanel({ page }: { page: PageOf<"number"> }) {
   const edit = usePageEdit(page);
+  const field = useFieldProps(page.id);
   const words = panel.number;
   const units = unitChoices(page.kind);
   const other = units.find((u) => u !== page.unit);
@@ -28,7 +29,7 @@ export function NumberPanel({ page }: { page: PageOf<"number"> }) {
 
   return (
     <>
-      <TextField id={`${page.id}-question`} label={panel.question} value={page.question} onChange={(v) => edit("question", (d) => void (d.question = v))} />
+      <TextField id={`${page.id}-question`} label={panel.question} value={page.question} onChange={(v) => edit("question", (d) => void (d.question = v))} {...field("question")} />
       <ChipGroup
         label={words.enter}
         value={page.kind}
@@ -75,11 +76,11 @@ export function NumberPanel({ page }: { page: PageOf<"number"> }) {
         <div role="group" aria-label={words.allowed} className="flex flex-col gap-2">
           <span className="text-[15px] font-semibold">{words.allowed}</span>
           <div className="flex items-center gap-2.5">
-            <Input shape="box" type="number" aria-label={words.smallest} value={page.min ?? ""} onChange={(e) => edit("min", (d) => void (d.min = asNumber(e.target.value)))} />
+            <Input shape="box" type="number" invalid={Boolean(field("range").error)} onBlur={field("range").onBlur} aria-label={words.smallest} value={page.min ?? ""} onChange={(e) => edit("min", (d) => void (d.min = asNumber(e.target.value)))} />
             <span className="text-sm text-mute">{words.to}</span>
-            <Input shape="box" type="number" aria-label={words.largest} value={page.max ?? ""} onChange={(e) => edit("max", (d) => void (d.max = asNumber(e.target.value)))} />
+            <Input shape="box" type="number" invalid={Boolean(field("range").error)} onBlur={field("range").onBlur} aria-label={words.largest} value={page.max ?? ""} onChange={(e) => edit("max", (d) => void (d.max = asNumber(e.target.value)))} />
           </div>
-          <FieldHint>{page.kind === "number" ? words.anyNote : words.rangeNote}</FieldHint>
+          {field("range").error ? <FieldError>{field("range").error}</FieldError> : <FieldHint>{page.kind === "number" ? words.anyNote : words.rangeNote}</FieldHint>}
         </div>
       )}
 

@@ -1,3 +1,4 @@
+import { pageTypes } from "./page-types";
 import type { Page, QuizDocument, Rule, ShowRule } from "./schema";
 
 /**
@@ -46,23 +47,43 @@ export const isPageVisible = (doc: QuizDocument, page: Page, answers: Answers) =
 
 const quoted = (text: string) => `“${text}”`;
 
+/** What a rule says about the person, in words: "they answered “Lose weight”", "their age is more than 40". */
 function describeRule(doc: QuizDocument, rule: Rule): string {
   const source = doc.pages.find((p) => p.id === rule.page);
-  if (!source) return "a page that no longer exists";
-  const question = quoted(source.type === "choice" || source.type === "number" ? source.question : "");
-  if (source.type === "choice") {
-    const answer = source.answers.find((a) => a.id === rule.value)?.text ?? "";
-    return `${question} ${rule.op} ${quoted(answer)}`;
+  if (source?.type === "choice") {
+    const answer = quoted(source.answers.find((a) => a.id === rule.value)?.text ?? "");
+    return rule.op === "is not" ? `they didn’t answer ${answer}` : `they answered ${answer}`;
   }
-  return `${question} ${rule.op} ${rule.value}`;
+  if (source?.type === "number") {
+    const subject = { age: "their age", height: "their height", weight: "their weight", number: "", date: "" }[source.kind] || `their answer to ${quoted(source.question)}`;
+    return `${subject} ${rule.op === "is not" ? "is not" : rule.op === "is" ? "is" : "is " + rule.op} ${rule.value}`;
+  }
+  return "a page that no longer exists";
 }
 
-/** The "In plain words" sentence under the conditions. Empty when the page has no condition. */
+/** The "In plain words" sentence under the conditions (board Conditions). Empty when the page has no condition. */
 export function describeShowRule(doc: QuizDocument, page: Page): string {
   const show: ShowRule | undefined = page.show;
   if (!show) return "";
-  const joiner = show.match === "all" ? " and " : " or ";
-  return `Show this page only when ${show.rules.map((rule) => describeRule(doc, rule)).join(joiner)}.`;
+  const title = quoted(pageTypes[page.type].title(page as never));
+  const parts = show.rules.map((rule) => describeRule(doc, rule));
+  if (show.match === "any") return `people see ${title} if ${parts.join(" or ")}.`;
+  return `people see ${title} only if ${parts.join(" and ")}. Everyone else skips it.`;
+}
+
+/** Earlier choice and number pages: what a page's conditions may look at. */
+export function ruleSources(doc: QuizDocument, pageId: string): Page[] {
+  const index = doc.pages.findIndex((p) => p.id === pageId);
+  return doc.pages.slice(0, Math.max(0, index)).filter(canBeRuleSource);
+}
+
+/** The comparisons that make sense for a page, in the order the menu shows them. */
+export const opsFor = (source: Page): Rule["op"][] => (source.type === "number" ? ["is", "is not", "more than", "less than"] : ["is", "is not"]);
+
+/** A first rule for a page: its nearest earlier source, "is" its first answer (or 0 for a number). */
+export function defaultRule(source: Page): Rule {
+  const value = source.type === "choice" ? (source.answers[0]?.id ?? "") : (source.type === "number" ? (source.min ?? 0) : "");
+  return { page: source.id, op: "is", value };
 }
 
 const usesPage = (rule: Rule, pageId: string) => rule.page === pageId;

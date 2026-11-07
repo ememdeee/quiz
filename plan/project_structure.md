@@ -86,6 +86,14 @@ Screens with several states open directly through a query: `/login?state=error|u
 - Data: `QuizzesRepo.get` now returns a `QuizBundle` (summary, draft, published), `saveDraft` added; the mock keeps bundles in localStorage (`mock/store.ts`, key `quiz.mock.bundles.v1`). Seed documents are in `src/data/mock/seed.ts`.
 - Editor UI: `src/components/editor/` (`editor-page`, `editor`, `editor-header`, `editor-context` for the store and the dialog requests, `page-list/*` with dnd-kit, `canvas/*`, `panels/*` one panel per page type, `add-page-dialog`, `page-dialogs`). Words in `src/content/dashboard/editor.ts`. Route `/dashboard/[quizId]` is the editor; `/responses` and `/settings` are still placeholders.
 
+## Publish, settings, pictures and Edit with AI (Slice C, 2026-11-07)
+- Conditions: `components/editor/panels/conditions-section.tsx`, words in `content/dashboard/conditions.ts`; logic in `lib/quiz/conditions.ts` (`describeShowRule` gives the "In plain words" sentence, `ruleSources`, `opsFor`, `defaultRule`).
+- Problems: `validateQuiz` codes become words in `content/dashboard/publish.ts`. The editor store keeps `touched` and `revealAll` so an error shows after a field is left, or for everything after Publish. Dialogs in `components/editor/publish-dialogs.tsx`. Mock `QuizzesRepo` got `publish`, `setSlug`, `slugAvailable`.
+- Settings: `components/editor/settings-drawer.tsx` (uses `ui/drawer.tsx`); `/dashboard/[quizId]/settings` opens the editor with the drawer open. The name is saved with the quiz document (autosave); the web address and the on/off switch call the repo directly.
+- Pictures: `MediaRepo` (`repos/mock/media.ts`, localStorage, seed pictures in `public/mock/`), `components/editor/media-context.tsx`, `picture-dialog.tsx`. A document stores only the picture id.
+- Edit with AI: `lib/ai/prompt.ts` (field list built from the schema), `export.ts`, `import.ts` (find, check, new ids, left-out pictures, changes), UI in `components/editor/ai/`, words in `content/dashboard/ai.ts`. Applying is one Undo step with a toast.
+- `lib/quiz/diff.ts` compares pages with sorted keys (`stable`), so a page written in another key order is not a change.
+
 ## What This Is
 
 A **Next.js 15** quiz/assessment platform that sells a personalized health plan (BodyReset). Users complete a multi-step quiz, receive a result page with health insights calculated from their answers, and are presented with a $29 offer. The product name in-code is "quiz" (historical artifact — the project is not Svelte).

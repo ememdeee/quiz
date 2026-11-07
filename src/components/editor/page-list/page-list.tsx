@@ -15,7 +15,7 @@ import { PageRow } from "./page-row";
 export function PageList({ maxPages }: { maxPages: number }) {
   const pages = useEditor((s) => s.doc.pages);
   const selectedId = useEditor((s) => s.selectedId);
-  const { requestAddPage, requestMove } = useEditorUi();
+  const { requestAddPage, requestMove, requestAi } = useEditorUi();
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
 
   const noQuestions = !pages.some((p) => pageTypes[p.type].isQuestion);
@@ -61,16 +61,17 @@ export function PageList({ maxPages }: { maxPages: number }) {
 
       {noQuestions ? null : addButton}
 
-      <div
-        aria-disabled="true"
-        className="mt-2 flex min-h-14 items-center gap-3 rounded-xl border border-line-strong bg-white px-3.5 py-2 text-slate opacity-60"
+      <button
+        type="button"
+        onClick={requestAi}
+        className="mt-2 flex min-h-14 items-center gap-3 rounded-xl border border-line-strong bg-white px-3.5 py-2 text-left text-slate transition-colors duration-200 hover:bg-dash focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-slate"
       >
         <SparklesIcon size={22} />
         <span>
           <span className="block text-[15px] font-semibold">{pageList.ai.title}</span>
           <span className="block text-[13px] text-mute">{pageList.ai.text}</span>
         </span>
-      </div>
+      </button>
     </aside>
   );
 }

@@ -325,3 +325,7 @@
   0% { transform: scale(1); opacity: 1; }
   70%, 100% { transform: scale(1.12, 1.35); opacity: 0; }
 }
+
+@keyframes drawer {
+  from { transform: translateX(40px); opacity: 0.6; }
+}

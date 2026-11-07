@@ -4,12 +4,14 @@ import { blankQuiz } from "@/lib/quiz/templates";
 import { documentFacts } from "@/lib/quizzes/summary";
 import type { QuizBundle } from "@/lib/quizzes/types";
 import { defaultFlags, writeFlags } from "./flags";
+import { resetMedia } from "./media";
 import { loadBundles, resetBundles } from "./store";
 
 /** Buttons on /dev that put the dummy data into a known state. Mock only. */
 
 export function resetAll() {
   resetBundles(seedBundles());
+  resetMedia();
   writeFlags(defaultFlags);
 }
 

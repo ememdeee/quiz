@@ -83,6 +83,23 @@ describe("editor store", () => {
     expect(store.getState().doc.pages.some((p) => p.id === "recommend")).toBe(true);
   });
 
+  it("renames the quiz without adding an Undo step", () => {
+    const { store } = make();
+    store.getState().setName("New name");
+    expect(store.getState().doc.name).toBe("New name");
+    expect(store.getState().past).toHaveLength(0);
+    expect(store.getState().revision).toBe(1);
+  });
+
+  it("remembers which fields were left, and reveals every error after Publish", () => {
+    const { store } = make();
+    store.getState().touch("recommend", "question");
+    expect(store.getState().touched["recommend:question"]).toBe(true);
+    expect(store.getState().revealAll).toBe(false);
+    store.getState().revealProblems();
+    expect(store.getState().revealAll).toBe(true);
+  });
+
   it("remembers which choice pages show picture slots", () => {
     const { store } = make();
     store.getState().setAnswerPictures("experience", true);

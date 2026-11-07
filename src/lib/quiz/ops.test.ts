@@ -102,6 +102,11 @@ describe("diffQuiz", () => {
     expect(diff.count).toBe(3);
   });
 
+  it("does not count a page whose keys are written in another order", () => {
+    const reordered: QuizDocument = { ...feedback, pages: feedback.pages.map((p) => Object.fromEntries(Object.entries(p).reverse()) as typeof p) };
+    expect(diffQuiz(reordered, feedback).count).toBe(0);
+  });
+
   it("counts a moved page as one change", () => {
     const moved = movePage(feedback, "more", 1);
     expect("doc" in moved && diffQuiz(moved.doc, feedback).count).toBe(1);

@@ -14,7 +14,7 @@ import { diffQuiz } from "@/lib/quiz/diff";
 import { quizStatus } from "@/lib/quizzes/list";
 import type { QuizBundle } from "@/lib/quizzes/types";
 import { quizHref, routes } from "@/lib/routes";
-import { useEditor, useEditorActions } from "./editor-context";
+import { useEditor, useEditorActions, useEditorUi } from "./editor-context";
 
 const pillTone = { open: "solid", closed: "neutral", not_published: "outline" } as const;
 
@@ -24,6 +24,7 @@ export function EditorHeader({ bundle, save, onRetry }: { bundle: QuizBundle; sa
   const doc = useEditor((s) => s.doc);
   const canUndo = useEditor((s) => s.past.length > 0);
   const { undo } = useEditorActions();
+  const { requestPublish, requestShare, requestSettings } = useEditorUi();
   const { quiz, published } = bundle;
   const status = quizStatus(quiz);
   const isPublished = status !== "not_published";
@@ -65,11 +66,11 @@ export function EditorHeader({ bundle, save, onRetry }: { bundle: QuizBundle; sa
         <UndoIcon />
         {editorHeader.undo}
       </Button>
-      <ButtonLink href={quizHref.settings(quiz.id)} shape="box" size="sm" variant="secondary" className="gap-2">
+      <Button shape="box" size="sm" variant="secondary" className="gap-2" onClick={requestSettings}>
         <SlidersIcon />
         {editorHeader.settings}
-      </ButtonLink>
-      <Button shape="box" size="sm" variant="secondary" disabled={!isPublished} className="gap-2">
+      </Button>
+      <Button shape="box" size="sm" variant="secondary" disabled={!isPublished} className="gap-2" onClick={requestShare}>
         <LinkIcon />
         {editorHeader.share}
       </Button>
@@ -77,7 +78,7 @@ export function EditorHeader({ bundle, save, onRetry }: { bundle: QuizBundle; sa
         <EyeIcon size={18} />
         {editorHeader.tryIt}
       </ButtonLink>
-      <Button shape="box" size="sm" disabled={upToDate} className="px-[22px]">
+      <Button shape="box" size="sm" disabled={upToDate} className="px-[22px]" onClick={requestPublish}>
         {upToDate ? editorHeader.published : isPublished ? editorHeader.publishChanges : editorHeader.publish}
       </Button>
       <AccountMenu user={user} />

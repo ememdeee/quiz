@@ -10,9 +10,9 @@ import { routes } from "@/lib/routes";
 import { Editor } from "./editor";
 
 /** `/dashboard/[quizId]`: the grey blocks while the quiz opens, "We can't find this quiz", or the editor (boards Saving, DashErrors, Main). */
-export function EditorPage({ quizId }: { quizId: string }) {
+export function EditorPage({ quizId, openSettings = false }: { quizId: string; openSettings?: boolean }) {
   const state = useQuiz(quizId);
-  if (state.status === "ready") return <Editor key={quizId} bundle={state.bundle} />;
+  if (state.status === "ready") return <Editor key={quizId} bundle={state.bundle} openSettings={openSettings} />;
   return (
     <>
       <DashHeader />
