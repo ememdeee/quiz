@@ -6,21 +6,22 @@
 ---
 
 ## A. Now (current phase)
-- Current phase: **Phase 0** (accounts, repo, decisions)
-- Next action: owner creates the accounts in section C, and answers decisions D1 and D2.
+- Current phase: **Phase 3** (database done on `quiz-dev`; the UI work in Phase 2 continues in another session)
+- Next action: owner reviews branch `phase-3-supabase` and says whether to push it. Then Phase 4 (auth) needs a Google Cloud OAuth client and a Mailtrap sandbox from the owner. Owner still answers D1 and D2 (D1 working default 1 hour is set in config).
 
 ## B. Design (Claude Design artifact: https://claude.ai/artifact/FiiBUq7uJaBcXyeqfTKtTw)
-- [x] All screens designed (158 boards, version 67 on 2026-11-07)
+- [x] All screens designed (158 boards, version 69 on 2026-11-07; v69 = FAQ full width, FAQ phone padding, Copy link spacing on Home and Pricing)
 - [x] Behavior rules board "How the quiz behaves" written
 - [ ] Design gaps closed (handover 13.1): G1 conflict dialog, G2 AI "no changes", G3 picture library note, G4 blocked-move toast, G5 email-change landing, G6 disconnect Google, G7 admin near-limit link, G8 "Full" on quiz card
 - [ ] Decisions needing a design change: D1 (link lifetimes), D2 (Google already exists)
 
 ## C. Owner tasks (accounts and things only the owner can do)
-- [ ] GitHub account, private repo named `quiz`
-- [ ] Docker Desktop installed (with WSL2)
-- [ ] Supabase account + staging project `quiz-staging` (region chosen, D8)
-- [ ] Supabase keys put in `.env.local` (never in chat)
-- [ ] Google Cloud OAuth client (for Google login)
+- [x] GitHub repo https://github.com/ememdeee/quiz (public, exists)
+- [x] ~~Docker~~ not needed (decided 2026-11-07)
+- [x] Supabase project `quiz-dev` created (Singapore, Free). One project is enough for now
+- [x] Mailtrap sandbox account (test inbox, D20) (done 2026-11-07, free: 50 emails per month)
+- [x] Supabase keys put in `.env.local` (never in chat)
+- [x] Google Cloud OAuth client (for Google login) (dev client `quiz-dev` done 2026-11-07, provider enabled in Supabase; production client later, Phase 16)
 - [ ] Vercel account, repo connected
 - [ ] Real domain bought (D9) and DNS access
 - [ ] Resend account + DNS records added
@@ -31,20 +32,20 @@
 - [ ] Owner account promoted to admin (SQL line from Code)
 
 ## D. Decisions (handover section 11)
-- [ ] D1 link lifetimes (rec: 1 hour for all)  - [ ] D2 Google linking (rec: accept auto-link)  - [ ] D3 slug holds 30 days
+- [x] D1 link lifetimes = 1 hour for all (approved 2026-11-07; design change pending)  - [x] D2 Google linking = accept auto-link (approved 2026-11-07; design change pending)  - [ ] D3 slug holds 30 days
 - [ ] D4 picture quota (rec: none)  - [ ] D5 noindex rules  - [ ] D6 analytics tool  - [ ] D7 Vercel paid plan
-- [ ] D8 region  - [ ] D9 domain  - [ ] D10 custom domains later  - [ ] D11 rate limits  - [ ] D12 reserved slugs
-- [ ] D13 "near limit" = 80%  - [ ] D14 Resend  - [ ] D15 keep contact messages  - [ ] D17 condition sources  - [ ] D18 blocked reorder  - [ ] D19 admin response count
+- [x] D8 region (Singapore)  - [ ] D9 domain  - [ ] D10 custom domains later  - [ ] D11 rate limits  - [ ] D12 reserved slugs
+- [x] D20 Mailtrap for dev emails  - [ ] D21 what stays in the public repo  - [ ] D13 "near limit" = 80%  - [ ] D14 Resend  - [ ] D15 keep contact messages  - [ ] D17 condition sources  - [ ] D18 blocked reorder  - [ ] D19 admin response count
 
 ## E. Build phases (handover section 12)
 - [ ] **Phase 0** Accounts, repo, decisions
 - [ ] **Phase 1** Clean-up and foundation (tooling, tokens, shared logic with unit tests)
 - [ ] **Phase 2** Whole UI with dummy data, all links connected, owner says "UI approved"
-  - [ ] UI kit  - [ ] layouts and shared components  - [ ] website  - [ ] auth screens  - [ ] quiz list and new quiz
+  - [ ] UI kit (website parts done, dashboard parts not)  - [ ] layouts and shared components (site and sign-in done, dashboard/admin/quiz not)  - [x] website  - [x] auth screens  - [ ] quiz list and new quiz
   - [ ] editor (all page types, conditions, publish, share, settings, media dialog, Edit with AI)  - [ ] quiz runtime
   - [ ] responses (summary, individual, export, delete)  - [ ] account  - [ ] admin  - [ ] email templates
   - [ ] link audit passes  - [ ] staging preview deployed
-- [ ] **Phase 3** Supabase local, database, security rules, pgTAP tests
+- [ ] **Phase 3** Supabase, database, security rules, tests: database, RLS, storage and 115 tests DONE (2026-11-07, branch `phase-3-supabase`); left: `repos/supabase` skeletons, optional dev seed
 - [ ] **Phase 4** Register, login, accounts base (real auth)
 - [ ] **Phase 5** Quizzes and editor for real (autosave, publish, slug check, limits)
 - [ ] **Phase 6** Pictures (media library)
@@ -65,7 +66,7 @@
 - [ ] QC-10 take a quiz (phone)  - [ ] QC-11 responses and downloads  - [ ] QC-12 limits  - [ ] QC-13 isolation between people
 - [ ] QC-14 account  - [ ] QC-15 Edit with AI  - [ ] QC-16 admin  - [ ] QC-17 emails  - [ ] QC-18 accessibility
 - [ ] QC-19 security  - [ ] QC-20 performance  - [ ] QC-21 production smoke
-- [ ] Database (pgTAP) tests pass  - [ ] Unit tests pass  - [ ] Manual checks done (real Google login, real email, real phones, screen reader)
+- [x] Database tests pass (Vitest, `npm run test:db`)  - [ ] Unit tests pass  - [ ] Manual checks done (real Google login, real email, real phones, screen reader)
 
 ## G. Release gate (all must be true before production)
 - [ ] `npm run release-check` green twice in a row
