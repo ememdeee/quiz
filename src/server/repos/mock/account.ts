@@ -8,7 +8,12 @@ import { readFlags } from "./flags";
 /** The signed-in person's own details, kept in localStorage. Nothing is sent anywhere. */
 const KEY = "quiz.mock.account.v1";
 
-const seed = (): AccountState => ({ name: mockProfile.name, email: mockProfile.email, pendingEmail: null, hasPassword: true, googleConnected: false });
+type Stored = Omit<AccountState, "canDisconnectGoogle">;
+
+const seed = (): Stored => ({ name: mockProfile.name, email: mockProfile.email, pendingEmail: null, hasPassword: true, googleConnected: false });
+
+/** Google can go when the person has a password to log in with instead (the real rule is in `server/actions/account.ts`). */
+const withDerived = (state: Stored): AccountState => ({ ...state, canDisconnectGoogle: state.googleConnected && state.hasPassword });
 
 let memory: AccountState | null = null;
 
@@ -16,15 +21,15 @@ function load(): AccountState {
   if (memory) return memory;
   try {
     const raw = window.localStorage.getItem(KEY);
-    if (raw) return (memory = JSON.parse(raw) as AccountState);
+    if (raw) return (memory = withDerived(JSON.parse(raw) as Stored));
   } catch {
     // Unreadable storage: start again from the seed
   }
-  return (memory = seed());
+  return (memory = withDerived(seed()));
 }
 
-export function saveAccount(state: AccountState) {
-  memory = state;
+export function saveAccount(state: Stored) {
+  memory = withDerived(state);
   try {
     window.localStorage.setItem(KEY, JSON.stringify(state));
   } catch {
@@ -54,7 +59,7 @@ async function change(apply: (state: AccountState) => AccountState | ErrorCode):
   const result = apply(load());
   if (typeof result === "string") return fail(result);
   saveAccount(result);
-  return ok(result);
+  return ok(load());
 }
 
 export const mockAccount: AccountRepo = {
@@ -77,4 +82,5 @@ export const mockAccount: AccountRepo = {
       return next.length < PASSWORD_MIN_LENGTH ? "password_short" : { ...state, hasPassword: true };
     }),
   connectGoogle: () => change((state) => ({ ...state, googleConnected: true })),
+  disconnectGoogle: () => change((state) => (state.canDisconnectGoogle ? { ...state, googleConnected: false } : "load_failed")),
 };

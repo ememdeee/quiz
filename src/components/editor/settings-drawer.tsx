@@ -50,7 +50,8 @@ export function SettingsDrawer({
     const timer = setTimeout(async () => {
       const check = await repos.quizzes.slugAvailable(quiz.id, slug);
       if (cancelled) return;
-      if (!check.ok) return void reportError(check.error);
+      // A check that could not be answered (too many checks in a minute, or the connection) stops the spinner; typing again asks again
+      if (!check.ok) return void (reportError(check.error) || setSlugState({ status: "idle" }));
       if (!check.data.available) return setSlugState({ status: "problem", reason: check.data.reason });
       const saved = await repos.quizzes.setSlug(quiz.id, slug);
       if (cancelled) return;

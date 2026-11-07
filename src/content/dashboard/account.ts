@@ -15,6 +15,8 @@ export const accountPage = {
   sendAgain: "Send it again",
   sentAgain: "Sent again",
   cancelChange: "Cancel the change",
+  /** The toast after the new-address link was opened. No board (gap G5). */
+  emailChanged: "Your email address was changed",
   login: "How you log in",
   password: "Password",
   passwordNote: "Change it any time.",
@@ -26,6 +28,8 @@ export const accountPage = {
   googleConnectedNote: "Connected. You can disconnect it after you set a password.",
   connect: "Connect",
   connected: "Connected",
+  /** Disconnect Google has no board (gap G6). */
+  disconnect: "Disconnect",
   deleteTitle: "Delete account",
   deleteText: "This permanently deletes your account, all your quizzes and all their responses. You can’t undo it.",
   deleteButton: "Delete my account",
@@ -47,6 +51,16 @@ export const passwordDialog = {
   cancel: "Cancel",
   update: "Update password",
   toast: "Password updated",
+} as const;
+
+/** No board (gap G6). */
+export const disconnectGoogleDialog = {
+  title: "Disconnect Google?",
+  text: "From now on you log in with your email and password. You can connect Google again any time.",
+  keep: "Keep it connected",
+  confirm: "Disconnect Google",
+  toast: "Google disconnected",
+  failed: "We couldn’t disconnect Google. Please try again.",
 } as const;
 
 export const deleteAccountDialog = {

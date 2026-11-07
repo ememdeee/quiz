@@ -1,41 +1,48 @@
 "use client";
 
-import { useRef } from "react";
 import { Field, FieldHint, Input } from "@/components/ui/field";
 import { auth } from "@/content/auth";
-import { PASSWORD_MIN_LENGTH } from "@/lib/validation";
+import type { AuthProblem } from "@/lib/routes";
+import { PASSWORD_MIN_LENGTH, resetProblems } from "@/lib/validation";
 import { resetPasswordAction } from "@/server/actions/auth";
+import { AuthProblemBanner } from "./auth-problem";
 import { AuthHeading, authStack } from "./auth-layout";
 import { SubmitButton } from "./submit-button";
+import { useValidatedForm } from "./use-validated-form";
 
-export function ResetForm() {
-  const password = useRef<HTMLInputElement>(null);
-  const confirm = useRef<HTMLInputElement>(null);
+const fields = ["password", "confirm"] as const;
 
-  // The browser's own message tells people the two passwords differ
-  const checkMatch = () => {
-    confirm.current?.setCustomValidity(password.current?.value === confirm.current?.value ? "" : auth.passwordMismatch);
-  };
-
+export function ResetForm({ problem = null }: { problem?: AuthProblem | null }) {
+  const { problems, onSubmit, clear } = useValidatedForm(resetProblems, fields);
   return (
-    <form action={resetPasswordAction} className={authStack}>
+    <form action={resetPasswordAction} onSubmit={onSubmit} noValidate className={authStack}>
       <AuthHeading title={auth.reset.title} sub={auth.reset.sub} />
-      <Field label={auth.fields.newPassword} htmlFor="reset-password">
+      <AuthProblemBanner problem={problem} />
+      <Field label={auth.fields.newPassword} htmlFor="reset-password" error={problems.password ? auth.fieldErrors[problems.password] : undefined}>
         <Input
-          ref={password}
           id="reset-password"
           name="password"
           type="password"
           autoComplete="new-password"
           minLength={PASSWORD_MIN_LENGTH}
           required
-          onInput={checkMatch}
-          aria-describedby="reset-password-hint"
+          invalid={!!problems.password}
+          onChange={() => clear("password")}
+          aria-describedby={problems.password ? "reset-password-error" : "reset-password-hint"}
         />
-        <FieldHint id="reset-password-hint">{auth.passwordHint}</FieldHint>
+        {problems.password ? null : <FieldHint id="reset-password-hint">{auth.passwordHint}</FieldHint>}
       </Field>
-      <Field label={auth.fields.confirmPassword} htmlFor="reset-confirm">
-        <Input ref={confirm} id="reset-confirm" name="confirm" type="password" autoComplete="new-password" required onInput={checkMatch} />
+      <Field label={auth.fields.confirmPassword} htmlFor="reset-confirm" error={problems.confirm ? auth.fieldErrors[problems.confirm] : undefined}>
+        <Input
+          id="reset-confirm"
+          name="confirm"
+          type="password"
+          autoComplete="new-password"
+          required
+          invalid={!!problems.confirm}
+          onChange={() => clear("confirm")}
+          aria-describedby={problems.confirm ? "reset-confirm-error" : undefined}
+        />
       </Field>
       <SubmitButton>{auth.reset.submit}</SubmitButton>
     </form>

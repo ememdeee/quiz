@@ -10,7 +10,9 @@ import { checkSlug, makeSlug } from "@/lib/slug";
 import { documentFacts } from "@/lib/quizzes/summary";
 import type { Profile, QuizBundle, QuizStart, QuizSummary } from "@/lib/quizzes/types";
 import { overridesOf, requireUser, type Authed } from "@/server/auth/guards";
+import { rateAllowed } from "@/server/rate-limit";
 import type { Database } from "@/types/database";
+import type { SaveDraftOptions } from "@/server/repos/ports";
 
 /**
  * The owner's quizzes on Supabase (handover 7.1). Every call starts with `requireUser`, and every query then runs with the
@@ -35,6 +37,7 @@ function summaryOf(row: Row): QuizSummary | null {
     acceptingResponses: row.accepting_responses,
     finishedResponses: row.finished_count,
     updatedAt: row.updated_at,
+    version: row.draft_version,
     ...documentFacts(draft, parse(row.published)),
   };
 }
@@ -118,13 +121,18 @@ export async function duplicateQuizAction(id: string): Promise<ActionResult<Quiz
   return insertQuiz(auth.data, name, { ...draft, name });
 }
 
-/** Saves a document as the draft. Returns the new version. A save never fails because another tab saved first: the last save wins until the "changed somewhere else" screen is designed (gap G1). */
-async function saveDocument(auth: Authed, row: Row, doc: QuizDocument): Promise<ActionResult<number>> {
-  const { data, error } = await auth.supabase.rpc("save_draft", { p_quiz_id: row.id, p_base_version: row.draft_version, p_doc: doc as unknown as Json });
+/**
+ * Saves a document as the draft. Returns the new version. With `base` (the version the editor last saw) a save that is behind fails
+ * with `conflict`, and the editor asks the person what to do (gap G1). Without `base` (rename, publish) the save goes on top of the
+ * newest version, trying once more if someone saved in between.
+ */
+async function saveDocument(auth: Authed, row: Row, doc: QuizDocument, base?: number): Promise<ActionResult<number>> {
+  const { data, error } = await auth.supabase.rpc("save_draft", { p_quiz_id: row.id, p_base_version: base ?? row.draft_version, p_doc: doc as unknown as Json });
   if (error) return fail("load_failed");
   const result = data as { status: string; version?: number; current_version?: number };
   if (result.status === "ok") return ok(result.version!);
   if (result.status === "conflict") {
+    if (base !== undefined) return fail("conflict");
     // Someone saved in between: try once more from the version that is there now
     const { data: again } = await auth.supabase.rpc("save_draft", { p_quiz_id: row.id, p_base_version: result.current_version!, p_doc: doc as unknown as Json });
     const retry = again as { status: string; version?: number };
@@ -135,13 +143,13 @@ async function saveDocument(auth: Authed, row: Row, doc: QuizDocument): Promise<
   return fail(result.status === "not_found" ? "not_found" : "load_failed");
 }
 
-export async function saveDraftAction(id: string, draft: QuizDocument): Promise<ActionResult<QuizSummary>> {
+export async function saveDraftAction(id: string, draft: QuizDocument, options: SaveDraftOptions = {}): Promise<ActionResult<QuizSummary>> {
   const auth = await requireUser();
   if (!auth.ok) return auth;
   if (!quizDocumentSchema.safeParse(draft).success) return fail("load_failed");
   const row = await one(auth.data, id);
   if (!row) return fail("not_found");
-  const saved = await saveDocument(auth.data, row, draft);
+  const saved = await saveDocument(auth.data, row, draft, options.keepMine ? undefined : options.baseVersion);
   if (!saved.ok) return saved;
   const fresh = await one(auth.data, id);
   return fresh && summaryOf(fresh) ? ok(summaryOf(fresh)!) : fail("load_failed");
@@ -193,6 +201,8 @@ export async function publishQuizAction(id: string, draft: QuizDocument): Promis
 export async function slugAvailableAction(id: string, slug: string): Promise<ActionResult<{ available: true } | { available: false; reason: "taken" | "invalid" | "reserved" }>> {
   const auth = await requireUser();
   if (!auth.ok) return auth;
+  // Decision D11: at most 30 live checks a minute for one person
+  if (!(await rateAllowed(`slug-check:${auth.data.userId}`, 30, 60))) return fail("rate_limited");
   const problem = checkSlug(slug);
   if (problem) return ok({ available: false, reason: problem });
   const { data, error } = await auth.data.supabase.rpc("slug_available", { p_slug: slug, p_quiz_id: id });

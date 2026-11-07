@@ -2,7 +2,7 @@ import "server-only";
 import { redirect } from "next/navigation";
 import { isLockedOut, safeNext } from "@/lib/auth-rules";
 import { publicEnv } from "@/lib/env";
-import { routes, type LoginState } from "@/lib/routes";
+import { authProblemHref, routes, type LoginState } from "@/lib/routes";
 import { isValidEmail, PASSWORD_MIN_LENGTH } from "@/lib/validation";
 import { setPendingEmail } from "@/server/session";
 import { createClient } from "@/server/supabase/server";
@@ -59,7 +59,8 @@ export async function registerReal(formData: FormData) {
   const email = text(formData, "email").trim().toLowerCase();
   const password = text(formData, "password");
   if (!name || !isValidEmail(email) || password.length < PASSWORD_MIN_LENGTH) redirect(routes.register);
-  if (!(await turnstilePassed(formData)) || !(await rateAllowed("register", 10, 3600))) redirect(routes.register);
+  if (!(await turnstilePassed(formData))) redirect(authProblemHref(routes.register, "check"));
+  if (!(await rateAllowed("register", 10, 3600))) redirect(authProblemHref(routes.register, "wait"));
 
   const supabase = await createClient();
   // The answer is the same whether or not the address already has an account
@@ -78,7 +79,8 @@ export async function resendVerificationReal(email: string): Promise<{ ok: boole
 export async function forgotPasswordReal(formData: FormData) {
   const email = text(formData, "email").trim().toLowerCase();
   if (!isValidEmail(email)) redirect(routes.forgotPassword);
-  if (!(await turnstilePassed(formData)) || !(await rateAllowed("forgot", 5, 3600))) redirect(routes.forgotPassword);
+  if (!(await turnstilePassed(formData))) redirect(authProblemHref(routes.forgotPassword, "check"));
+  if (!(await rateAllowed("forgot", 5, 3600))) redirect(authProblemHref(routes.forgotPassword, "wait"));
   const supabase = await createClient();
   await supabase.auth.resetPasswordForEmail(email, { redirectTo: callback(`/auth/confirm?next=${routes.resetPassword}`) });
   await setPendingEmail(email);
@@ -93,6 +95,8 @@ export async function resetPasswordReal(formData: FormData) {
   // Only someone who opened a reset link (and so has a recovery session) may set a new password this way
   if (!data.user) redirect(routes.resetPasswordExpired);
   const { error } = await supabase.auth.updateUser({ password });
+  // Supabase refuses the old password as the new one; every other failure is treated as an old link
+  if (error?.code === "same_password") redirect(authProblemHref(routes.resetPassword, "same-password"));
   if (error) redirect(routes.resetPasswordExpired);
   await supabase.auth.signOut({ scope: "others" });
   redirect(routes.resetPasswordDone);

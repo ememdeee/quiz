@@ -93,7 +93,7 @@ const customerFeedback: QuizDocument = {
   ],
 };
 
-type Seed = { meta: Omit<QuizSummary, "pageCount" | "unpublishedChanges">; draft: QuizDocument; published: QuizDocument | null };
+type Seed = { meta: Omit<QuizSummary, "pageCount" | "unpublishedChanges" | "version">; draft: QuizDocument; published: QuizDocument | null };
 
 /** The three quizzes of the Quizzes board. Times are "ago" so the list always reads like the design. */
 export function seedBundles(now: number = Date.now()): QuizBundle[] {
@@ -115,5 +115,5 @@ export function seedBundles(now: number = Date.now()): QuizBundle[] {
       published: null,
     },
   ];
-  return seeds.map(({ meta, draft, published }) => ({ quiz: { ...meta, ...documentFacts(draft, published) }, draft, published }));
+  return seeds.map(({ meta, draft, published }) => ({ quiz: { ...meta, version: 1, ...documentFacts(draft, published) }, draft, published }));
 }

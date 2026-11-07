@@ -3,6 +3,8 @@ import { AccountPage } from "@/components/account/account-page";
 
 export const metadata: Metadata = { title: "Account · Quiz", robots: { index: false } };
 
-export default function AccountRoute() {
-  return <AccountPage />;
+/** `?email=changed` is where the "confirm your new email" link lands (no board, gap G5). */
+export default async function AccountRoute({ searchParams }: { searchParams: Promise<{ email?: string }> }) {
+  const { email } = await searchParams;
+  return <AccountPage emailChanged={email === "changed"} />;
 }

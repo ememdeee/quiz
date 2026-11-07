@@ -2,7 +2,8 @@ import { seedBundles } from "@/data/mock/seed";
 import type { QuizBundle } from "@/lib/quizzes/types";
 
 /** The dummy database: the owner's quizzes with their documents, kept in localStorage so a refresh keeps every edit. */
-const KEY = "quiz.mock.bundles.v1";
+/** v2: quizzes now carry a `version` (the conflict check, gap G1). Dummy data saved under v1 is simply dropped. */
+const KEY = "quiz.mock.bundles.v2";
 
 let memory: QuizBundle[] | null = null;
 

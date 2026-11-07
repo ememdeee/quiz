@@ -8,6 +8,13 @@ export function quizStatus(quiz: Pick<QuizSummary, "firstPublishedAt" | "accepti
   return quiz.acceptingResponses ? "open" : "closed";
 }
 
+/**
+ * Published, and the finished responses reached the plan limit: people now see "This quiz is closed". The quiz card shows
+ * "Full" for this (no board, gap G8). `maxResponses` is the limit of the person's plan.
+ */
+export const isFull = (quiz: Pick<QuizSummary, "firstPublishedAt" | "finishedResponses">, maxResponses: number): boolean =>
+  quiz.firstPublishedAt !== null && quiz.finishedResponses >= maxResponses;
+
 export const sortOptions = [
   { value: "edited", label: "Last edited" },
   { value: "name", label: "Name, A to Z" },

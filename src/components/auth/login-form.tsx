@@ -38,8 +38,8 @@ export function LoginForm({ initialState, initialEmail, next = "" }: { initialSt
         </Banner>
       ) : null}
 
-      {state === "google-exists" ? null : <GoogleButton />}
-      {state === "google-exists" ? null : <OrDivider />}
+      <GoogleButton />
+      <OrDivider />
 
       <Field label={auth.fields.email} htmlFor="login-email">
         <Input id="login-email" name="email" type="email" autoComplete="email" required defaultValue={email} invalid={wrongPassword} />

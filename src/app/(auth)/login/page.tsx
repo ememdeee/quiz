@@ -10,7 +10,7 @@ import { getPendingEmail, getSessionUser } from "@/server/session";
 export const metadata: Metadata = { title: "Log in · Quiz", robots: { index: false } };
 
 /** States whose design shows the email already filled in. */
-const prefilled: LoginState[] = ["error", "suspended", "google-exists"];
+const prefilled: LoginState[] = ["error", "suspended"];
 
 /** ?state=... opens each login screen directly (the dev link list uses this). */
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ state?: string; next?: string }> }) {

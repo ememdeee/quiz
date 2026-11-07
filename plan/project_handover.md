@@ -1,6 +1,6 @@
 # Handover: building the Quiz platform
 > Last Updated: 2026-11-08
-> Status: **Design is finished** (Claude Design artifact, 158 boards). **Website tab UI built 2026-11-07** (Phase 2.3 and 2.4, on mock data; the rest of the UI and the whole backend are not built). Next step: Phase 0 (accounts and decisions), Phase 1 (foundation), then the rest of Phase 2.
+> Status: **Design is finished** (Claude Design artifact, 158 boards). **Website tab UI built 2026-11-07** (Phase 2.3 and 2.4, on mock data; the rest of the UI and the whole backend are not built). **Update 2026-11-08:** all code is built (UI on the mock, the whole backend on Supabase, tests, runbooks). Every design gap (G1 to G25) is also built, as a simple version **without a board** (owner decision, see R1 and 13.4); the owner designs them later. What is left is mostly the owner's: accounts, the Vercel preview check, designing what is in 13.4, legal text. The list that matters most is `project_checklist.md`, sections A and H.
 > Owner: Muhammad Basurah (contact: basurah@basrh.com). Talk to the owner in Indonesian. All UI text is English.
 > At the start of every session read sections 0, 1 and 12 (summary, rules, master checklist); read the other sections when you work on that area. Update the checklist in section 12 as work is done.
 
@@ -28,6 +28,7 @@ Inti rencananya:
 - **Minor (code may change directly, and must say so in the commit):** fixing a typo, nudging spacing by a few px, making code match the design, a bug fix that does not change what the person sees or does.
 - **Not minor (design first):** a new screen, dialog, state, field, button, flow, rule or limit; a layout change; new wording that changes meaning; anything that changes what is saved.
 - If code needs something that is not in the design (see section 13, "Known design gaps"): **stop, write down what is needed, ask the owner**, update the design, then build.
+- **TEMPORARY EXCEPTION (owner, 2026-11-08):** this Claude account has no access to the Claude Design artifact, so Code cannot design there and must not wait. For anything missing from the design Code builds the **simplest sensible version directly in code** and writes it into the "NOT DESIGNED YET" list: `project_checklist.md` section H (owner-friendly), 13.4 below, and the dev page `/dev/undesigned`. Ugly is fine. The owner designs those later in Claude Design and Code then matches them. Everything else in R1 still holds: do not change a screen that **has** a board without the owner, and never leave an invented screen unlisted.
 - After a design change: update the board **How the quiz behaves** (`BehaviorRules`) if a rule changed, update this file if architecture changed, then code.
 - How to read the design from Claude Code: use the Artifact tool, action `read`, with the artifact URL and `path` set to `project/<BoardName>.dc.html` (for example `project/Main.dc.html`). `project/canvas.json` is the index of all boards (position, size, title, canvas page). Boards are small HTML files: read the markup and inline styles for exact text, sizes and states. Never guess a design from memory.
 - At each milestone the owner may ask for a **design snapshot** copied into `docs/design-snapshot/` (read-only reference, with the artifact version number in its name). The artifact stays the source of truth.
@@ -833,7 +834,9 @@ Environment variables (all validated in `src/lib/env.ts`; the app refuses to sta
 | D20 | Test inbox for development and QC (no Docker, so no local mail catcher) | Mailtrap sandbox over SMTP (free); check its current free limits | Phase 4 | **Done 2026-11-07** (free: 50 emails/month, 1 sandbox) |
 | D21 | Public repo: which plan files stay in the repo | Keep technical plan files; ask before pushing business/marketing notes | Phase 1 | No |
 
-**Status of the decisions on 2026-11-08 (built in code):** D5 noindex (website indexable, private pages and quiz links not), D6 Vercel Web Analytics (loads only on Vercel), D11 rate limits (`server/rate-limit.ts`: register 10/h, forgot 5/h, contact 5/h, public quiz calls per minute, sign-in lock 5 tries/15 min), D13 near-limit at 80%, D15 contact messages kept in `contact_messages`, D18 blocked reorder, D19 admin responses = finished only. Still open for the owner: D3, D4, D7, D10, D12, D14, D17, D21 and the design change for D1 and D2.
+**D1 and D2 (2026-11-08):** both built in code. D1: the verify screens (`VerifyEmailView`, `/verify-email/expired`) and the verify email (`emails/verify.tsx`, rebuilt into `supabase/templates/confirmation.html`) say **1 hour**; the email-change link (our own table) stays 24 hours. D2: `LoginGoogleExists` is removed from the code (login state `google-exists`, its banner and its `/dev` link). Still owed in Claude Design: update `VerifySent`, `VerifyExpired`, `EmailVerify`; delete the two `LoginGoogleExists` boards; update `BehaviorRules` (checklist H7).
+
+**Status of the decisions on 2026-11-08 (built in code):** D5 noindex (website indexable, private pages and quiz links not), D6 Vercel Web Analytics (loads only on Vercel), D11 rate limits (`server/rate-limit.ts`: register 10/h, forgot 5/h, contact 5/h, public quiz calls per minute, sign-in lock 5 tries/15 min, and since 2026-11-08 the live web-address check 30/min per person; when it is refused the address field just stops checking, no message), D13 near-limit at 80%, D15 contact messages kept in `contact_messages`, D18 blocked reorder, D19 admin responses = finished only. Still open for the owner: D3, D4, D7, D10, D12, D14, D17, D21 and the design change for D1 and D2.
 
 ---
 
@@ -877,7 +880,7 @@ Every task below must also satisfy the **Definition of Done** (DoD):
 Owner and Code together.
 - [x] Owner: GitHub repo exists (public), Supabase project `quiz-dev` exists (Singapore). No Docker. Still to think about: the domain (D9). (Rows 1–3 in section 10.)
 - [ ] Code: confirm section 11 decisions D1, D2, D17, D18 with the owner. Where a design change is needed (D1, D2), do it in Claude Design now and update `BehaviorRules`.
-- [ ] Code: close the known design gaps G1–G8 (section 13) in Claude Design, or agree to defer each.
+- [x] Code: close the known design gaps G1–G8 (section 13) in Claude Design, or agree to defer each. _Deferred in writing 2026-11-08: all gaps are built as simple versions without a board and listed in `project_checklist.md` section H and 13.4; the owner designs them later._
 - [ ] Code: optional design snapshot into `docs/design-snapshot/` (copy of all `project/*.dc.html` plus `canvas.json`, folder name with the artifact version).
 - **Done when:** repo and the dev Supabase project exist (yes), decisions logged in section 11, design gaps closed or deferred in writing.
 
@@ -937,7 +940,7 @@ Build, in this order (each item = its boards, all states, desktop + phone where 
 ### Phase 5 — Quizzes and the editor for real
 - [x] `server/actions/quizzes.ts` with `repos/remote`: list, create (blank, template, copy), duplicate, rename, delete (the database holds the old address 30 days), open/closed, `saveDraft` (versioned in the database), `publish` (strict check first, then the database re-checks the page count), `setSlug`, live address check (`slug_available`), limits (dialog, server, database). The editor, autosave, offline bar, undo and "N changes not published" run unchanged on it. _Done 2026-11-08._
 - [x] `NEXT_PUBLIC_DATA_MODE=supabase` switches every area at once (quizzes, pictures, responses, account, admin, public quiz); the mock stays for the UI phase and the link audit.
-- [ ] Conflict dialog: the design has no board (G1). Until then a save never fails because another tab saved first: it retries once from the newest version, so the last save wins. D18 (blocked reorder) is done in the editor.
+- [x] Conflict dialog (G1, no board, built 2026-11-08): `QuizSummary.version` (the database `draft_version`); the editor's autosave sends the version it last saw (`SaveDraftOptions.baseVersion`); a save that is behind returns `conflict` and the editor shows `ConflictDialog` ("Load the newest" reloads the page, "Keep my version" saves with `keepMine`). Rename and Publish still go on top of the newest version. The mock raises `version` on every page save and has the `/dev` switch "Next editor save says changed somewhere else". D18 (blocked reorder) is done in the editor.
 - [x] **Done when:** QC-04, QC-05, QC-06, QC-08 and QC-09 pass (`real-quiz.spec.ts`, `real-editor.spec.ts`): create, the 5-quiz limit, autosave surviving a reload, publish blocked without a question, Share link, a page shown only to some people, two people on the same address.
 
 ### Phase 6 — Pictures
@@ -959,13 +962,14 @@ Build, in this order (each item = its boards, all states, desktop + phone where 
 
 ### Phase 10 — Account settings complete
 - [x] `server/actions/account.ts`: name, email change (our `email_changes` table: link mailed to the NEW address, 24 hours, cancel, resend at most once a minute, `/auth/email-change/confirm`), change password (current password checked on a throwaway client, other devices signed out, "Password changed" email), set password (Google-only), connect Google (needs `enable_manual_linking`, set in `config.toml`, applied by the owner's `config push`), delete account (pictures, then the account; quizzes and answers follow by the database). _Done 2026-11-08._
-- [ ] "Disconnect Google" is not built: the board does not exist yet (G6).
+- [x] "Disconnect Google" (G6, no board, built 2026-11-08): `disconnectGoogleAction` (`unlinkIdentity`), `AccountState.canDisconnectGoogle` (Google connected, a password exists, and Supabase still has 2 identities, because it never removes an account's last one), a button and a confirm dialog on Account. Known limit: a person who began with Google and later set a password cannot disconnect it.
+- [x] The "confirm your new email" link lands on `/account?email=changed` (toast) or `/verify-email/expired?for=email-change` (G5, no board, built 2026-11-08).
 - [x] **Done when:** QC-14 passes (name saved, password change with a wrong then the right current password, the old password stops working and the email arrives, delete removes the person and their quizzes, the email-change link works once).
 
 ### Phase 11 — Admin area
 - [x] `server/actions/admin.ts` (`requireAdmin` first; reads use the service key and only counts and profile facts; people are put together in memory, fine to a few thousand people, a database function replaces it later): overview, people list, CSV, person, plan and limits (Free clears the extras), notes, suspend (profile + ban), restore, delete (typed email, pictures removed), own-account protection, `admin_log`. _Done 2026-11-08._
 - [x] Verified: login blocked for a suspended person, their quizzes show closed, restore brings login back; a normal person and a stranger get the no-access page. **Done when:** QC-16 passes (`real-account.spec.ts`, `real-auth.spec.ts`).
-- [ ] The Users table has no "near a limit" filter (G7).
+- [x] The Users table has the filter "Near a limit" (G7, no board, built 2026-11-08); the Overview counter opens it (`?filter=near-limit`).
 
 ### Phase 12 — Email for real
 - [x] One sender (`server/email/send.ts`): Resend when `RESEND_API_KEY` is set, the Mailtrap test inbox in development, retries on "too many requests". The "Confirm your new email", "Password changed" and contact emails are rendered from `emails/` and sent by it. The contact form saves a copy first (`contact_messages`), is rate limited (5 an hour), and mails the owner with the visitor as reply-to. QC-17: the password-changed and contact emails were read back from the Mailtrap inbox. _Done 2026-11-08._
@@ -1001,7 +1005,7 @@ Rule: **any visual or wording change goes through Claude Design first.**
 ## 13. Known design gaps and things not mentioned yet
 
 ### 13.1 Design gaps (close in Claude Design before the phase that needs them)
-These are needed by the code but are **not in the design yet**. Do not invent them in code (rule R1).
+These are needed by the code but are **not in the design yet**. **Status 2026-11-08:** every gap below is now built in code as a simple version (rule R1, temporary exception) and listed for the owner in `project_checklist.md` section H and in 13.4. The rows say what was missing; where a row says "not built", it is built now.
 
 | ID | Gap | Needed by |
 |---|---|---|
@@ -1052,6 +1056,25 @@ These are needed by the code but are **not in the design yet**. Do not invent th
 - **Database commands without Docker:** use `--remote` (for example `supabase db push --remote`, `supabase db query --remote`); without it the CLI tries a local stack. `supabase gen types typescript --linked` still works. The shell breaks passwords with special characters, so run CLI commands through `node scripts/with-env.mjs <command>` (loads `.env.local` as written, never prints it).
 - **Tests and checks** call the Supabase Management API for catalog queries (`SUPABASE_ACCESS_TOKEN` needs database read/write rights).
 - Dev project note: the dashboard labels `main` as PRODUCTION; it is only the default branch name.
+
+### 13.4 Built by Code without a design (2026-11-08): the owner's design to-do
+The owner cannot give Code access to the Claude Design artifact from this account, so Code built the simplest sensible version of everything missing and keeps one honest list. **Where the list lives (keep all three in step):** `project_checklist.md` section H (owner-friendly table with where to see each), this section, and the dev page `/dev/undesigned` (`src/app/dev/undesigned/page.tsx`, links to each screen; does not exist in a production build).
+
+Built **new** in this session (these were not in the app at all before): G1 conflict dialog, G5 email-change landing and expired wording, G6 disconnect Google, G7 "Near a limit" filter, G8 "Full" quiz card, G9 field errors on Register, Forgot and Reset, G10 phone menu when logged in, G11 sending and "couldn't send" states, G25 bot-check and rate-limit banners (and the contact form saying "not sent" when the bot check fails), G26 the address check that pauses quietly past 30 a minute. Built **earlier on a guess**, still no board: G2/G20, G3, G4/G17, G12, G13 to G16, G18, G19, G21, G22, G23, G24 and the "Welcome back" case of G25. Approved changes the boards do not show yet: D1, D2.
+
+**How the new ones work (so a designer knows what exists):**
+- **G1** `ConflictDialog` (cannot be dismissed): "This quiz was changed somewhere else", buttons "Load the newest" and "Keep my version".
+- **G5** `/account?email=changed` toast "Your email address was changed"; `/verify-email/expired?for=email-change`, title "This link has expired", button "Go to my account".
+- **G6** Account, Google row: "Disconnect" opens "Disconnect Google?" (buttons "Keep it connected" and "Disconnect Google"), toast "Google disconnected". Google-first accounts that set a password stay "Connected" (Supabase limit).
+- **G7** Users filter "Near a limit", Overview counter links to it.
+- **G8** Quiz card: grey pill "Full", description "It reached N responses. People see that it is closed.", no Copy link, no Open/Close menu item.
+- **G9** `useValidatedForm` + `lib/validation.ts` (`registerProblems`, `forgotProblems`, `resetProblems`, 7 unit tests): red message under the field after pressing the button; Log in is unchanged (browser messages).
+- **G10** `SiteNav` phone menu for a logged-in person: "Account settings" and "Log out" rows above the big button.
+- **G11** `VerifyEmailView`: button spinner while sending; red banner "We couldn't send the email. Please try again in a minute."
+- **G25** `?problem=check|wait|same-password` on the three forms, red banner (`AuthProblemBanner`).
+- **G26** (new id) the live web-address check is limited to 30 a minute per person (D11); when refused the field just stops checking, with no message.
+
+**Rule for later sessions:** when the owner designs one of these, build it to the board, delete its row from checklist H and this list, and add the board to Appendix A. Do not remove a row because the code "looks fine".
 
 ---
 

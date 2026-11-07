@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { filterAndSort, quizStatus } from "./list";
+import { filterAndSort, isFull, quizStatus } from "./list";
 import type { QuizSummary } from "./types";
 
 const make = (over: Partial<QuizSummary>): QuizSummary => ({
@@ -12,6 +12,7 @@ const make = (over: Partial<QuizSummary>): QuizSummary => ({
   pageCount: 5,
   finishedResponses: 0,
   updatedAt: "2026-11-01T00:00:00Z",
+  version: 1,
   ...over,
 });
 
@@ -29,6 +30,19 @@ describe("quizStatus", () => {
   it("is open or closed after publishing", () => {
     expect(quizStatus(make({}))).toBe("open");
     expect(quizStatus(make({ acceptingResponses: false }))).toBe("closed");
+  });
+});
+
+describe("isFull", () => {
+  it("is true once a published quiz has the plan's number of finished responses", () => {
+    expect(isFull(make({ finishedResponses: 500 }), 500)).toBe(true);
+    expect(isFull(make({ finishedResponses: 501 }), 500)).toBe(true);
+    expect(isFull(make({ finishedResponses: 499 }), 500)).toBe(false);
+  });
+
+  it("follows the limit of the person's plan, and never applies to a quiz that was not published", () => {
+    expect(isFull(make({ finishedResponses: 600 }), 1000)).toBe(false);
+    expect(isFull(make({ firstPublishedAt: null, finishedResponses: 500 }), 500)).toBe(false);
   });
 });
 

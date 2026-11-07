@@ -15,7 +15,7 @@ export type QuizActions = {
 };
 
 /** The three dots on a quiz card and the menu they open (board QuizMenu). */
-export function QuizMenu({ quiz, actions }: { quiz: QuizSummary; actions: QuizActions }) {
+export function QuizMenu({ quiz, actions, full }: { quiz: QuizSummary; actions: QuizActions; full: boolean }) {
   const status = quizStatus(quiz);
   const published = status !== "not_published";
   return (
@@ -41,7 +41,7 @@ export function QuizMenu({ quiz, actions }: { quiz: QuizSummary; actions: QuizAc
         <MenuItem icon={<CopyIcon />} onSelect={() => actions.duplicate(quiz)}>
           {quizMenu.duplicate}
         </MenuItem>
-        {published ? (
+        {published && !full ? (
           <MenuItem icon={status === "open" ? <LockIcon /> : <UnlockIcon />} onSelect={() => actions.toggleOpen(quiz)}>
             {status === "open" ? quizMenu.close : quizMenu.open}
           </MenuItem>

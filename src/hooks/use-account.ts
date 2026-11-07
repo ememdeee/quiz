@@ -43,5 +43,6 @@ export function useAccount() {
     cancelEmailChange: () => run(repos.account.cancelEmailChange()),
     setPassword: (input: { current?: string; next: string }) => run(repos.account.setPassword(input)),
     connectGoogle: () => run(repos.account.connectGoogle()),
+    disconnectGoogle: () => run(repos.account.disconnectGoogle()),
   };
 }

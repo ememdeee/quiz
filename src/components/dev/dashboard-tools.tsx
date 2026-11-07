@@ -15,6 +15,7 @@ const switches: { key: keyof MockFlags; label: string }[] = [
   { key: "loggedOut", label: "Pretend logged out (“You’ve been logged out”)" },
   { key: "failNextSave", label: "Next quiz answer fails to save (“We couldn’t save your answer”)" },
   { key: "failNextQuizLoad", label: "Next quiz link fails to open (“Something went wrong”)" },
+  { key: "conflictNextSave", label: "Next editor save says “changed somewhere else” (no board yet)" },
 ];
 
 /** Dev only: puts the dashboard's dummy data and switches into a known state. Nothing here is saved anywhere real. */

@@ -36,12 +36,16 @@ async function stateOf(auth: Authed): Promise<AccountState> {
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
+  const hasPassword = providers.includes("email") || user?.user_metadata?.has_password === true;
+  const googleConnected = providers.includes("google");
   return {
     name: auth.profile.name,
     email: auth.email,
     pendingEmail: pending?.new_email ?? null,
-    hasPassword: providers.includes("email") || user?.user_metadata?.has_password === true,
-    googleConnected: providers.includes("google"),
+    hasPassword,
+    googleConnected,
+    // Supabase keeps an account's last identity, so Google can only go when another one (email) is there too
+    canDisconnectGoogle: googleConnected && hasPassword && (user?.identities?.length ?? 0) >= 2,
   };
 }
 
@@ -135,6 +139,20 @@ export async function connectGoogleAction(): Promise<ActionResult<AccountState>>
   const { data, error } = await auth.data.supabase.auth.linkIdentity({ provider: "google", options: { redirectTo: `${publicEnv.siteUrl}/auth/callback?next=${encodeURIComponent(routes.account)}` } });
   if (error || !data.url) return fail("load_failed");
   redirect(data.url);
+}
+
+/** Removes Google from an account that can still log in another way (gap G6). The person's quizzes and answers are not touched. */
+export async function disconnectGoogleAction(): Promise<ActionResult<AccountState>> {
+  const auth = await requireUser();
+  if (!auth.ok) return auth;
+  const before = await stateOf(auth.data);
+  if (!before.canDisconnectGoogle) return fail("load_failed");
+  const { data } = await auth.data.supabase.auth.getUserIdentities();
+  const google = data?.identities.find((identity) => identity.provider === "google");
+  if (!google) return ok(before);
+  const { error } = await auth.data.supabase.auth.unlinkIdentity(google);
+  if (error) return fail("load_failed");
+  return ok(await stateOf(auth.data));
 }
 
 /** "Delete my account": pictures, then the account itself (quizzes and answers go with it), then the session. */

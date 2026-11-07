@@ -88,8 +88,7 @@ function Overview({ data }: { data: AdminOverviewData }) {
 
         <div className="flex flex-col gap-4">
           <Counter value={data.unverified} label={words.unverified} href={`${adminHref.users}?filter=unverified`} />
-          {/* The Users table has no "near a limit" filter yet (gap G7), so this opens the whole list, as the board does */}
-          <Counter value={data.nearLimit} label={words.nearLimit} href={adminHref.users} />
+          <Counter value={data.nearLimit} label={words.nearLimit} href={`${adminHref.users}?filter=near-limit`} />
         </div>
       </div>
 

@@ -12,6 +12,7 @@ import {
 import {
   cancelEmailChangeAction,
   connectGoogleAction,
+  disconnectGoogleAction,
   getAccountAction,
   requestEmailChangeAction,
   resendEmailChangeAction,
@@ -46,7 +47,7 @@ export const remoteRepos: Repos = {
   quizzes: {
     list: () => listQuizzesAction(),
     get: (id) => getQuizAction(id),
-    saveDraft: (id, draft) => saveDraftAction(id, draft),
+    saveDraft: (id, draft, options) => saveDraftAction(id, draft, options),
     create: (input) => createQuizAction(input),
     rename: (id, name) => renameQuizAction(id, name),
     duplicate: (id) => duplicateQuizAction(id),
@@ -71,6 +72,7 @@ export const remoteRepos: Repos = {
     cancelEmailChange: () => cancelEmailChangeAction(),
     setPassword: (input) => setPasswordAction(input),
     connectGoogle: () => connectGoogleAction(),
+    disconnectGoogle: () => disconnectGoogleAction(),
   },
   runner: { ...remoteRunner, loadPreview: (quizId) => loadPreviewAction(quizId) },
   admin: {

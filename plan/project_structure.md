@@ -1,5 +1,5 @@
 # Project Structure
-> Last Updated: 2026-11-08
+> Last Updated: 2026-11-08 (later the same day: conflict check on saves, disconnect Google, sign-in field errors and banners, `/dev/undesigned`)
 > Rewritten for the redesigned product. The old app (BodyReset, GTM and Meta Pixel, timed pages, Gumroad) is gone from the code; only git history keeps it.
 > The plan and the rules live in `project_handover.md`. This file says **where things are**.
 
@@ -78,6 +78,8 @@ src/types/database.ts    Generated from the database (supabase gen types)
 
 Website: `/`, `/pricing`, `/contact`, `/terms`, `/privacy`, `/maintenance`.
 Sign-in: `/register`, `/login`, `/forgot-password` (+ `/sent`), `/reset-password` (+ `/done`, `/expired`), `/verify-email` (+ `/done`, `/expired`), `/goodbye`.
+Dev only (not in a production build): `/dev` (test links and switches), `/dev/undesigned` (every screen built without a board, with a link to each), `/dev/ui`, `/dev/templates`, `/dev/emails`.
+Sign-in screens also take `?problem=check|wait|same-password` (banner) and `/verify-email/expired?for=email-change`; `/account?email=changed` shows the "email changed" toast.
 Signed in: `/dashboard`, `/dashboard/[quizId]` (editor), `/dashboard/[quizId]/responses`, `/dashboard/[quizId]/settings`, `/dashboard/[quizId]/preview`, `/account`.
 Admin: `/admin`, `/admin/users`, `/admin/users/[userId]`.
 People answering: `/quiz/[slug]`.
@@ -89,6 +91,9 @@ Every URL string lives in `src/lib/routes.ts`.
 - One place for each thing: routes (`routes.ts`), words (`content/`), colors (tokens in `design-system.css`), page types (the registry in `lib/quiz/page-types/`), limits (`plan/limits.ts`).
 - Server code starts with `import "server-only"` (actions are `"use server"` and export only async functions).
 - The service-role client (`supabase/admin.ts`) is used only after the code has checked who is asking: public quiz answers, the admin area, the sign-in lock, emails changes.
+- Saves of the editor carry a version: `QuizSummary.version` is the database `draft_version`; `useAutosave` sends the version it last saw (`SaveDraftOptions` in `repos/ports.ts`), a save that is behind answers `conflict` and the editor asks (`ConflictDialog`). Rename and Publish do not carry a version.
+- Forms of the sign-in screens check themselves before sending (`components/auth/use-validated-form.ts` with `lib/validation.ts`); the server checks again and turns a form back with `?problem=` (`authProblemHref` in `lib/routes.ts`).
+- Anything built without a board is listed in `plan/project_checklist.md` section H, `plan/project_handover.md` 13.4 and `/dev/undesigned`. Keep the three in step.
 - Nothing from a browser is trusted: public answers are checked against the PUBLISHED quiz and the saved texts come from it (`lib/quiz/progress.ts`).
 - Secrets are only in `.env.local` (never committed). `.env.example` lists every name.
 

@@ -16,10 +16,10 @@ describe("the five emails", () => {
     }
   });
 
-  it("verify: greets by name, links to the address, says 24 hours, and says who to ignore it for", async () => {
+  it("verify: greets by name, links to the address, says 1 hour (what Supabase really allows), and says who to ignore it for", async () => {
     const text = flat(await html("verify"));
     expect(text).toContain("Hi Sarah, thanks for signing up");
-    expect(text).toContain("This link works for 24 hours");
+    expect(text).toContain("This link works for 1 hour");
     expect(text).toContain("If you didn’t create a Quiz account, you can ignore this email.");
     expect(await html("verify")).toContain('href="https://quiz.basrh.com/verify-email/done?token=a1b2c3d4e5f6"');
   });

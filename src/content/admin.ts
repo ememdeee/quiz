@@ -44,7 +44,8 @@ export const usersPage = {
   csv: "Download as CSV",
   search: "Search",
   searchPlaceholder: "Search by name or email",
-  filters: { everyone: "Everyone", free: "Free", custom: "Custom", unverified: "Not verified" },
+  /** "Near a limit" has no board (gap G7). */
+  filters: { everyone: "Everyone", free: "Free", custom: "Custom", unverified: "Not verified", "near-limit": "Near a limit" },
   filterLabel: "Show",
   sortLabel: "Sort",
   newestFirst: "Newest first",

@@ -6,23 +6,27 @@
 ---
 
 ## A. Now
-- **All the code is built.** Every screen, the whole backend on Supabase (login, quizzes, pictures, answering, responses, account, admin, contact, emails), the tests, CI and the runbooks. What is left is mostly **yours** (accounts and decisions), listed in B, C and D below.
-- Branch `phase-2-ui` holds everything (it already includes the database branch and the Google/Mailtrap branch). It is **not pushed** and not merged into `main`: open a pull request when you are ready.
-- The most useful next steps for you, in order: (1) run `node scripts/with-env.mjs npx supabase config push` once (it only changes the two auth emails and turns on "connect Google"; the CLI shows the change and asks); (2) create the Vercel project and send the preview link; (3) decide the open design gaps in B (G1 to G8, G23, G24) and D1/D2 in Claude Design; (4) the accounts in C for launch.
+- **All the code is built, and (2026-11-08) every design gap is now built too, as a simple version.** Every screen, the whole backend on Supabase (login, quizzes, pictures, answering, responses, account, admin, contact, emails), the tests, CI and the runbooks. What is left is mostly **yours** (accounts, decisions, and designing the screens in section H), listed below.
+- **Important (owner decision 2026-11-08): this Claude account cannot open the Claude Design artifact**, so Code does not wait for designs any more. Code builds a simple version of anything missing and lists it in **section H** ("NOT DESIGNED YET"). You design those in Claude Design when you want, then tell Code to match. Ugly is fine until then. Nothing in H is hidden: `/dev/undesigned` (local only) links to each one.
+- Branch `phase-2-ui` holds everything (it already includes the database branch and the Google/Mailtrap branch). Code commits there; **you push** (Vercel then deploys by itself). Code says when a push is worth doing.
+- Done by you: `supabase config push` (verify and reset emails live, "connect Google" on), Vercel account and repo link. **One more `config push` is needed** because the verify email now says "1 hour" (D1; the template file was rebuilt): `node scripts/with-env.mjs npx supabase config push`.
+- **Test status (2026-11-08, after this session's changes):** `npm run release-check` green (194 unit tests, lint, typecheck, production build); `test:db` 118 green; `qc:links` and `qc:a11y` green (63 / 66 / 76 pages as visitor / person / admin); `qc:real` 43 of 43 green on the Supabase dev project (one test, "deleting the account", timed out once on a cold first compile and passed alone; it did not fail again); `qc:prod` 12 of 12 green. New real spec `tests/qc/real-gaps.spec.ts` proves G1 (two windows), G8 and G7 against the real database. Not provable here: G6 with a real Google account, G11's "couldn't send", and everything that needs your phone, Gmail or screen reader (section F "Manual checks").
 - Run everything yourself any time: `npm run release-check`, `npm run test:db`, `npm run qc:links`, `npm run qc:a11y`, `npm run qc:real`, `npm run qc:prod`.
 
 ## B. Design (Claude Design artifact: https://claude.ai/artifact/FiiBUq7uJaBcXyeqfTKtTw)
 - [x] All screens designed (158 boards, version 69)
 - [x] Behavior rules board "How the quiz behaves" written
-- [ ] Design gaps closed (handover 13.1): G1 conflict dialog, G2 AI "no changes", G3 picture library note, G4 blocked-move toast, G5 email-change landing, G6 disconnect Google, G7 admin near-limit link, G8 "Full" on quiz card. Also G23 (quiz runtime wording) and G24 (admin wording and states). Code built a sensible version of each; the owner confirms or changes it in Design.
-- [ ] Decisions needing a design change: D1 (link lifetimes), D2 (Google already exists)
+- [x] Design gaps G1 to G8, G23, G24 (and G9 to G22, G25): **built by Code in a simple version on 2026-11-08** (nothing is missing in the app any more). They still have **no board**: see section H.
+- [ ] **Design the screens in section H** (owner, in Claude Design, whenever ready), then ask Code to match each one. Not a blocker for testing or release; it is a blocker for "design fidelity review done" in section G.
+- [ ] Update the boards for the approved changes D1 (every email link lasts 1 hour) and D2 (remove the two `LoginGoogleExists` boards, update BehaviorRules). The code already follows both.
 
 ## C. Owner tasks (accounts and things only the owner can do)
 - [x] GitHub repo https://github.com/ememdeee/quiz (public)
 - [x] Supabase project `quiz-dev` (Singapore, Free)
 - [x] Mailtrap sandbox (test inbox), Supabase keys in `.env.local`, Google OAuth dev client
-- [ ] **Run `config push`** (see A) so the designed verify and reset emails and "connect Google" go live on the dev project
-- [ ] Vercel account, repo connected (then the preview deploy, handover 2.13)
+- [x] `config push` run (2026-11-08): the designed verify and reset emails and "connect Google" are live on the dev project. [ ] **Run it once more** after this session (verify email text changed to 1 hour)
+- [x] Vercel account created, repo connected; the owner pushes (deploys by itself). Set the environment variables first: see `docs/runbooks/deploy.md` (for a test deploy on the dev project: `NEXT_PUBLIC_DATA_MODE=supabase`, `NEXT_PUBLIC_SITE_URL`, the three Supabase keys, `IP_HASH_SALT`, the Mailtrap names), and in Supabase (Authentication, URL Configuration) set **Site URL** to the Vercel address and add `https://<that address>/**` to the redirect URLs, or the email links still point to localhost
+- [ ] Preview checked on the Vercel address (handover 2.13)
 - [ ] DNS access to `basrh.com` for `quiz.basrh.com` and the email records
 - [ ] Resend account + DNS records (SPF, DKIM, DMARC); then `RESEND_API_KEY`
 - [ ] Cloudflare Turnstile keys (site key and secret)
@@ -47,13 +51,13 @@
   - [x] responses  - [x] account  - [x] admin  - [x] email templates  - [x] session switcher link  - [x] link audit passes (`npm run qc:links`)  - [ ] staging preview deployed (needs Vercel)
 - [x] **Phase 3** Supabase, database, security rules, tests (database tests incl. code-versus-database parity, row-level security check)
 - [x] **Phase 4** Register, login, accounts base (real auth)
-- [x] **Phase 5** Quizzes and editor for real (autosave, publish, slug check, limits)
+- [x] **Phase 5** Quizzes and editor for real (autosave, publish, slug check, limits; the "changed somewhere else" dialog is built without a board, G1)
 - [x] **Phase 6** Pictures (media library)
 - [x] **Phase 7** Public quiz and saving answers
 - [x] **Phase 8** Responses: summary, individual, export, delete
 - [x] **Phase 9** Edit with AI for real (the owner still tries real AI chats)
-- [x] **Phase 10** Account settings (disconnect Google waits for its design, G6)
-- [x] **Phase 11** Admin area
+- [x] **Phase 10** Account settings (disconnect Google built without a board, G6; email-change landing built without a board, G5)
+- [x] **Phase 11** Admin area (the "Near a limit" filter is built without a board, G7)
 - [ ] **Phase 12** Email for real: code and tests done; needs the owner's Resend account, DNS and `config push`
 - [ ] **Phase 13** Website completion: SEO, icons, share pictures, analytics, placeholders done; final copy and legal need the owner
 - [ ] **Phase 14** Hardening: Turnstile, rate limits, security headers and policy, Sentry (off until its key), accessibility and performance checks done; backups drill, uptime monitor and audit need the owner's accounts
@@ -75,3 +79,63 @@
 - [ ] Backups on and restore drill worked
 - [ ] Real domain, email domain verified, legal texts final, placeholders removed
 - [ ] Production smoke (QC-21) passed after deploy
+
+---
+
+## H. NOT DESIGNED YET: built by Code without a board in Claude Design
+
+> **Baca ini dulu (Bahasa Indonesia):** semua yang ada di bagian ini dibuat langsung di kode oleh Claude Code tanpa desain di Claude Design (akun ini tidak punya akses ke artifact desainnya). Semuanya jalan, tapi tampilannya sederhana dan kata-katanya tebakan Code. Kalau kamu mau mengubahnya: desain dulu di Claude Design, lalu minta Code menyamakan. Saat dibuka secara lokal (`npm run dev`), halaman **`/dev/undesigned`** menampilkan daftar yang sama dengan link ke tiap layar.
+>
+> Legend: **NEW** = built in the 2026-11-08 session (was missing completely). **GUESS** = built earlier in a simple version, still no board. Each row: where to see it, then what Code decided. Detail of each gap: `project_handover.md` section 13.1 and 13.4.
+> Keep this list, `/dev/undesigned` (`src/app/dev/undesigned/page.tsx`) and handover 13.4 in step. When a screen gets its board and the code matches it, delete its row here and write the board name in handover Appendix A.
+
+### H1. Register, log in and passwords
+| ID | Where to see it | What Code built |
+|---|---|---|
+| G9 NEW | `/register`, `/forgot-password`, `/reset-password`: press the button with empty fields | Red message under each wrong field: name missing, email missing or not valid, password missing or under 8 characters, "The two passwords are not the same." The first wrong field gets focus; a message goes away when the person types. Log in still uses the browser's own messages for empty fields |
+| G11 NEW | Button spinner on every form; `/verify-email` | "Sending" = the button spinner. If "Send the email again" fails: red banner "We couldn't send the email. Please try again in a minute." (only seen when the email service is down) |
+| G25 NEW | `/register?problem=check` and `=wait`, `/forgot-password?problem=wait`, `/reset-password?problem=same-password` | A red banner above the form when the bot check fails, there were too many tries, or the new password is the old one. The contact form now says "not sent" when the bot check fails (before it looked sent) |
+| G5 NEW | `/account?email=changed`, `/verify-email/expired?for=email-change` | After the new-address link: toast "Your email address was changed" on Account. An old link: the expired screen worded for an email change ("Links to confirm a new email address work for 24 hours...") with the button "Go to my account" |
+| G10 NEW | Phone width, logged in, open the menu on any website page | The same four links, then "Account settings" and "Log out" under them, then the big "My quizzes" button |
+| G12 GUESS | 404 page, "Go to my quizzes" | A logged-out person lands on Log in, then on the dashboard |
+
+### H2. Quiz list
+| ID | Where to see it | What Code built |
+|---|---|---|
+| G8 NEW | `/dashboard` after the `/dev` button "Body Reset: 500 responses" | Card with a grey pill "Full" and "It reached 500 responses. People see that it is closed." No "Copy link" button and no Open/Close in its menu. "Full" follows the person's plan limit |
+| G13 to G16 GUESS | `/dashboard` | Rename dialog (like New quiz); "A copy of a quiz I already have" has a quiz dropdown; the usage meter is a popover on "3 of 5 quizzes · Free plan"; toasts: Link copied, Quiz renamed / duplicated / closed / opened / deleted, a generic error, "Check your email" on the phone gate |
+
+### H3. Editor
+| ID | Where to see it | What Code built |
+|---|---|---|
+| G1 NEW | Editor, with the `/dev` switch "Next editor save says changed somewhere else" on, then edit anything | A dialog that cannot be closed: "This quiz was changed somewhere else" with "Load the newest" (drops what is on this screen) and "Keep my version" (saves this screen on top). Nothing is overwritten until the person chooses |
+| G2 / G20 GUESS | Editor, Edit with AI, paste the quiz back | A small "Nothing would change" message with Back |
+| G3 GUESS | Editor, Add a picture | The picture library only grows: no delete or rename (decision: not in v1) |
+| G4 / G17 / G19 GUESS | Editor | Blocked-move toast "That move would make a condition look at a later page."; a page with no title shows its kind; heading "Edit last page"; the Day / Month / Year answer box; field errors for title, message, number range, button text and condition order; web address errors other than "taken"; "Change" and "Remove" on a picture |
+| G26 NEW | Editor, Quiz settings, typing the web address very fast (more than 30 checks in a minute) | The live "is this address free" check stops quietly and the spinner goes away; typing again asks again. No message (decision D11 limit of 30 checks a minute) |
+| G18 GUESS | Editor of a never-published quiz, Publish | "Publish your quiz?" with "Your quiz has N pages." |
+
+### H4. Responses and account
+| ID | Where to see it | What Code built |
+|---|---|---|
+| G21 GUESS | Responses, Summary and Individual | No match in the Individual search; the "Removed questions" group in Summary; the toast after "Delete all responses" |
+| G6 NEW | `/account` (in the dummy data press Connect first) | When Google is connected and the person has a password: button "Disconnect" and a question "Disconnect Google?" ("From now on you log in with your email and password. You can connect Google again any time."), then the toast "Google disconnected". **Limit:** a person who began with Google and later set a password cannot disconnect (Supabase keeps an account's last sign-in method), so their row stays "Connected" |
+| G22 GUESS | `/account` | A new email is typed and sent with Enter or by leaving the field; a wrong-email message; "Set a password" for a Google-only account |
+
+### H5. Admin
+| ID | Where to see it | What Code built |
+|---|---|---|
+| G7 NEW | `/admin/users?filter=near-limit` (log in as admin) | A fourth filter "Near a limit" (80% of a Free limit). The Overview counter "Close to a Free plan limit" opens it |
+| G24 GUESS | `/admin`, a person on the Free plan, a person that does not exist | The Free state of the Plan card; "They" instead of "She/her"; limit-box error; empty search; toasts; loading and failed cards; "Person not found"; notes save when the box loses focus; "Newest people" shows Today / Yesterday / a date |
+
+### H6. The quiz people take
+| ID | Where to see it | What Code built |
+|---|---|---|
+| G23 GUESS | `/quiz/body-reset`, Try it | Messages for a required text, phone and number; the helper line for a number with only a minimum or maximum; a single-choice question that is not required shows Continue; Loading has no Back; a white screen while the quiz opens; "Close preview" goes to the editor; a picture on an End page shows under the text |
+| G25 GUESS | A quiz changed after someone started; `/maintenance` | No board for "Welcome back" when the quiz changed (answers to removed pages are kept but not shown). The maintenance page is used as is for maintenance mode |
+
+### H7. Approved by you, not drawn yet
+| ID | What the code does | What the boards still show |
+|---|---|---|
+| D1 | Every email link lasts **1 hour** (verify screens and the verify email say so). The email-change link stays 24 hours | `VerifySent`, `VerifyExpired`, `EmailVerify` say 24 hours |
+| D2 | A Google login joins an existing account with the same email. The screen "Log in: Google, account exists" is gone | Two boards `LoginGoogleExists` (desktop, phone) and a rule in `BehaviorRules` |

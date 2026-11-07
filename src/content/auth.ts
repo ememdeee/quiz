@@ -1,3 +1,5 @@
+import type { FieldProblem } from "@/lib/validation";
+
 /**
  * Words on the sign-in screens (boards Register, Login*, Forgot*, Reset*, Verify*, AccountDeleted).
  * Inline format: **bold** and [link text](page:name), see components/ui/rich-text.tsx.
@@ -15,7 +17,24 @@ export const auth = {
     confirmPassword: "Confirm new password",
   },
   passwordHint: "At least 8 characters.",
-  passwordMismatch: "The two passwords are not the same.",
+  /** Field errors on Register, Forgot password and Set a new password. The design shows field errors only on Contact (gap G9). */
+  fieldErrors: {
+    name_missing: "Please enter your name.",
+    email_missing: "Please enter your email.",
+    email_invalid: "Please enter a valid email.",
+    password_missing: "Please choose a password.",
+    password_short: "Use at least 8 characters.",
+    passwords_differ: "The two passwords are not the same.",
+  } satisfies Record<FieldProblem, string>,
+  /**
+   * Banners above Register, Forgot password and Set a new password when the server turned the form back (gaps G11, G25): the
+   * bot check failed, too many tries from one place, or the new password is the old one.
+   */
+  problems: {
+    check: "**We couldn’t check that you’re a person.** Please try again.",
+    wait: "**Too many tries.** Please wait a little while and try again.",
+    "same-password": "**That is your old password.** Please choose a new one.",
+  },
   forgotLink: "Forgot your password?",
   backToLogin: "Back to log in",
 
@@ -29,8 +48,6 @@ export const auth = {
       unverified: "**Please verify your email first.** We sent a link to {email}. [Send it again](page:verify-email)",
       "too-many": "**Too many tries.** For your security, wait 15 minutes and try again. Or [reset your password](page:forgot-password) now.",
       suspended: "**This account is suspended.** You can’t log in right now. If you think this is a mistake, [contact us](page:contact).",
-      "google-exists":
-        "**This email already has an account with a password.** Log in with your password below. You can connect Google later in your account settings.",
       "google-cancelled": "Logging in with Google was cancelled. You can try again, or log in with your email.",
     },
     panel: {
@@ -92,8 +109,10 @@ export const auth = {
     done: "I’ve verified my email",
     resend: "Send the email again",
     resendWait: "Send the email again ({seconds}s)",
-    wrongAddress: "Wrong address? [Use a different email](page:register). The link works for 24 hours.",
+    wrongAddress: "Wrong address? [Use a different email](page:register). The link works for 1 hour.",
     resentBanner: "**We sent it again.** You can ask for another one in 60 seconds.",
+    /** "Send the email again" did not go through. No board (gap G11). */
+    resendFailed: "**We couldn’t send the email.** Please try again in a minute.",
     resentHelp: "Still nothing? Check your spam folder. Wrong address? [Use a different email](page:register).",
     caption: "One more step.",
   },
@@ -105,8 +124,16 @@ export const auth = {
   },
   verifyExpired: {
     title: "This link has expired",
-    sub: "Verification links work for 24 hours. We can send you a new one.",
+    sub: "Verification links work for 1 hour. We can send you a new one.",
     button: "Send a new link",
+    caption: "Links don’t last forever.",
+  },
+
+  /** The expired screen for the "confirm your new email" link. No board (gap G5): the verify screen with the words of an email change. */
+  emailChangeExpired: {
+    title: "This link has expired",
+    sub: "Links to confirm a new email address work for 24 hours. Start the change again from your account and we’ll send a new one.",
+    button: "Go to my account",
     caption: "Links don’t last forever.",
   },
 

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { NO_OVERRIDES } from "@/lib/plan/limits";
 import { dayLabel, isNearLimit, overviewOf, PAGE_SIZE, parseLimit, peopleCsv, queryPeople, showingRange } from "./people";
-import type { AdminPerson } from "./types";
+import type { AdminPerson, PeopleFilter } from "./types";
 
 const NOW = Date.parse("2026-11-07T12:00:00Z");
 const DAY = 24 * 60 * 60 * 1000;
@@ -34,7 +34,7 @@ const quiz = (responses: number, pages = 5) => ({
   updatedAt: ago(0),
 });
 
-const ids = (people: AdminPerson[], search: string, filter: "everyone" | "free" | "custom" | "unverified" = "everyone") =>
+const ids = (people: AdminPerson[], search: string, filter: PeopleFilter = "everyone") =>
   queryPeople(people, { search, filter, page: 1 }).rows.map((row) => row.person.id);
 
 describe("the people list", () => {
@@ -54,6 +54,16 @@ describe("the people list", () => {
     expect(ids(people, "", "custom")).toEqual(["b"]);
     expect(ids(people, "", "free")).toEqual(["a", "c"]);
     expect(ids(people, "", "unverified")).toEqual(["c"]);
+  });
+
+  it("filters the people who are close to a Free plan limit (the Overview counter opens this list)", () => {
+    const withQuizzes = [
+      person("near", { quizzes: [quiz(400)], signedUpAt: ago(1) }),
+      person("far", { quizzes: [quiz(10)], signedUpAt: ago(2) }),
+      person("custom-near", { plan: "custom", quizzes: [quiz(499)], signedUpAt: ago(3) }),
+    ];
+    expect(ids(withQuizzes, "", "near-limit")).toEqual(["near"]);
+    expect(queryPeople(withQuizzes, { search: "", filter: "near-limit", page: 1 }).total).toBe(overviewOf(withQuizzes, NOW).nearLimit);
   });
 
   it("pages through many people and keeps the page inside the range", () => {

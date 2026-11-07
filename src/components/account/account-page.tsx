@@ -8,7 +8,7 @@ import { Field, FieldError, FieldHint, Input } from "@/components/ui/field";
 import { ArrowLeftIcon, CheckIcon, GoogleIcon, WifiOffIcon } from "@/components/ui/icons";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/toast";
-import { accountPage, passwordDialog } from "@/content/dashboard/account";
+import { accountPage, disconnectGoogleDialog, passwordDialog } from "@/content/dashboard/account";
 import { dashErrors, dashLabels } from "@/content/dashboard/common";
 import { quizList } from "@/content/dashboard/quizzes";
 import { useAccount } from "@/hooks/use-account";
@@ -18,7 +18,7 @@ import { saveFile } from "@/lib/responses/export/download";
 import { repos } from "@/server/repos";
 import { resetAll } from "@/server/repos/mock/dev";
 import { deleteAccountAction } from "@/server/actions/dashboard";
-import { DeleteAccountDialog, PasswordDialog } from "./account-dialogs";
+import { DeleteAccountDialog, DisconnectGoogleDialog, PasswordDialog } from "./account-dialogs";
 
 const Card = ({ className, children }: { className?: string; children: ReactNode }) => (
   <section className={`flex flex-col gap-5 rounded-2xl border bg-white p-6 ${className ?? "border-line"}`}>{children}</section>
@@ -40,21 +40,30 @@ async function downloadEverything() {
 }
 
 /** `/account` (boards Account, AccountEmail, AccountGoogleOnly): details, how you log in, delete. */
-export function AccountPage() {
-  const { account, failed, reload, updateName, requestEmailChange, resendEmailChange, cancelEmailChange, setPassword, connectGoogle } = useAccount();
+export function AccountPage({ emailChanged = false }: { emailChanged?: boolean }) {
+  const { account, failed, reload, updateName, requestEmailChange, resendEmailChange, cancelEmailChange, setPassword, connectGoogle, disconnectGoogle } = useAccount();
   const { show } = useToast();
   const [name, setName] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
   const [emailError, setEmailError] = useState(false);
   const [saving, setSaving] = useState(false);
   const [resent, setResent] = useState(false);
-  const [dialog, setDialog] = useState<"password" | "delete" | null>(null);
+  const [dialog, setDialog] = useState<"password" | "delete" | "disconnect" | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const shownName = name ?? account?.name ?? "";
   const shownEmail = email ?? account?.email ?? "";
 
   useEffect(() => () => void (timer.current && clearTimeout(timer.current)), []);
+
+  // Opened from the "confirm your new email" link: say it worked once, then drop `?email=changed` so a refresh does not repeat it
+  useEffect(() => {
+    if (!emailChanged) return;
+    show({ message: accountPage.emailChanged });
+    window.history.replaceState(null, "", routes.account);
+    // `show` is stable enough for a one-time message; running again would repeat the toast
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [emailChanged]);
 
   const changeName = (value: string) => {
     setName(value);
@@ -84,6 +93,15 @@ export function AccountPage() {
       return "ok" as const;
     }
     return result.error === "wrong_password" ? ("wrong_password" as const) : ("failed" as const);
+  };
+
+  /** Returns whether it worked, so the dialog can say if it did not. */
+  const confirmDisconnect = async () => {
+    const result = await disconnectGoogle();
+    if (!result.ok) return false;
+    setDialog(null);
+    show({ message: disconnectGoogleDialog.toast });
+    return true;
   };
 
   const deleteAccount = async () => {
@@ -185,7 +203,11 @@ export function AccountPage() {
                     <span className="text-sm text-mute">{account.googleConnected && !account.hasPassword ? accountPage.googleConnectedNote : accountPage.googleNote}</span>
                   </span>
                 </span>
-                {account.googleConnected ? (
+                {account.canDisconnectGoogle ? (
+                  <Button shape="box" variant="secondary" onClick={() => setDialog("disconnect")}>
+                    {accountPage.disconnect}
+                  </Button>
+                ) : account.googleConnected ? (
                   <Button shape="box" variant="secondary" disabled>
                     {accountPage.connected}
                   </Button>
@@ -215,6 +237,7 @@ export function AccountPage() {
       </main>
 
       {dialog === "password" && account ? <PasswordDialog hasPassword={account.hasPassword} onSave={savePassword} onClose={() => setDialog(null)} /> : null}
+      {dialog === "disconnect" ? <DisconnectGoogleDialog onConfirm={confirmDisconnect} onClose={() => setDialog(null)} /> : null}
       {dialog === "delete" ? <DeleteAccountDialog onDownload={() => void downloadEverything()} onConfirm={deleteAccount} onClose={() => setDialog(null)} /> : null}
     </>
   );

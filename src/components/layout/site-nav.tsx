@@ -4,17 +4,22 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ButtonLink } from "@/components/ui/button";
-import { ChevronRightIcon, CloseIcon, MenuIcon } from "@/components/ui/icons";
+import { ChevronRightIcon, CloseIcon, LogoutIcon, MenuIcon, UserIcon } from "@/components/ui/icons";
 import { softHover } from "@/components/ui/link-styles";
-import { siteLabels, siteNavLinks } from "@/content/site";
+import { accountMenuItems, siteLabels, siteNavLinks } from "@/content/site";
 import { createQuizHref, routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
+import { logoutAction } from "@/server/actions/session";
 import type { SessionUser } from "@/server/session";
 import { AccountMenu } from "./account-menu";
 import { Logo } from "./logo";
 
 const pill =
   "mx-auto flex max-w-[1096px] items-center justify-between gap-2 rounded-full border border-line bg-white/95 p-1.5 pl-[18px] shadow-[0_8px_30px_rgba(51,65,85,0.08)] nav:gap-4 nav:p-2 nav:pl-6";
+
+/** A row under the phone menu links for a logged-in person. The design has no phone menu for them (gap G10). */
+const phoneAccountRow =
+  "flex min-h-12 w-full items-center gap-3 rounded-[10px] text-[17px] font-semibold text-slate no-underline focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-slate";
 
 const navLink = cn(
   "inline-flex min-h-11 items-center rounded-full px-4 text-[15px] font-medium text-ink no-underline focus-visible:outline-[3px] focus-visible:outline-slate",
@@ -147,6 +152,20 @@ export function SiteNav({ user }: { user: SessionUser | null }) {
             </Link>
           ))}
         </nav>
+        {user ? (
+          <div className="mx-3 mt-6 flex flex-col gap-1 border-t border-line pt-4">
+            <Link href={routes.account} onClick={() => setOpen(false)} className={phoneAccountRow}>
+              <UserIcon size={20} />
+              {accountMenuItems.settings}
+            </Link>
+            <form action={logoutAction}>
+              <button type="submit" className={phoneAccountRow}>
+                <LogoutIcon />
+                {accountMenuItems.logOut}
+              </button>
+            </form>
+          </div>
+        ) : null}
         <ButtonLink href={createHref} size="lg" onClick={() => setOpen(false)} className="mx-3 mt-auto min-h-[60px]">
           {loggedIn ? siteLabels.myQuizzes : siteLabels.createQuiz}
         </ButtonLink>

@@ -30,7 +30,8 @@ export type AdminPerson = {
   quizzes: AdminQuiz[];
 };
 
-export type PeopleFilter = "everyone" | "free" | "custom" | "unverified";
+/** `near-limit` has no board (gap G7): the Overview counter "Close to a Free plan limit" opens the Users list on it. */
+export type PeopleFilter = "everyone" | "free" | "custom" | "unverified" | "near-limit";
 export type PeopleQuery = { search: string; filter: PeopleFilter; page: number };
 
 export type PersonRow = { person: AdminPerson; quizzes: number; responses: number };

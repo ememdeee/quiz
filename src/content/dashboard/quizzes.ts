@@ -25,6 +25,11 @@ export const quizCard = {
     closed: "Closed. People see a message that it is closed.",
     not_published: "Only you can see this. Publish it to share.",
   } satisfies Record<QuizStatus, string>,
+  /** The quiz reached its response limit. No board (gap G8). */
+  full: {
+    status: "Full",
+    description: (max: number) => `It reached ${max.toLocaleString("en-US")} responses. People see that it is closed.`,
+  },
   options: "Quiz options",
   edit: "Edit",
   publish: "Publish",

@@ -22,6 +22,7 @@ import { createEditorStore } from "@/store/editor-store";
 import { AddPageDialog } from "./add-page-dialog";
 import { AiDialog } from "./ai/ai-dialog";
 import { Canvas } from "./canvas/canvas";
+import { ConflictDialog } from "./conflict-dialog";
 import { EditorStoreProvider, EditorUiProvider, ProblemsProvider, useEditor, type EditorUi } from "./editor-context";
 import { EditorHeader } from "./editor-header";
 import { MediaProvider } from "./media-context";
@@ -51,7 +52,7 @@ type DialogState =
 export function Editor({ bundle: initial, openSettings = false }: { bundle: QuizBundle; openSettings?: boolean }) {
   const [store] = useState(() => createEditorStore(initial.draft));
   const [bundle, setBundle] = useState(initial);
-  const save = useAutosave(initial.quiz.id, store);
+  const save = useAutosave(initial.quiz.id, store, initial.quiz.version);
   const profile = useProfile();
   const maxPages = profile ? getLimits(profile).pagesPerQuiz : FREE_LIMITS.pagesPerQuiz;
   const { show } = useToast();
@@ -60,7 +61,14 @@ export function Editor({ bundle: initial, openSettings = false }: { bundle: Quiz
   const [dialog, setDialog] = useState<DialogState>(openSettings ? { kind: "settings" } : null);
   const [publishing, setPublishing] = useState(false);
 
-  const setQuiz = useCallback((quiz: QuizSummary) => setBundle((current) => ({ ...current, quiz })), []);
+  const { syncVersion } = save;
+  const setQuiz = useCallback(
+    (quiz: QuizSummary) => {
+      syncVersion(quiz.version);
+      setBundle((current) => ({ ...current, quiz }));
+    },
+    [syncVersion],
+  );
 
   /** Deletes a page at once and offers Undo. */
   const deletePage = useCallback(
@@ -130,6 +138,7 @@ export function Editor({ bundle: initial, openSettings = false }: { bundle: Quiz
       if (!reportError(result.error)) show({ message: dashErrors.generic, tone: "error" });
       return closeDialog();
     }
+    syncVersion(result.data.quiz.version);
     setBundle(result.data);
     setDialog({ kind: "share", live: true });
   };
@@ -164,6 +173,7 @@ export function Editor({ bundle: initial, openSettings = false }: { bundle: Quiz
               </div>
             </div>
 
+            {save.conflict ? <ConflictDialog onChoose={save.resolveConflict} /> : null}
             {dialog?.kind === "add" ? <AddPageDialog onAdd={addPage} onClose={closeDialog} /> : null}
             {dialog?.kind === "limit" ? <PageLimitDialog max={maxPages} onClose={closeDialog} /> : null}
             {dialog?.kind === "delete" ? (

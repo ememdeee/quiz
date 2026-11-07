@@ -11,7 +11,7 @@
 
 ## 1. What is already decided or done
 - Supabase dev project: ref `ubyfseqdzzuixvxmabfe`, linked. `supabase/config.toml` already has: confirm email **on**, password minimum 8, `double_confirm_changes = false`, `otp_expiry = 3600`.
-- **D1 is approved by the owner (2026-11-07):** all email links (verify and reset) last **1 hour**. Supabase has one lifetime for all of them. `otp_expiry = 3600` is already pushed. The design text ("24 hours") is changed in Claude Design, not by you.
+- **D1 is approved by the owner (2026-11-07):** all email links (verify and reset) last **1 hour**. Supabase has one lifetime for all of them. `otp_expiry = 3600` is already pushed. (Update 2026-11-08: the code and the verify email now say "1 hour" themselves; the boards still say "24 hours" and are owed an update, see `plan/project_checklist.md` H7.)
 - Why Mailtrap: no Docker, so no local mail catcher. Mailtrap is a **fake inbox on the internet**: the emails land there and nobody real receives them, so tests can sign up fake people safely and read the verification link.
 - Supabase's built-in email service is limited (few emails per hour, only to team members); with our own SMTP it is much more flexible. Production uses Resend later (Phase 12), not Mailtrap.
 

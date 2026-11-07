@@ -4,7 +4,7 @@ import { useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { Field, Input } from "@/components/ui/field";
-import { deleteAccountDialog, passwordDialog } from "@/content/dashboard/account";
+import { deleteAccountDialog, disconnectGoogleDialog, passwordDialog } from "@/content/dashboard/account";
 import { PASSWORD_MIN_LENGTH } from "@/lib/validation";
 
 /**
@@ -61,6 +61,46 @@ export function PasswordDialog({
           </Button>
         </div>
       </form>
+    </Dialog>
+  );
+}
+
+/** "Disconnect Google?" (no board, gap G6): one question, nothing to type. */
+export function DisconnectGoogleDialog({ onConfirm, onClose }: { onConfirm: () => Promise<boolean>; onClose: () => void }) {
+  const words = disconnectGoogleDialog;
+  const [pending, setPending] = useState(false);
+  const [failed, setFailed] = useState(false);
+
+  const confirm = async () => {
+    setPending(true);
+    setFailed(false);
+    const done = await onConfirm();
+    setPending(false);
+    setFailed(!done);
+  };
+
+  return (
+    <Dialog
+      open
+      onOpenChange={(open) => !open && !pending && onClose()}
+      title={words.title}
+      description={words.text}
+      actions={
+        <>
+          <Button shape="box" size="sm" variant="secondary" disabled={pending} onClick={onClose}>
+            {words.keep}
+          </Button>
+          <Button shape="box" size="sm" loading={pending} onClick={confirm}>
+            {words.confirm}
+          </Button>
+        </>
+      }
+    >
+      {failed ? (
+        <p role="alert" className="m-0 text-sm text-danger">
+          {words.failed}
+        </p>
+      ) : null}
     </Dialog>
   );
 }

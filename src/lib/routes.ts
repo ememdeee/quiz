@@ -31,6 +31,7 @@ export const routes = {
   devUi: "/dev/ui",
   devTemplates: "/dev/templates",
   devEmails: "/dev/emails",
+  devUndesigned: "/dev/undesigned",
 } as const;
 
 /** Pages of one quiz in the dashboard. They use the quiz id, never the web address. */
@@ -57,6 +58,10 @@ export const absoluteUrl = (path: string) => `${SITE_URL}${path}`;
 export const CONTACT_EMAIL = "basurah@basrh.com";
 export const mailto = (address: string = CONTACT_EMAIL) => `mailto:${address}`;
 
+/** After the "confirm your new email" link: the Account page says it worked, or the expired screen says "email change" (no board, gap G5). */
+export const accountHref = { emailChanged: `${routes.account}?email=changed` } as const;
+export const verifyEmailExpiredHref = (kind: "email-change") => `${routes.verifyEmailExpired}?for=${kind}`;
+
 /** Where "Create your quiz" goes: people without an account register first. */
 export const createQuizHref = (loggedIn: boolean) => (loggedIn ? routes.dashboard : routes.register);
 
@@ -66,11 +71,15 @@ export const loginStates = [
   "unverified",
   "too-many",
   "suspended",
-  "google-exists",
   "google-cancelled",
 ] as const;
 export type LoginState = (typeof loginStates)[number];
 export const loginHref = (state?: LoginState) => (state ? `${routes.login}?state=${state}` : routes.login);
+
+/** Why the server turned a sign-in form back (shown as a banner; no board, gaps G11 and G25). */
+export const authProblems = ["check", "wait", "same-password"] as const;
+export type AuthProblem = (typeof authProblems)[number];
+export const authProblemHref = (path: string, problem: AuthProblem) => `${path}?problem=${problem}`;
 
 /** Result screens of the contact form and the verify-email screen, opened directly. */
 export const contactHref = (state: "error" | "sent") => `${routes.contact}?state=${state}`;

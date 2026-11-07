@@ -25,8 +25,12 @@ export function isNearLimit(person: AdminPerson): boolean {
   );
 }
 
-const matches = (person: AdminPerson, filter: PeopleFilter) =>
-  filter === "everyone" || (filter === "unverified" ? !person.emailVerified : person.plan === filter);
+const matches = (person: AdminPerson, filter: PeopleFilter) => {
+  if (filter === "everyone") return true;
+  if (filter === "unverified") return !person.emailVerified;
+  if (filter === "near-limit") return isNearLimit(person);
+  return person.plan === filter;
+};
 
 const newestFirst = (a: AdminPerson, b: AdminPerson) => new Date(b.signedUpAt).getTime() - new Date(a.signedUpAt).getTime();
 

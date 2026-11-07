@@ -173,7 +173,7 @@ export function QuizListPage() {
           ) : (
             <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-6">
               {visible.map((quiz) => (
-                <QuizCard key={quiz.id} quiz={quiz} actions={actions} />
+                <QuizCard key={quiz.id} quiz={quiz} actions={actions} responseLimit={limits.responsesPerQuiz} />
               ))}
               {searching ? null : (
                 <button

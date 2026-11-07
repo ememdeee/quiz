@@ -44,6 +44,7 @@ export function fillToLimit() {
         acceptingResponses: true,
         finishedResponses: 0,
         updatedAt: new Date(Date.now() - (i + 1) * 3_600_000).toISOString(),
+        version: 1,
         ...documentFacts(draft, null),
       },
     };

@@ -10,10 +10,16 @@ import type { Profile, QuizBundle, QuizStart, QuizSummary } from "@/lib/quizzes/
  * calls work against the browser mock now and against server actions in Phase 5.
  * The mock lives in ./mock; this file holds only the shapes, so it is safe to import anywhere.
  */
+/**
+ * How the editor saves its draft. `baseVersion` is the version it last saw: a save that is behind fails with `conflict` (gap G1).
+ * `keepMine` is "Keep my version" after that dialog: save on top of whatever is there now.
+ */
+export type SaveDraftOptions = { baseVersion?: number; keepMine?: boolean };
+
 export interface QuizzesRepo {
   list(): Promise<ActionResult<QuizSummary[]>>;
   get(id: string): Promise<ActionResult<QuizBundle>>;
-  saveDraft(id: string, draft: QuizDocument): Promise<ActionResult<QuizSummary>>;
+  saveDraft(id: string, draft: QuizDocument, options?: SaveDraftOptions): Promise<ActionResult<QuizSummary>>;
   create(input: { name: string; from: QuizStart }): Promise<ActionResult<QuizSummary>>;
   rename(id: string, name: string): Promise<ActionResult<QuizSummary>>;
   duplicate(id: string): Promise<ActionResult<QuizSummary>>;
@@ -42,6 +48,11 @@ export type AccountState = {
   pendingEmail: string | null;
   hasPassword: boolean;
   googleConnected: boolean;
+  /**
+   * Google is connected AND the person has another way to log in. Supabase cannot remove the only identity of an account, so a
+   * person who started with Google and later set a password cannot disconnect it (gap G6, no board).
+   */
+  canDisconnectGoogle: boolean;
 };
 
 export interface AccountRepo {
@@ -53,6 +64,8 @@ export interface AccountRepo {
   /** `current` is needed only when a password exists already. */
   setPassword(input: { current?: string; next: string }): Promise<ActionResult<AccountState>>;
   connectGoogle(): Promise<ActionResult<AccountState>>;
+  /** Only when `canDisconnectGoogle` (gap G6). */
+  disconnectGoogle(): Promise<ActionResult<AccountState>>;
 }
 
 /** The owner's picture library. Newest first. */

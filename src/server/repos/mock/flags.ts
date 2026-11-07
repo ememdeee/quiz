@@ -17,12 +17,14 @@ export type MockFlags = {
   failNextSave: boolean;
   /** The next quiz opened by its link fails once ("Something went wrong") */
   failNextQuizLoad: boolean;
+  /** The next autosave in the editor answers "changed somewhere else" once (the conflict dialog, gap G1) */
+  conflictNextSave: boolean;
 };
 
 const KEY = "quiz.mock.flags.v1";
 const EVENT = "quiz-mock-flags";
 
-export const defaultFlags: MockFlags = { slow: false, failNextLoad: false, offline: false, suspended: false, loggedOut: false, failNextSave: false, failNextQuizLoad: false };
+export const defaultFlags: MockFlags = { slow: false, failNextLoad: false, offline: false, suspended: false, loggedOut: false, failNextSave: false, failNextQuizLoad: false, conflictNextSave: false };
 
 export function readFlags(): MockFlags {
   if (typeof window === "undefined") return defaultFlags;

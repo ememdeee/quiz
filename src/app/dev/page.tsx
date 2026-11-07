@@ -67,7 +67,6 @@ const groups: { title: string; note?: string; links: { label: string; href: stri
       { label: "Log in: email not verified", href: loginHref("unverified") },
       { label: "Log in: too many tries", href: loginHref("too-many") },
       { label: "Log in: account suspended", href: loginHref("suspended") },
-      { label: "Log in: Google, account exists", href: loginHref("google-exists") },
       { label: "Log in: Google cancelled", href: loginHref("google-cancelled") },
     ],
   },
@@ -121,6 +120,10 @@ export default async function DevPage() {
         <p className="mb-0 mt-2 text-base text-mute">
           For building and testing only. This page does not exist on the real website. Every link opens a screen of the design; resize the window or use the phone view to check the phone layout.
         </p>
+
+        <Link href={routes.devUndesigned} className={`${linkClass} mt-6 border-2 border-slate`}>
+          Not designed yet: every screen Code built without a board, with a link to see each one
+        </Link>
 
         <section className="mt-8 rounded-2xl border border-line bg-white p-5">
           <h2 className="m-0 text-lg font-bold">Who is logged in</h2>

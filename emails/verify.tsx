@@ -3,7 +3,7 @@ import { EmailButton, EmailLayout, LinkFallback, text } from "./layout";
 
 export type VerifyProps = { name: string; verifyUrl: string };
 
-/** "Verify your email" (board EmailVerify). Sent when someone registers or asks for the link again. The link works for 24 hours. */
+/** "Verify your email" (board EmailVerify). Sent when someone registers or asks for the link again. The link works for 1 hour (decision D1: Supabase has one lifetime for all its links; the board still says 24 hours). */
 export function Verify({ name, verifyUrl }: VerifyProps) {
   return (
     <EmailLayout preview="Confirm your email address to start making quizzes.">
@@ -14,7 +14,7 @@ export function Verify({ name, verifyUrl }: VerifyProps) {
       <Section style={{ margin: "28px 0" }}>
         <EmailButton href={verifyUrl}>Verify my email</EmailButton>
       </Section>
-      <LinkFallback validFor="24 hours" href={verifyUrl} />
+      <LinkFallback validFor="1 hour" href={verifyUrl} />
       <Text style={text.rule}>If you didn’t create a Quiz account, you can ignore this email.</Text>
     </EmailLayout>
   );

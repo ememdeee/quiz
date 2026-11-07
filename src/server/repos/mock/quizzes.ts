@@ -33,10 +33,19 @@ function replace(id: string, change: (bundle: QuizBundle) => QuizBundle): Action
   return ok(updated);
 }
 
-/** The same quiz with its facts recomputed from its documents and a fresh "edited" time. */
-const touched = (bundle: QuizBundle, patch: Partial<QuizSummary> = {}): QuizBundle => ({
+/**
+ * The same quiz with its facts recomputed from its documents and a fresh "edited" time. `pagesChanged` raises the version,
+ * as the real database does when the pages are saved (switching a quiz open or closed does not).
+ */
+const touched = (bundle: QuizBundle, patch: Partial<QuizSummary> = {}, pagesChanged = false): QuizBundle => ({
   ...bundle,
-  quiz: { ...bundle.quiz, ...patch, ...documentFacts(bundle.draft, bundle.published), updatedAt: new Date().toISOString() },
+  quiz: {
+    ...bundle.quiz,
+    ...patch,
+    ...documentFacts(bundle.draft, bundle.published),
+    version: bundle.quiz.version + (pagesChanged ? 1 : 0),
+    updatedAt: new Date().toISOString(),
+  },
 });
 
 function startingDocument(from: QuizStart, name: string): QuizDocument | null {
@@ -64,6 +73,7 @@ function add(name: string, document: (name: string) => QuizDocument | null, prof
     acceptingResponses: true,
     finishedResponses: 0,
     updatedAt: new Date().toISOString(),
+    version: 1,
     ...documentFacts(draft, null),
   };
   saveBundles([{ quiz, draft, published: null }, ...bundles]);
@@ -101,7 +111,7 @@ export const mockQuizzes: QuizzesRepo = {
     if (blocked) return fail(blocked);
     const trimmed = name.trim();
     if (!trimmed) return fail("name_required");
-    return summaryOf(replace(id, (bundle) => touched({ ...bundle, draft: { ...bundle.draft, name: trimmed } }, { name: trimmed })));
+    return summaryOf(replace(id, (bundle) => touched({ ...bundle, draft: { ...bundle.draft, name: trimmed } }, { name: trimmed }, true)));
   },
 
   async duplicate(id) {
@@ -118,11 +128,19 @@ export const mockQuizzes: QuizzesRepo = {
     return summaryOf(replace(id, (bundle) => touched(bundle, { acceptingResponses: accepting })));
   },
 
-  async saveDraft(id, draft) {
+  async saveDraft(id, draft, options = {}) {
     const blocked = await gate();
     if (blocked) return fail(blocked);
     if (!quizDocumentSchema.safeParse(draft).success) return fail("load_failed");
-    return summaryOf(replace(id, (bundle) => touched({ ...bundle, draft }, { name: draft.name })));
+    const current = find(id);
+    if (!current) return fail("not_found");
+    // A save that is behind the stored version means the quiz was saved from another tab or window (gap G1). `/dev` can force it once.
+    if (!options.keepMine) {
+      const forced = readFlags().conflictNextSave;
+      if (forced) writeFlags({ conflictNextSave: false });
+      if (forced || (options.baseVersion !== undefined && options.baseVersion !== current.quiz.version)) return fail("conflict");
+    }
+    return summaryOf(replace(id, (bundle) => touched({ ...bundle, draft }, { name: draft.name }, true)));
   },
 
   async publish(id, draft) {
@@ -130,7 +148,7 @@ export const mockQuizzes: QuizzesRepo = {
     if (blocked) return fail(blocked);
     if (validateQuiz(draft, { maxPages: getLimits(mockProfile).pagesPerQuiz }).length > 0) return fail("publish_blocked");
     return replace(id, (bundle) =>
-      touched({ ...bundle, draft, published: structuredClone(draft) }, { firstPublishedAt: bundle.quiz.firstPublishedAt ?? new Date().toISOString() }),
+      touched({ ...bundle, draft, published: structuredClone(draft) }, { firstPublishedAt: bundle.quiz.firstPublishedAt ?? new Date().toISOString() }, true),
     );
   },
 

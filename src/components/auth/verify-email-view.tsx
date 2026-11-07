@@ -13,6 +13,8 @@ import { AuthHeading, authLink, AuthStack } from "./auth-layout";
 export function VerifyEmailView({ email, initialResent }: { email: string; initialResent: boolean }) {
   const { verify } = auth;
   const [resent, setResent] = useState(initialResent);
+  const [failed, setFailed] = useState(false);
+  const [sending, setSending] = useState(false);
   const [seconds, setSeconds] = useState(initialResent ? RESEND_WAIT_SECONDS : 0);
 
   useEffect(() => {
@@ -22,13 +24,24 @@ export function VerifyEmailView({ email, initialResent }: { email: string; initi
   }, [seconds]);
 
   const sendAgain = async () => {
+    setSending(true);
+    setFailed(false);
+    const { ok } = await resendVerificationAction();
+    setSending(false);
+    setResent(ok);
+    // "We couldn't send it" has no board (gap G11). The wait still starts, so the next try is not a second too early
+    setFailed(!ok);
     setSeconds(RESEND_WAIT_SECONDS);
-    setResent((await resendVerificationAction()).ok);
   };
 
   return (
     <AuthStack>
       <AuthHeading title={verify.title} sub={<RichText text={verify.sub.replace("{email}", email)} />} />
+      {failed ? (
+        <Banner tone="error">
+          <RichText text={verify.resendFailed} />
+        </Banner>
+      ) : null}
       {resent ? (
         <Banner tone="info">
           <RichText text={verify.resentBanner} />
@@ -42,7 +55,7 @@ export function VerifyEmailView({ email, initialResent }: { email: string; initi
           {verify.resendWait.replace("{seconds}", String(seconds))}
         </DisabledButton>
       ) : (
-        <Button variant="secondary" size="lg" block onClick={sendAgain}>
+        <Button variant="secondary" size="lg" block loading={sending} onClick={sendAgain}>
           {verify.resend}
         </Button>
       )}

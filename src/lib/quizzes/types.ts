@@ -14,6 +14,11 @@ export type QuizSummary = {
   pageCount: number;
   finishedResponses: number;
   updatedAt: string;
+  /**
+   * The version of the working copy. Every save of the pages raises it. The editor sends the version it last saw with each save, so
+   * a save from a second tab or window is noticed (the "changed somewhere else" dialog, gap G1).
+   */
+  version: number;
 };
 
 /** A quiz with its working copy and, once published, the copy people see. */

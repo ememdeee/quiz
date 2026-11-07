@@ -42,8 +42,8 @@ export async function sendContactMessage(_previous: ContactFormState, formData: 
     return { status: "sent" };
   }
 
-  // A failed bot check looks like it worked and sends nothing
-  if (!(await turnstilePassed(formData))) return { status: "sent" };
+  // A failed bot check says the message was not sent (a real person whose check did not load must not lose their message; gap G25)
+  if (!(await turnstilePassed(formData))) return { status: "error", values, errors: {} };
   const db = createAdminClient();
   const hash = await ipHash();
   const { data: allowed } = await db.rpc("rate_limit_hit", { p_key: `contact:${hash}`, p_limit: 5, p_window_seconds: 3600 });

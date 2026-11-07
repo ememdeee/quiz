@@ -19,6 +19,14 @@ export const editorHeader = {
   status: { open: "Open", closed: "Closed", not_published: "Not published" } satisfies Record<QuizStatus, string>,
 } as const;
 
+/** Shown when the quiz was saved from another tab or window. No board (gap G1). */
+export const conflictDialog = {
+  title: "This quiz was changed somewhere else",
+  text: "It was saved from another tab or window since you opened it. Keep what you see here, or load the newest version and lose what you changed here.",
+  reload: "Load the newest",
+  keep: "Keep my version",
+} as const;
+
 export const pageList = {
   title: "Pages",
   count: (used: number, max: number) => `${used} of ${max} · in this order`,
