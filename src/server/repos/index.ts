@@ -1,3 +1,4 @@
+import { dataMode } from "@/lib/env";
 import { mockAccount } from "./mock/account";
 import { mockAdmin } from "./mock/admin";
 import { mockMedia } from "./mock/media";
@@ -5,12 +6,9 @@ import { mockProfiles, mockQuizzes } from "./mock/quizzes";
 import { mockResponses } from "./mock/responses";
 import { mockRunner } from "./mock/runner";
 import type { Repos } from "./ports";
+import { remoteRepos } from "./remote";
 
-/**
- * The one place that decides which data layer is wired in. Today it is the browser mock; Phase 5
- * swaps it for server actions and the screens do not change. Screens reach it only through hooks.
- */
-export const repos: Repos = {
+const mockRepos: Repos = {
   quizzes: mockQuizzes,
   profiles: mockProfiles,
   media: mockMedia,
@@ -19,3 +17,9 @@ export const repos: Repos = {
   runner: mockRunner,
   admin: mockAdmin,
 };
+
+/**
+ * The one place that decides which data layer is wired in: the browser dummy data (NEXT_PUBLIC_DATA_MODE unset or "mock") or
+ * the real one on Supabase ("supabase"). Screens reach it only through hooks and do not change (handover 4.3).
+ */
+export const repos: Repos = dataMode === "supabase" ? remoteRepos : mockRepos;

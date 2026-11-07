@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import { afterAll, describe, expect, it } from "vitest";
 import { ONE_PIXEL_PNG, admin, anon, people, rand } from "./helpers.ts";
 

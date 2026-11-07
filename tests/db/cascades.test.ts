@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import { afterAll, describe, expect, it } from "vitest";
 import { HASH, admin, createPublishedQuiz, people, rand, resetAll } from "./helpers.ts";
 

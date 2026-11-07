@@ -21,7 +21,7 @@ export default defineConfig({
     // The whole mock app: every link and button
     { name: "links", testMatch: /link-audit/, use: { baseURL: `http://localhost:${links}` } },
     // The app on the real Supabase dev project: sign-in and everything after it
-    { name: "real", testMatch: /real-.*.spec.ts/, fullyParallel: false, workers: 1, use: { baseURL: `http://localhost:${real}` } },
+    { name: "real", testMatch: /real-.*.spec.ts/, fullyParallel: false, workers: 1, timeout: 120_000, use: { baseURL: `http://localhost:${real}` } },
   ],
   webServer: [
     { command: `npx next dev -p ${links}`, url: `http://localhost:${links}`, reuseExistingServer: true, timeout: 5 * 60_000, env: { NEXT_DIST_DIR: ".next-qc-links" } },

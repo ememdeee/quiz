@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { inject } from "vitest";
 import { assertDevProject, loadEnv, requireEnv } from "./env.ts";

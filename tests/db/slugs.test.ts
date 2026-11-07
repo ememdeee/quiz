@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { admin, createQuizAs, newSlug, people, resetAll } from "./helpers.ts";
 
