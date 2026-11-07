@@ -1,0 +1,22 @@
+[
+  {
+    "quizId": "body-reset-01",
+    "title": "Body Reset 01",
+    "description": "",
+    "status": "published",
+    "stepsCount": 29,
+    "thumbnailUrl": "",
+    "updatedAt": "2026-07-26T11:07:41.118Z",
+    "createdAt": "2026-03-01T08:32:16.998Z"
+  },
+  {
+    "quizId": "debug-quiz",
+    "title": "Debug Quiz",
+    "description": "",
+    "status": "published",
+    "stepsCount": 4,
+    "thumbnailUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuCXk51eYEkhF49xf8HudSwKps9vv5gY5uPaB0asg7c4b6FxXwZzd0Lc9XkzXXwgT35PaY8wLlfi8Rlqds-MUyuUZaJm8yvBUMWjDfETMcAmT_P689lsuR3BKwK-hvM9oWVehtvSOBHAtJ2IIYREVLs20Aq8KaYe6RnCL4DNBHP-iKZCNFi0pVBXveE9-oPCZPPD7LfAVfsmU85xRn9ySovDXFGF1lpV5hKmtivg1R4cXNWK6YKWYxk9j0V9sVHaBPRawF_Di_twlxmw",
+    "updatedAt": "2026-05-09T00:47:48.280Z",
+    "createdAt": "2026-05-08T10:08:51.223Z"
+  }
+]

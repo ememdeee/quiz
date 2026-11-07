@@ -1,0 +1,5 @@
+chat, it seems my home page and home page navbar still not using the updatedt way to get the quiz url.
+
+not like the src/app/members/page.tsx that already using the getQuizUrl
+
+please updaet my home page and navbar, also make that function or things global so can be reusable and not coded repeatatly in each file. make it effective.

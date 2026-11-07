@@ -1,0 +1,134 @@
+{
+  "quizId": "debug-quiz",
+  "meta": {
+    "title": "Debug Quiz",
+    "description": "",
+    "theme": "light",
+    "primaryColor": "#EC4899",
+    "status": "published",
+    "createdAt": "2026-05-08T10:08:51.223Z",
+    "updatedAt": "2026-05-09T00:47:48.280Z",
+    "thumbnailUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuCXk51eYEkhF49xf8HudSwKps9vv5gY5uPaB0asg7c4b6FxXwZzd0Lc9XkzXXwgT35PaY8wLlfi8Rlqds-MUyuUZaJm8yvBUMWjDfETMcAmT_P689lsuR3BKwK-hvM9oWVehtvSOBHAtJ2IIYREVLs20Aq8KaYe6RnCL4DNBHP-iKZCNFi0pVBXveE9-oPCZPPD7LfAVfsmU85xRn9ySovDXFGF1lpV5hKmtivg1R4cXNWK6YKWYxk9j0V9sVHaBPRawF_Di_twlxmw"
+  },
+  "settings": {
+    "showProgressBar": true,
+    "allowBack": true,
+    "autoAdvance": true,
+    "autoAdvanceDelay": 600,
+    "shuffleOptions": false
+  },
+  "steps": [
+    {
+      "id": "landing",
+      "type": "quiz-landing",
+      "layout": "default",
+      "required": true,
+      "content": {
+        "eyebrow": "Trusted by 50,000+ Users",
+        "title": "Welcome to the Quiz",
+        "subtitle": "Let's get started!",
+        "options": [
+          {
+            "value": "female",
+            "label": "Women Start Here",
+            "icon": "female"
+          },
+          {
+            "value": "male",
+            "label": "Men Start Here",
+            "icon": "male"
+          }
+        ]
+      },
+      "navigation": {
+        "showBack": false,
+        "showSkip": false
+      }
+    },
+    {
+      "id": "step_1778234941233_3stl5m3a3",
+      "type": "multiple-choice",
+      "layout": "default",
+      "required": true,
+      "content": {
+        "question": "New Question",
+        "subtitle": "",
+        "options": [
+          {
+            "value": "option1",
+            "label": "Option 1"
+          },
+          {
+            "value": "option2",
+            "label": "Option 2"
+          },
+          {
+            "value": "option3",
+            "label": "Option 3"
+          }
+        ]
+      },
+      "navigation": {
+        "showBack": true,
+        "showSkip": false
+      }
+    },
+    {
+      "id": "step_1778234950869_2piahls74",
+      "type": "multiple-choice",
+      "layout": "default",
+      "required": true,
+      "content": {
+        "question": "New Question",
+        "subtitle": "",
+        "options": [
+          {
+            "value": "option1",
+            "label": "Option 1"
+          },
+          {
+            "value": "option2",
+            "label": "Option 2"
+          },
+          {
+            "value": "option3",
+            "label": "Option 3"
+          }
+        ]
+      },
+      "navigation": {
+        "showBack": true,
+        "showSkip": false
+      }
+    },
+    {
+      "id": "step_1778234951665_zaw8t5237",
+      "type": "result-page-body-reset-01",
+      "layout": "default",
+      "required": true,
+      "content": {
+        "question": "New Question",
+        "subtitle": "",
+        "options": [
+          {
+            "value": "option1",
+            "label": "Option 1"
+          },
+          {
+            "value": "option2",
+            "label": "Option 2"
+          },
+          {
+            "value": "option3",
+            "label": "Option 3"
+          }
+        ],
+        "ctaLink": "https://quiz.gumroad.com/l/body-reset"
+      },
+      "navigation": {
+        "showBack": true,
+        "showSkip": false
+      }
+    }
+  ]
+}

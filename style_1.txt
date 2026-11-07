@@ -1,0 +1,52 @@
+Use a premium soft-pastel aesthetic with a dreamy, glow-infused atmosphere.
+Visuals should combine elegance with subtle futuristic energy.
+
+🎨 Color & Atmosphere
+
+Soft gradient backgrounds or surfaces using purple, violet, indigo, and subtle orange highlights.
+
+Semi-transparent layers (white/20–40) to create a frosted glass effect.
+
+Use gentle color transitions; nothing harsh or flat.
+
+🌫️ Effects & Texture
+
+Frequent use of backdrop blur, translucency, and soft glows.
+
+Add floating or glowing accents such as blurred blob-like shapes or ambient lighting.
+
+Elements should feel airy, smooth, and slightly magical.
+
+✨ Interactions & Motion
+
+Transitions should be smooth (≈300ms), with soft easing—never abrupt.
+
+Hover states should subtly scale elements and increase glow/shadow depth.
+
+Selected/active states should use warm orange highlights, glow pulses, and slight scale-up.
+
+Optional: subtle looping glow or ambient animation for premium emphasis.
+
+🧪 Component Styling Rules
+
+Corners should be fully rounded (2xl or more).
+
+Use thin borders with soft color tones (purples/oranges) and light transparency.
+
+Shadows should be soft, diffused, and used sparingly to emphasize interaction.
+
+Typography should be clean, bold where needed, using slate/dark neutrals for contrast.
+
+🌟 Overall Vibe
+
+Dreamy, modern, soft-futuristic.
+
+Warm highlights, cool base tones.
+
+Blurred, glowing, premium aesthetic.
+
+Everything should feel gentle, smooth, and visually comforting, but still high-end.
+
+Important Note: 
+Never use gradient bg or shadow for text, it hard to read.
+

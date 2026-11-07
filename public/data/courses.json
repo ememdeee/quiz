@@ -1,0 +1,58 @@
+{
+  "courses": [
+    {
+      "id": "svelte-training-01",
+      "slug": "svelte-training",
+      "title": "SvelteTraining",
+      "description": "A complete home fitness program designed by certified trainers. Build strength, burn fat, and transform your body — no gym, no equipment required.",
+      "thumbnail": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=80",
+      "instructor": "Quiz Trainers",
+      "level": "Beginner",
+      "totalDuration": "1h 30m",
+      "videos": [
+        {
+          "id": "vid-st-01",
+          "title": "Welcome to SvelteTraining",
+          "description": "Get a full overview of your 6-week transformation journey. Learn what to expect from each session, how to use the program effectively, and how to set yourself up for lasting success from day one.",
+          "wistiaId": "a54lzg7wck",
+          "duration": "08:00"
+        },
+        {
+          "id": "vid-st-02",
+          "title": "Your Body Assessment",
+          "description": "Understand your starting point with a guided body assessment. We walk through the key metrics that matter, help you identify areas to target, and establish a baseline so you can track your real progress.",
+          "wistiaId": "stnns6ls2o",
+          "duration": "12:00"
+        },
+        {
+          "id": "vid-st-03",
+          "title": "Beginner Home Workout Foundations",
+          "description": "Build the essential movement patterns that underpin every workout in this program. Perfect your form with fundamental bodyweight exercises before adding intensity — this session is the cornerstone of your results.",
+          "wistiaId": "mz8uivijdx",
+          "duration": "20:00"
+        },
+        {
+          "id": "vid-st-04",
+          "title": "Core & Strength Fundamentals",
+          "description": "Develop a rock-solid core and functional strength using minimal equipment. These targeted exercises form the backbone of your home training routine and directly support every other session in the program.",
+          "wistiaId": "glyc4dwoeo",
+          "duration": "18:00"
+        },
+        {
+          "id": "vid-st-05",
+          "title": "HIIT & Cardio Training",
+          "description": "Push your cardiovascular limits with high-intensity interval sessions engineered to torch calories and build endurance — all from your living room. Short bursts, maximum results, zero equipment needed.",
+          "wistiaId": "iuyor3cd4r",
+          "duration": "22:00"
+        },
+        {
+          "id": "vid-st-06",
+          "title": "Nutrition & Recovery Guide",
+          "description": "Fuel your results with a practical, no-fluff guide to eating for performance and recovery. Covers post-workout nutrition, smart hydration strategies, sleep optimization, and how to sustain your gains long-term.",
+          "wistiaId": "u80ays0ev9",
+          "duration": "15:00"
+        }
+      ]
+    }
+  ]
+}

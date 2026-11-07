@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e ' *)",
+      "mcp__claude-in-chrome__tabs_context_mcp",
+      "Read(//c/Users/MEMED/AppData/Local/**)",
+      "Bash(npx --no-install playwright --version)",
+      "Bash(where chrome *)",
+      "Read(//c/Program Files/Google/Chrome/Application//**)",
+      "Bash(node --version; ls \"/c/Program Files/Google/Chrome/Application/\")"
+    ]
+  }
+}

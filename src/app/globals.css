@@ -1,0 +1,527 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Fresh Health Palette */
+  --background: oklch(0.96 0.01 160);
+  /* Soft Mint (approx) #DFF3EC */
+  --foreground: oklch(0.25 0.04 150);
+  /* Deep Emerald #0F4D3A */
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.25 0.04 150);
+
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.25 0.04 150);
+
+  --primary: oklch(0.25 0.04 150);
+  /* Deep Emerald #0F4D3A */
+  --primary-foreground: oklch(0.98 0 0);
+
+  --secondary: oklch(0.35 0.05 150);
+  /* Forest Green #155F4A */
+  --secondary-foreground: oklch(0.98 0 0);
+
+  --muted: oklch(0.93 0.02 160);
+  --muted-foreground: oklch(0.50 0.05 160);
+  /* Muted Teal #3E8F7A */
+
+  --accent: oklch(0.92 0.20 120);
+  /* Neon Lime #C9F84B */
+  --accent-foreground: oklch(0.15 0.03 150);
+
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.98 0 0);
+
+  --border: oklch(0.85 0.02 160);
+  --input: oklch(0.85 0.02 160);
+  --ring: oklch(0.25 0.04 150);
+  /* Deep Emerald Ring */
+
+  --chart-1: oklch(0.25 0.04 150);
+  --chart-2: oklch(0.35 0.05 150);
+  --chart-3: oklch(0.92 0.20 120);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+
+  --radius: 0.625rem;
+  --sidebar: oklch(0.96 0.01 160);
+  --sidebar-foreground: oklch(0.25 0.04 150);
+
+  /* Custom Palette vars for direct usage */
+  --color-deep-emerald: #0F4D3A;
+  --color-forest-green: #155F4A;
+  --color-soft-mint: #DFF3EC;
+  --color-neon-lime: #C9F84B;
+  --color-muted-teal: #3E8F7A;
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.145 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.145 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.985 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border: oklch(0.269 0 0);
+  --input: oklch(0.269 0 0);
+  --ring: oklch(0.439 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.269 0 0);
+  --sidebar-ring: oklch(0.439 0 0);
+}
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-inter: var(--font-inter);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Quiz Theme Colors */
+  --color-quiz-primary: var(--quiz-primary, #13ecc8);
+  --color-quiz-primary-fg: var(--quiz-primary-fg, #10221f);
+  --color-quiz-bg: var(--quiz-bg, #f6f8f8);
+  --color-quiz-fg: var(--quiz-fg, #0f172a);
+  --color-quiz-muted-fg: var(--quiz-muted-fg, #64748b);
+  --color-quiz-border: var(--quiz-border, #e2e8f0);
+
+  /* Dashboard Colors */
+  --color-dashboard-primary: #6467f2;
+  --color-dashboard-background-light: #f6f6f8;
+  --color-dashboard-background-dark: #101122;
+  --color-dashboard-surface-dark: #1a1b2e;
+  --color-dashboard-border-dark: #282839;
+}
+
+@layer utilities {
+
+  /* Custom scrollbar for dark mode editors */
+  .scrollbar-custom::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-track {
+    background: #101122;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-thumb {
+    background: #282839;
+    border-radius: 4px;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-thumb:hover {
+    background: #3f3f5a;
+  }
+
+  .phone-mockup-shadow {
+    box-shadow: 0 0 0 12px #2d2d3a, 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  }
+
+  .material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    /* Preferred icon size */
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /* Mobile viewport optimization */
+  html {
+    height: 100vh;
+    height: 100dvh;
+    /* Dynamic viewport height for mobile browsers */
+  }
+
+  body {
+    height: 100vh;
+    height: 100dvh;
+    /* overflow: hidden; Prevent scrolling */
+    font-family: var(--font-inter);
+  }
+
+  /* Updated responsive text scaling to better support modern phone sizes */
+  /* Base mobile scaling for modern phones (390px-430px width) */
+  @media (max-width: 480px) {
+    .mobile-scale {
+      font-size: clamp(0.875rem, 3.5vw, 1.125rem);
+    }
+
+    .mobile-scale-lg {
+      font-size: clamp(1.125rem, 4.5vw, 1.5rem);
+    }
+
+    .mobile-scale-xl {
+      font-size: clamp(1.375rem, 5.5vw, 2rem);
+    }
+
+    .mobile-scale-2xl {
+      font-size: clamp(1.75rem, 6.5vw, 2.75rem);
+    }
+  }
+
+  /* Smaller modern phones and older devices */
+  @media (max-width: 400px) {
+    .mobile-scale {
+      font-size: clamp(0.8rem, 3vw, 1rem);
+    }
+
+    .mobile-scale-lg {
+      font-size: clamp(1rem, 4vw, 1.375rem);
+    }
+
+    .mobile-scale-xl {
+      font-size: clamp(1.25rem, 5vw, 1.75rem);
+    }
+
+    .mobile-scale-2xl {
+      font-size: clamp(1.5rem, 6vw, 2.25rem);
+    }
+  }
+
+  /* iPhone SE and very small screens */
+  @media (max-width: 375px) {
+    .mobile-scale {
+      font-size: clamp(0.75rem, 2.5vw, 0.9rem);
+    }
+
+    .mobile-scale-lg {
+      font-size: clamp(0.9rem, 3.5vw, 1.25rem);
+    }
+
+    .mobile-scale-xl {
+      font-size: clamp(1.1rem, 4.5vw, 1.5rem);
+    }
+
+    .mobile-scale-2xl {
+      font-size: clamp(1.3rem, 5.5vw, 2rem);
+    }
+  }
+
+  /* Height-based adjustments for very short screens */
+  @media (max-height: 667px) and (max-width: 480px) {
+    .mobile-scale {
+      font-size: clamp(0.8rem, 3vw, 1rem);
+    }
+
+    .mobile-scale-lg {
+      font-size: clamp(1rem, 4vw, 1.375rem);
+    }
+
+    .mobile-scale-xl {
+      font-size: clamp(1.25rem, 5vw, 1.75rem);
+    }
+
+    .mobile-scale-2xl {
+      font-size: clamp(1.5rem, 6vw, 2.25rem);
+    }
+  }
+
+  /* Tablet optimization - iPad and Android tablets (768px-1024px) */
+  @media (min-width: 481px) and (max-width: 1024px) {
+    .mobile-scale {
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+    }
+
+    .mobile-scale-lg {
+      font-size: clamp(1.25rem, 3vw, 1.75rem);
+    }
+
+    .mobile-scale-xl {
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+    }
+
+    .mobile-scale-2xl {
+      font-size: clamp(2.25rem, 5vw, 3.5rem);
+    }
+
+    /* Tablet-specific spacing adjustments */
+    .tablet-spacing {
+      padding: clamp(1.5rem, 4vw, 3rem);
+    }
+
+    .tablet-gap {
+      gap: clamp(1rem, 3vw, 2rem);
+    }
+  }
+
+  /* Portrait tablets - more conservative scaling */
+  @media (min-width: 481px) and (max-width: 768px) and (orientation: portrait) {
+    .mobile-scale {
+      font-size: clamp(1rem, 2.2vw, 1.125rem);
+    }
+
+    .mobile-scale-lg {
+      font-size: clamp(1.25rem, 2.8vw, 1.5rem);
+    }
+
+    .mobile-scale-xl {
+      font-size: clamp(1.75rem, 3.5vw, 2.25rem);
+    }
+
+    .mobile-scale-2xl {
+      font-size: clamp(2.25rem, 4.5vw, 3rem);
+    }
+  }
+
+  /* Landscape tablets - utilize wider space */
+  @media (min-width: 769px) and (max-width: 1024px) and (orientation: landscape) {
+    .mobile-scale {
+      font-size: clamp(1.125rem, 2vw, 1.375rem);
+    }
+
+    .mobile-scale-lg {
+      font-size: clamp(1.5rem, 2.5vw, 2rem);
+    }
+
+    .mobile-scale-xl {
+      font-size: clamp(2rem, 3.5vw, 2.75rem);
+    }
+
+    .mobile-scale-2xl {
+      font-size: clamp(2.5rem, 4.5vw, 4rem);
+    }
+  }
+}
+
+/* Bouncing-dots loader (components/ui/message-loading.tsx).
+   Bounce distance comes from --bounce set by the component. */
+@keyframes message-loading-bounce {
+  0%,
+  57%,
+  100% {
+    transform: translateY(0);
+  }
+
+  28.5% {
+    transform: translateY(calc(var(--bounce, 6px) * -1));
+  }
+}
+
+/* Added custom animations for fade in effects */
+@keyframes stepFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+    filter: blur(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+  }
+
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@layer utilities {
+  .animate-scale-in {
+    animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-marquee {
+    animation: marquee 40s linear infinite;
+  }
+
+  .animate-slide-down {
+    animation: slideDown 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-slide-in {
+    animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .pause-on-hover:hover {
+    animation-play-state: paused;
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-fade-out {
+    animation: fadeOut 0.3s ease-out forwards;
+  }
+
+  /* Utility for staggered children (up to 5) */
+  .delay-100 {
+    animation-delay: 100ms;
+  }
+
+  .delay-200 {
+    animation-delay: 200ms;
+  }
+
+  .delay-300 {
+    animation-delay: 300ms;
+  }
+
+  .delay-400 {
+    animation-delay: 400ms;
+  }
+
+  .delay-500 {
+    animation-delay: 500ms;
+  }
+
+  /* Scroll Reveal State Classes */
+  .reveal-hidden {
+    opacity: 0;
+    transform: translateY(30px);
+    filter: blur(8px);
+    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .reveal-visible {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
