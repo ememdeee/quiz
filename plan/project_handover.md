@@ -768,7 +768,7 @@ The repo is a copy of an older app (a health-plan quiz with JSON files on disk, 
 | 4 | Supabase values -> `.env.local` | Phase 3 | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (also called publishable key), `SUPABASE_SERVICE_ROLE_KEY` (secret key; **server only**), `SUPABASE_PROJECT_REF`, `SUPABASE_DB_PASSWORD`. Found in Project Settings > API and > Database. Optional `SUPABASE_ACCESS_TOKEN` (personal token) so the CLI can run `link` and `db push` |
 | 5 | **Google Cloud** project, OAuth consent screen, OAuth **Web client** | Phase 4 | Authorized redirect URIs: `https://<project-ref>.supabase.co/auth/v1/callback` and the local one Code lists. Give the **Client ID and Secret** to Supabase Auth > Providers > Google (dashboard) and to `.env.local` for local runs. **DONE 2026-11-07 (dev):** OAuth client `quiz-dev` (project `quiz-514006`, Testing mode, test user = owner, basic scopes only); `GOOGLE_CLIENT_ID/SECRET` in `.env.local`; provider enabled via `supabase/config.toml` + `config push`; authorize URL reaches Google with the right redirect URI. Real sign-in test is left for Phase 4. Production client and "In production" status: Phase 16 |
 | 6 | **Vercel** account, repo connected, staging deploy | end of Phase 2 | Vercel Hobby is for non-commercial use; production needs a paid plan (D7) |
-| 7 | The **real domain** (decision D9) and access to its DNS (Cloudflare recommended) | Phase 12 and 16 | Needed to send email from the domain, for production URLs and for Google/Supabase redirect settings. Until then staging uses the `*.vercel.app` URL |
+| 7 | The **real domain** (decision D9) and access to its DNS (Cloudflare recommended) | Phase 12 and 16 | **Domain = `quiz.basrh.com` (subdomain of the owner's `basrh.com`, D9).** Register this exact name (not `basrh.com`) in Vercel, Resend and the Google production client. Needed to send email from the domain, for production URLs and for Google/Supabase redirect settings. Until then staging uses the `*.vercel.app` URL |
 | 8 | **Resend** account + API key; add the DNS records Code lists | Phase 12 | `RESEND_API_KEY`; sender `Quiz <hello@yourdomain>` |
 | 9 | **Cloudflare Turnstile** site key + secret (free) | Phase 14 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY` |
 | 10 | **Sentry** project DSN | Phase 14 | `SENTRY_DSN` |
@@ -819,7 +819,7 @@ Environment variables (all validated in `src/lib/env.ts`; the app refuses to sta
 | D6 | Visitor counting tool | Vercel Web Analytics (cookieless, simplest). Per-quiz numbers are our own counters | Phase 13 | No |
 | D7 | Vercel plan | Pro for production (Hobby is non-commercial; check current terms) | Phase 16 | No |
 | D8 | Region of Supabase and of the Vercel functions (must match) | **Decided: Singapore (ap-southeast-1)**; set the Vercel functions region to Singapore (`sin1`) | done | No |
-| D9 | Real domain name (site, email sender, OAuth) | Buy it now; everything in production needs it | Phase 12 | No |
+| D9 | Real domain name (site, email sender, OAuth) | Buy it now; everything in production needs it | Phase 12 | **Decided 2026-11-07: no new domain. Use the subdomain `quiz.basrh.com` (owner already owns `basrh.com`; no budget for a new one).** Needs DNS access to `basrh.com` (to add records for Vercel and Resend) |
 | D10 | Custom domains for Custom-plan people | After launch. v1 stores the name only | after Phase 16 | Later |
 | D11 | Rate limits | login 5 failures / 15 min per email; register 5 / hour per IP; forgot password 3 / hour per email; contact 3 / hour per IP; slug check 30 / min per user; public quiz calls 120 / min per IP per quiz | Phase 14 | No |
 | D12 | Reserved slugs | `new edit preview admin api www app quiz login register` | Phase 5 | No |
@@ -890,7 +890,7 @@ Owner and Code together.
 - **Done when:** `npm run lint && npm run typecheck && npm test && npm run build` are green locally and in CI, and the quiz-core unit tests cover the cases in 14.2.
 
 ### Phase 2 — The whole UI with dummy data
-Goal: the owner can click through **every** screen of the design in a browser, on dummy data, with every link and button leading somewhere real. No Supabase yet (`DATA_MODE=mock`).
+Dashboard tab handover for a fresh session: `docs/handover-dashboard-ui.md` (slices A to D = items 2.0, 2.1, 2.5, 2.6, 2.8, 2.9). Goal: the owner can click through **every** screen of the design in a browser, on dummy data, with every link and button leading somewhere real. No Supabase yet (`DATA_MODE=mock`).
 
 Setup
 - [ ] 2.0 **Mock layer:** `src/server/repos/ports.ts` (the interfaces), `repos/mock/*` and `src/data/mock/*`: a few people, quizzes in every state, responses (finished and unfinished, with conditional pages and a removed question), pictures (use a handful of neutral stock images stored in `public/mock/`), an admin list of about 40 people. State persists in `localStorage` so refresh keeps edits. The mock repos call the **same** `lib/` functions (limits, slug rules, validation, diff) as the real code will.

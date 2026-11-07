@@ -8,6 +8,7 @@
 ## A. Now (current phase)
 - Current phase: **Phase 3** (database done on `quiz-dev`; the UI work in Phase 2 continues in another session)
 - Next action: owner reviews branch `phase-3-supabase` and says whether to push it. Then Phase 4 (auth) needs a Google Cloud OAuth client and a Mailtrap sandbox from the owner. Owner still answers D1 and D2 (D1 working default 1 hour is set in config).
+- UI track (separate session, can run next to Phase 4): the Dashboard UI. Handover: `docs/handover-dashboard-ui.md` (four slices A to D, start with A).
 
 ## B. Design (Claude Design artifact: https://claude.ai/artifact/FiiBUq7uJaBcXyeqfTKtTw)
 - [x] All screens designed (158 boards, version 69 on 2026-11-07; v69 = FAQ full width, FAQ phone padding, Copy link spacing on Home and Pricing)
@@ -23,7 +24,7 @@
 - [x] Supabase keys put in `.env.local` (never in chat)
 - [x] Google Cloud OAuth client (for Google login) (dev client `quiz-dev` done 2026-11-07, provider enabled in Supabase; production client later, Phase 16)
 - [ ] Vercel account, repo connected
-- [ ] Real domain bought (D9) and DNS access
+- [ ] Domain: use `quiz.basrh.com` (D9 decided, no purchase); still needs DNS access to `basrh.com` and the records added
 - [ ] Resend account + DNS records added
 - [ ] Cloudflare Turnstile keys
 - [ ] Sentry project
@@ -34,7 +35,7 @@
 ## D. Decisions (handover section 11)
 - [x] D1 link lifetimes = 1 hour for all (approved 2026-11-07; design change pending)  - [x] D2 Google linking = accept auto-link (approved 2026-11-07; design change pending)  - [ ] D3 slug holds 30 days
 - [ ] D4 picture quota (rec: none)  - [ ] D5 noindex rules  - [ ] D6 analytics tool  - [ ] D7 Vercel paid plan
-- [x] D8 region (Singapore)  - [ ] D9 domain  - [ ] D10 custom domains later  - [ ] D11 rate limits  - [ ] D12 reserved slugs
+- [x] D8 region (Singapore)  - [x] D9 domain (`quiz.basrh.com`)  - [ ] D10 custom domains later  - [ ] D11 rate limits  - [ ] D12 reserved slugs
 - [x] D20 Mailtrap for dev emails  - [ ] D21 what stays in the public repo  - [ ] D13 "near limit" = 80%  - [ ] D14 Resend  - [ ] D15 keep contact messages  - [ ] D17 condition sources  - [ ] D18 blocked reorder  - [ ] D19 admin response count
 
 ## E. Build phases (handover section 12)
