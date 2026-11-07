@@ -30,6 +30,7 @@ export const routes = {
   dev500: "/dev/500",
   devUi: "/dev/ui",
   devTemplates: "/dev/templates",
+  devEmails: "/dev/emails",
 } as const;
 
 /** Pages of one quiz in the dashboard. They use the quiz id, never the web address. */
@@ -48,6 +49,10 @@ export const adminHref = {
   users: "/admin/users",
   user: (id: string) => `/admin/users/${id}`,
 } as const;
+
+/** The public address of the website (decision D9). Emails need whole addresses, so they are built from this. */
+export const SITE_URL = "https://quiz.basrh.com";
+export const absoluteUrl = (path: string) => `${SITE_URL}${path}`;
 
 export const CONTACT_EMAIL = "basurah@basrh.com";
 export const mailto = (address: string = CONTACT_EMAIL) => `mailto:${address}`;

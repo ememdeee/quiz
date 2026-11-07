@@ -104,6 +104,7 @@ const dashboardGroup = {
     { label: "Quiz not found", href: quizHref.edit("does-not-exist") },
     { label: "UI kit: every component", href: routes.devUi },
     { label: "What each template contains", href: routes.devTemplates },
+    { label: "The five emails", href: routes.devEmails },
   ],
 };
 
