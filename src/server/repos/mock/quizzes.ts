@@ -1,12 +1,14 @@
-import { BLANK_PAGE_COUNT, quizTemplates } from "@/data/mock/templates";
 import { mockProfile } from "@/data/mock/seed";
 import { fail, ok, type ActionResult, type ErrorCode } from "@/lib/errors";
 import { getLimits, hasReachedQuizLimit } from "@/lib/plan/limits";
+import { quizDocumentSchema, type QuizDocument } from "@/lib/quiz/schema";
+import { blankQuiz, templateQuiz } from "@/lib/quiz/templates";
 import { makeSlug } from "@/lib/slug";
-import type { Profile, QuizStart, QuizSummary } from "@/lib/quizzes/types";
+import { documentFacts } from "@/lib/quizzes/summary";
+import type { Profile, QuizBundle, QuizStart, QuizSummary } from "@/lib/quizzes/types";
 import type { ProfilesRepo, QuizzesRepo } from "../ports";
 import { readFlags, writeFlags } from "./flags";
-import { loadQuizzes, saveQuizzes } from "./store";
+import { loadBundles, saveBundles } from "./store";
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -19,51 +21,55 @@ async function gate(): Promise<ErrorCode | null> {
   return null;
 }
 
-const touch = (quiz: QuizSummary): QuizSummary => ({ ...quiz, updatedAt: new Date().toISOString() });
+const find = (id: string) => loadBundles().find((b) => b.quiz.id === id);
 
-function replace(id: string, change: (quiz: QuizSummary) => QuizSummary): ActionResult<QuizSummary> {
-  const quizzes = loadQuizzes();
-  const index = quizzes.findIndex((q) => q.id === id);
+function replace(id: string, change: (bundle: QuizBundle) => QuizBundle): ActionResult<QuizBundle> {
+  const bundles = loadBundles();
+  const index = bundles.findIndex((b) => b.quiz.id === id);
   if (index === -1) return fail("not_found");
-  const updated = change(quizzes[index]);
-  saveQuizzes(quizzes.map((q, i) => (i === index ? updated : q)));
+  const updated = change(bundles[index]);
+  saveBundles(bundles.map((b, i) => (i === index ? updated : b)));
   return ok(updated);
 }
 
-function newQuiz(name: string, pageCount: number, quizzes: QuizSummary[]): QuizSummary | null {
-  const slug = makeSlug(name, (candidate) => quizzes.some((q) => q.slug === candidate));
-  if (slug === null) return null;
-  return {
-    id: crypto.randomUUID(),
-    name,
-    slug,
-    firstPublishedAt: null,
-    acceptingResponses: true,
-    unpublishedChanges: 0,
-    pageCount,
-    finishedResponses: 0,
-    updatedAt: new Date().toISOString(),
-  };
-}
+/** The same quiz with its facts recomputed from its documents and a fresh "edited" time. */
+const touched = (bundle: QuizBundle, patch: Partial<QuizSummary> = {}): QuizBundle => ({
+  ...bundle,
+  quiz: { ...bundle.quiz, ...patch, ...documentFacts(bundle.draft, bundle.published), updatedAt: new Date().toISOString() },
+});
 
-function pagesFor(from: QuizStart, quizzes: QuizSummary[]): number | null {
-  if (from.kind === "blank") return BLANK_PAGE_COUNT;
-  if (from.kind === "template") return quizTemplates.find((t) => t.id === from.templateId)?.pages.length ?? null;
-  return quizzes.find((q) => q.id === from.quizId)?.pageCount ?? null;
+function startingDocument(from: QuizStart, name: string): QuizDocument | null {
+  if (from.kind === "blank") return blankQuiz(name);
+  if (from.kind === "template") return templateQuiz(from.templateId, name);
+  const original = find(from.quizId);
+  return original ? { ...structuredClone(original.draft), name } : null;
 }
 
 /** Adds a quiz after the checks the real server will make: the plan limit first, then the name. */
-function add(name: string, pageCount: number | null, profile: Profile): ActionResult<QuizSummary> {
-  const quizzes = loadQuizzes();
-  if (hasReachedQuizLimit(quizzes.length, getLimits(profile))) return fail("limit_quizzes");
+function add(name: string, document: (name: string) => QuizDocument | null, profile: Profile): ActionResult<QuizSummary> {
+  const bundles = loadBundles();
+  if (hasReachedQuizLimit(bundles.length, getLimits(profile))) return fail("limit_quizzes");
   const trimmed = name.trim();
   if (!trimmed) return fail("name_required");
-  if (pageCount === null) return fail("not_found");
-  const created = newQuiz(trimmed, pageCount, quizzes);
-  if (!created) return fail("load_failed");
-  saveQuizzes([created, ...quizzes]);
-  return ok(created);
+  const draft = document(trimmed);
+  if (!draft) return fail("not_found");
+  const slug = makeSlug(trimmed, (candidate) => bundles.some((b) => b.quiz.slug === candidate));
+  if (slug === null) return fail("load_failed");
+  const quiz: QuizSummary = {
+    id: crypto.randomUUID(),
+    name: trimmed,
+    slug,
+    firstPublishedAt: null,
+    acceptingResponses: true,
+    finishedResponses: 0,
+    updatedAt: new Date().toISOString(),
+    ...documentFacts(draft, null),
+  };
+  saveBundles([{ quiz, draft, published: null }, ...bundles]);
+  return ok(quiz);
 }
+
+const summaryOf = (result: ActionResult<QuizBundle>): ActionResult<QuizSummary> => (result.ok ? ok(result.data.quiz) : result);
 
 export const mockQuizzes: QuizzesRepo = {
   async list() {
@@ -73,20 +79,20 @@ export const mockQuizzes: QuizzesRepo = {
       writeFlags({ failNextLoad: false });
       return fail("load_failed");
     }
-    return ok([...loadQuizzes()]);
+    return ok(loadBundles().map((b) => b.quiz));
   },
 
   async get(id) {
     const blocked = await gate();
     if (blocked) return fail(blocked);
-    const quiz = loadQuizzes().find((q) => q.id === id);
-    return quiz ? ok(quiz) : fail("not_found");
+    const bundle = find(id);
+    return bundle ? ok(bundle) : fail("not_found");
   },
 
   async create({ name, from }) {
     const blocked = await gate();
     if (blocked) return fail(blocked);
-    return add(name, pagesFor(from, loadQuizzes()), mockProfile);
+    return add(name, (trimmed) => startingDocument(from, trimmed), mockProfile);
   },
 
   async rename(id, name) {
@@ -94,29 +100,36 @@ export const mockQuizzes: QuizzesRepo = {
     if (blocked) return fail(blocked);
     const trimmed = name.trim();
     if (!trimmed) return fail("name_required");
-    return replace(id, (quiz) => touch({ ...quiz, name: trimmed }));
+    return summaryOf(replace(id, (bundle) => touched({ ...bundle, draft: { ...bundle.draft, name: trimmed } }, { name: trimmed })));
   },
 
   async duplicate(id) {
     const blocked = await gate();
     if (blocked) return fail(blocked);
-    const original = loadQuizzes().find((q) => q.id === id);
+    const original = find(id);
     if (!original) return fail("not_found");
-    return add(`Copy of ${original.name}`, original.pageCount, mockProfile);
+    return add(`Copy of ${original.quiz.name}`, (name) => ({ ...structuredClone(original.draft), name }), mockProfile);
   },
 
   async setAcceptingResponses(id, accepting) {
     const blocked = await gate();
     if (blocked) return fail(blocked);
-    return replace(id, (quiz) => touch({ ...quiz, acceptingResponses: accepting }));
+    return summaryOf(replace(id, (bundle) => touched(bundle, { acceptingResponses: accepting })));
+  },
+
+  async saveDraft(id, draft) {
+    const blocked = await gate();
+    if (blocked) return fail(blocked);
+    if (!quizDocumentSchema.safeParse(draft).success) return fail("load_failed");
+    return summaryOf(replace(id, (bundle) => touched({ ...bundle, draft })));
   },
 
   async remove(id) {
     const blocked = await gate();
     if (blocked) return fail(blocked);
-    const quizzes = loadQuizzes();
-    if (!quizzes.some((q) => q.id === id)) return fail("not_found");
-    saveQuizzes(quizzes.filter((q) => q.id !== id));
+    const bundles = loadBundles();
+    if (!bundles.some((b) => b.quiz.id === id)) return fail("not_found");
+    saveBundles(bundles.filter((b) => b.quiz.id !== id));
     return ok({ id });
   },
 };

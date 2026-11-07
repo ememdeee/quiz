@@ -1,35 +1,35 @@
-import { seedQuizzes } from "@/data/mock/seed";
-import type { QuizSummary } from "@/lib/quizzes/types";
+import { seedBundles } from "@/data/mock/seed";
+import type { QuizBundle } from "@/lib/quizzes/types";
 
-/** The dummy database: the owner's quizzes, kept in localStorage so a refresh keeps every edit. */
-const KEY = "quiz.mock.quizzes.v1";
+/** The dummy database: the owner's quizzes with their documents, kept in localStorage so a refresh keeps every edit. */
+const KEY = "quiz.mock.bundles.v1";
 
-let memory: QuizSummary[] | null = null;
+let memory: QuizBundle[] | null = null;
 
-export function loadQuizzes(): QuizSummary[] {
+export function loadBundles(): QuizBundle[] {
   if (memory) return memory;
   try {
     const raw = window.localStorage.getItem(KEY);
     if (raw) {
-      memory = JSON.parse(raw) as QuizSummary[];
+      memory = JSON.parse(raw) as QuizBundle[];
       return memory;
     }
   } catch {
     // Unreadable or blocked storage: start again from the seed
   }
-  memory = seedQuizzes();
+  memory = seedBundles();
   return memory;
 }
 
-export function saveQuizzes(quizzes: QuizSummary[]) {
-  memory = quizzes;
+export function saveBundles(bundles: QuizBundle[]) {
+  memory = bundles;
   try {
-    window.localStorage.setItem(KEY, JSON.stringify(quizzes));
+    window.localStorage.setItem(KEY, JSON.stringify(bundles));
   } catch {
     // Storage full or blocked: edits last until the page is closed
   }
 }
 
-export function resetQuizzes(quizzes: QuizSummary[] = seedQuizzes()) {
-  saveQuizzes(quizzes);
+export function resetBundles(bundles: QuizBundle[] = seedBundles()) {
+  saveBundles(bundles);
 }

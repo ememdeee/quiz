@@ -1,5 +1,6 @@
 import type { ActionResult } from "@/lib/errors";
-import type { Profile, QuizStart, QuizSummary } from "@/lib/quizzes/types";
+import type { QuizDocument } from "@/lib/quiz/schema";
+import type { Profile, QuizBundle, QuizStart, QuizSummary } from "@/lib/quizzes/types";
 
 /**
  * What the screens may ask the data layer for (handover 4.3). Everything is async, so the same
@@ -8,7 +9,8 @@ import type { Profile, QuizStart, QuizSummary } from "@/lib/quizzes/types";
  */
 export interface QuizzesRepo {
   list(): Promise<ActionResult<QuizSummary[]>>;
-  get(id: string): Promise<ActionResult<QuizSummary>>;
+  get(id: string): Promise<ActionResult<QuizBundle>>;
+  saveDraft(id: string, draft: QuizDocument): Promise<ActionResult<QuizSummary>>;
   create(input: { name: string; from: QuizStart }): Promise<ActionResult<QuizSummary>>;
   rename(id: string, name: string): Promise<ActionResult<QuizSummary>>;
   duplicate(id: string): Promise<ActionResult<QuizSummary>>;

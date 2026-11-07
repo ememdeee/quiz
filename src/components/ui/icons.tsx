@@ -268,3 +268,39 @@ export const InfoIcon = (p: IconProps) => (
     <path d="M12 11v5M12 8h0" />
   </Svg>
 );
+export const ImageIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <rect x="3" y="4" width="18" height="16" rx="2" />
+    <circle cx="9" cy="10" r="2" />
+    <path d="m21 15-5-5L5 20" />
+  </Svg>
+);
+export const UndoIcon = (p: IconProps) => (
+  <Svg size={18} {...p}>
+    <path d="M9 14 4 9l5-5" />
+    <path d="M4 9h10a6 6 0 0 1 0 12h-3" />
+  </Svg>
+);
+export const SlidersIcon = (p: IconProps) => (
+  <Svg size={18} {...p}>
+    <path d="M4 6h8M20 6h-2M4 12h2M20 12H10M4 18h10M20 18h-2" />
+    <circle cx="16" cy="6" r="2" />
+    <circle cx="8" cy="12" r="2" />
+    <circle cx="18" cy="18" r="2" />
+  </Svg>
+);
+export const ChevronUpIcon = (p: IconProps) => (
+  <Svg size={18} {...p}>
+    <path d="m18 15-6-6-6 6" />
+  </Svg>
+);
+export const GripIcon = (p: IconProps) => (
+  <Svg size={18} fill="currentColor" stroke="none" {...p}>
+    <circle cx="9" cy="6" r="1.6" />
+    <circle cx="15" cy="6" r="1.6" />
+    <circle cx="9" cy="12" r="1.6" />
+    <circle cx="15" cy="12" r="1.6" />
+    <circle cx="9" cy="18" r="1.6" />
+    <circle cx="15" cy="18" r="1.6" />
+  </Svg>
+);

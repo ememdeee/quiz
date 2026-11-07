@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { quizTemplates } from "@/data/mock/templates";
+import { describePage, quizTemplates } from "@/lib/quiz/templates";
 import { templateContents } from "@/content/dashboard/quizzes";
 import { routes } from "@/lib/routes";
 
@@ -22,7 +22,7 @@ export default function TemplatesPage() {
               <h2 className="m-0 text-[22px] font-bold text-ink">{template.name}</h2>
               <p className="m-0 mb-4 mt-1 text-[15px] text-mute">{template.tagline}</p>
               <ol className="m-0 list-none p-0">
-                {template.pages.map((page, index) => (
+                {template.document.pages.map(describePage).map((page, index) => (
                   <li key={page.title} className="mb-2 flex items-center gap-3 rounded-xl border border-line bg-white px-3 py-2.5">
                     <span className="grid size-[26px] flex-none place-items-center rounded-full bg-soft text-xs font-bold">{index + 1}</span>
                     <span>

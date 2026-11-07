@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useDashEvents } from "@/components/dashboard/dash-events";
 import type { ActionResult } from "@/lib/errors";
 import { getLimits, type Limits } from "@/lib/plan/limits";
-import type { Profile, QuizStart, QuizSummary } from "@/lib/quizzes/types";
+import type { Profile, QuizBundle, QuizStart, QuizSummary } from "@/lib/quizzes/types";
 import { repos } from "@/server/repos";
 
 /** What a screen may show for the quiz list. The screens never talk to a repository themselves. */
@@ -57,7 +57,7 @@ export function useQuizzes() {
   };
 }
 
-export type QuizState = { status: "loading" } | { status: "ready"; quiz: QuizSummary } | { status: "not_found" };
+export type QuizState = { status: "loading" } | { status: "ready"; bundle: QuizBundle } | { status: "not_found" };
 
 /** One quiz by id, for the page that will hold the editor. Any answer other than a session problem counts as "not found". */
 export function useQuiz(id: string): QuizState {
@@ -68,7 +68,7 @@ export function useQuiz(id: string): QuizState {
     let cancelled = false;
     void repos.quizzes.get(id).then((result) => {
       if (cancelled) return;
-      if (result.ok) return setState({ status: "ready", quiz: result.data });
+      if (result.ok) return setState({ status: "ready", bundle: result.data });
       if (!reportError(result.error)) setState({ status: "not_found" });
     });
     return () => {
@@ -77,4 +77,24 @@ export function useQuiz(id: string): QuizState {
   }, [id, reportError]);
 
   return state;
+}
+
+/** The signed-in person (plan and limits). null until it has loaded. */
+export function useProfile(): Profile | null {
+  const { reportError } = useDashEvents();
+  const [profile, setProfile] = useState<Profile | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    void repos.profiles.getCurrent().then((result) => {
+      if (cancelled) return;
+      if (result.ok) setProfile(result.data);
+      else reportError(result.error);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [reportError]);
+
+  return profile;
 }

@@ -305,3 +305,23 @@
     --n: var(--t);
   }
 }
+
+/* A ring that grows and fades around the one button the person should press next (no shadow repaint) */
+@layer components {
+  .pulse-ring {
+    position: relative;
+  }
+  .pulse-ring::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border: 2px solid rgba(51, 65, 85, 0.45);
+    pointer-events: none;
+    animation: ring 2.4s ease-out infinite;
+  }
+}
+@keyframes ring {
+  0% { transform: scale(1); opacity: 1; }
+  70%, 100% { transform: scale(1.12, 1.35); opacity: 0; }
+}

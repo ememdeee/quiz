@@ -77,3 +77,28 @@ export function Radio({ className, ...rest }: ComponentProps<typeof RadioGroupPr
     />
   );
 }
+
+/** A short row of exclusive choices drawn like tabs (the unit "cm | in"). Same keyboard use as radios. */
+export function Segmented({
+  options,
+  className,
+  ...rest
+}: ComponentProps<typeof RadioGroupPrimitive.Root> & { options: readonly { value: string; label: string }[] }) {
+  return (
+    <RadioGroupPrimitive.Root className={cn("inline-flex gap-1 self-start rounded-xl bg-soft p-1", className)} {...rest}>
+      {options.map((option) => (
+        <RadioGroupPrimitive.Item
+          key={option.value}
+          value={option.value}
+          className={cn(
+            "inline-flex min-h-10 cursor-pointer items-center rounded-[9px] px-5 text-[15px] font-medium text-ink-2 transition-colors duration-200",
+            "data-[state=checked]:bg-white data-[state=checked]:font-semibold data-[state=checked]:text-slate",
+            focus,
+          )}
+        >
+          {option.label}
+        </RadioGroupPrimitive.Item>
+      ))}
+    </RadioGroupPrimitive.Root>
+  );
+}

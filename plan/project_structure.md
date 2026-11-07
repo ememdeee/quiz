@@ -80,6 +80,12 @@ Screens with several states open directly through a query: `/login?state=error|u
 - UI kit in `src/components/ui/` (Radix: dialog, dropdown-menu, popover, switch, checkbox, radio-group, tabs). `Button` and `Input` take `shape="box"` for the dashboard. `/dev/ui` shows all of it; `/dev/templates` shows the template contents.
 - Decisions: card "Full" state not built (G8); Copy link copies directly (the Share dialog is slice C); tokens added: `fill`, `dashline`, `scrim`.
 
+## Quiz core and editor (Slice B, 2026-11-07)
+- Quiz core (pure, tested, no UI): `src/lib/quiz/` = `schema.ts` (Zod `quiz-v1`, lenient), `page-types/` (the registry: one file per type, nothing else may switch on the type), `conditions.ts`, `diff.ts`, `validate.ts` (codes only; words come with the Publish screens), `time-estimate.ts`, `units.ts`, `ids.ts`, `ops.ts` (add, copy, move, delete), `templates/` (3 templates as documents, `blankQuiz`, `templateQuiz`). `lib/quizzes/summary.ts` keeps the card numbers (page count, changes waiting) in step with the documents.
+- Editor state: `src/store/editor-store.ts` (vanilla Zustand + Immer; typing grouped per field for 800 ms, every other action one Undo step; `answerPictures` is a screen flag, not part of the document). Autosave: `src/hooks/use-autosave.ts` (800 ms after the last change, waits while offline, saves on leaving).
+- Data: `QuizzesRepo.get` now returns a `QuizBundle` (summary, draft, published), `saveDraft` added; the mock keeps bundles in localStorage (`mock/store.ts`, key `quiz.mock.bundles.v1`). Seed documents are in `src/data/mock/seed.ts`.
+- Editor UI: `src/components/editor/` (`editor-page`, `editor`, `editor-header`, `editor-context` for the store and the dialog requests, `page-list/*` with dnd-kit, `canvas/*`, `panels/*` one panel per page type, `add-page-dialog`, `page-dialogs`). Words in `src/content/dashboard/editor.ts`. Route `/dashboard/[quizId]` is the editor; `/responses` and `/settings` are still placeholders.
+
 ## What This Is
 
 A **Next.js 15** quiz/assessment platform that sells a personalized health plan (BodyReset). Users complete a multi-step quiz, receive a result page with health insights calculated from their answers, and are presented with a $29 offer. The product name in-code is "quiz" (historical artifact — the project is not Svelte).

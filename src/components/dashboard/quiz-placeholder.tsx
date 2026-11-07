@@ -36,7 +36,7 @@ export function QuizPlaceholder({ quizId }: { quizId: string }) {
               <ArrowLeftIcon />
               {quizPlaceholder.back}
             </ButtonLink>
-            <h1 className="m-0 mt-2 text-[32px] font-bold leading-10">{state.quiz.name}</h1>
+            <h1 className="m-0 mt-2 text-[32px] font-bold leading-10">{state.bundle.quiz.name}</h1>
         </div>
       ) : null}
     </main>

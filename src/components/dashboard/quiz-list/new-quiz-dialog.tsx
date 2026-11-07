@@ -6,7 +6,7 @@ import { Radio, RadioCard, RadioGroup } from "@/components/ui/controls";
 import { Dialog } from "@/components/ui/dialog";
 import { Field, Input, Select } from "@/components/ui/field";
 import { newQuizDialog } from "@/content/dashboard/quizzes";
-import { quizTemplates } from "@/data/mock/templates";
+import { quizTemplates } from "@/lib/quiz/templates";
 import type { QuizStart, QuizSummary } from "@/lib/quizzes/types";
 import { cn } from "@/lib/utils";
 

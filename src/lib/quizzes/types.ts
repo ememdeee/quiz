@@ -1,6 +1,7 @@
 import type { LimitOverrides, Plan } from "@/lib/plan/limits";
+import type { QuizDocument } from "@/lib/quiz/schema";
 
-/** One quiz as the list and the editor header see it. The pages themselves come in the editor slice. */
+/** One quiz as the list and the editor header see it. The pages themselves are in the document (`QuizBundle`). */
 export type QuizSummary = {
   id: string;
   name: string;
@@ -14,6 +15,9 @@ export type QuizSummary = {
   finishedResponses: number;
   updatedAt: string;
 };
+
+/** A quiz with its working copy and, once published, the copy people see. */
+export type QuizBundle = { quiz: QuizSummary; draft: QuizDocument; published: QuizDocument | null };
 
 export type Profile = {
   name: string;

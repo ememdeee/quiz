@@ -38,7 +38,7 @@ export function MenuItem({
     <MenuPrimitive.Item
       className={cn(
         "flex min-h-12 w-full cursor-pointer items-center gap-2.5 rounded-lg px-3 text-[15px] font-medium outline-none transition-colors duration-150",
-        "data-[highlighted]:bg-soft focus-visible:outline-[3px] focus-visible:-outline-offset-[3px] focus-visible:outline-slate",
+        "data-[highlighted]:bg-soft data-[disabled]:pointer-events-none data-[disabled]:opacity-45 focus-visible:outline-[3px] focus-visible:-outline-offset-[3px] focus-visible:outline-slate",
         danger ? "text-danger" : "text-slate",
         className,
       )}

@@ -1,37 +1,41 @@
 "use client";
 
-import type { ReactNode } from "react";
-import { AccountMenu } from "@/components/layout/account-menu";
-import { Logo } from "@/components/layout/logo";
+import { createContext, useContext, type ReactNode } from "react";
 import { Banner } from "@/components/ui/banner";
 import { WifiOffIcon } from "@/components/ui/icons";
 import { ToastProvider } from "@/components/ui/toast";
 import { dashErrors } from "@/content/dashboard/common";
 import { useOffline } from "@/hooks/use-offline";
-import { routes } from "@/lib/routes";
 import type { SessionUser } from "@/server/session";
 import { DashEventsProvider } from "./dash-events";
 import { PhoneGate } from "./phone-gate";
 
+const UserContext = createContext<SessionUser | null>(null);
+
+/** The person who is logged in, for the top bars. */
+export function useDashUser(): SessionUser {
+  const user = useContext(UserContext);
+  if (!user) throw new Error("useDashUser needs the DashShell above it");
+  return user;
+}
+
 /**
- * Everything around a dashboard screen: the top bar with the logo and the account button (board Quizzes),
- * the toasts, the offline bar and the two "session" dialogs. Phones get the PhoneGate instead.
+ * Everything around a dashboard screen: the toasts, the offline bar and the two "session" dialogs.
+ * Phones get the PhoneGate instead. Each screen draws its own top bar (the quiz list and the editor differ).
  */
 export function DashShell({ user, children }: { user: SessionUser; children: ReactNode }) {
   return (
+    <UserContext.Provider value={user}>
     <ToastProvider>
       <DashEventsProvider>
         <PhoneGate />
         <div className="min-h-dvh bg-dash font-inter text-slate max-nav:hidden">
-          <header className="flex items-center justify-between gap-4 border-b border-line bg-white px-8 py-3">
-            <Logo height={32} href={routes.dashboard} />
-            <AccountMenu user={user} />
-          </header>
           <OfflineBar />
           {children}
         </div>
       </DashEventsProvider>
     </ToastProvider>
+    </UserContext.Provider>
   );
 }
 
