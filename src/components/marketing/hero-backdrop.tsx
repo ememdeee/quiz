@@ -1,12 +1,12 @@
 import type { CSSProperties } from "react";
 
-const defaultA: CSSProperties = { width: 420, height: 420, left: -120, top: -100, background: "radial-gradient(circle, #C9D6EA, transparent 70%)" };
+const defaultA: CSSProperties = { width: 420, height: 420, left: -120, top: -100, background: "radial-gradient(circle, var(--color-tint), transparent 70%)" };
 const defaultB: CSSProperties = {
   width: 460,
   height: 460,
   right: -140,
   top: 40,
-  background: "radial-gradient(circle, #B7C7DF, transparent 70%)",
+  background: "radial-gradient(circle, var(--color-haze-b), transparent 70%)",
   animationDelay: "-7s",
 };
 

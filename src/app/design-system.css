@@ -24,6 +24,22 @@
   --color-dashline: #9aa5b4;
   /* Dimmed page behind a dialog */
   --color-scrim: rgb(51 65 85 / 0.45);
+  /* The dark sections of the website (call-to-action band, insights, sign-in side panel) and their glows */
+  --color-night: #3b4a60;
+  --color-night-line: #3a4a63;
+  --color-night-card: #273449;
+  --color-orb-a: #6e86ab;
+  --color-orb-b: #50678a;
+  --color-orb-c: #5c7399;
+  --color-orb-d: #44597a;
+  --color-haze-b: #b7c7df;
+  --color-on-dark: #e1e8f2;
+  --color-on-dark-2: #c5d0e0;
+  --color-on-dark-3: #b9c5d6;
+  --color-on-dark-4: #d6deea;
+  --color-on-dark-5: #d6e0ef;
+  --color-on-dark-6: #a9b7cc;
+  --color-bar-soft: #8fa0b8;
   /* Behind the quiz card on a computer screen (board FEDesktop) */
   --color-stage: #eef1f5;
   --color-danger: #b3261e;

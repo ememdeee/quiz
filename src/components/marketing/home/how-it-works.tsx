@@ -51,7 +51,7 @@ function AnswersPreview() {
         {bars.map((bar) => (
           <i
             key={bar.h + bar.d}
-            className="flex-1 origin-bottom animate-[grow_3.6s_ease-in-out_infinite_alternate] rounded-t-md bg-[#8FA0B8]"
+            className="flex-1 origin-bottom animate-[grow_3.6s_ease-in-out_infinite_alternate] rounded-t-md bg-bar-soft"
             style={{ height: bar.h, animationDelay: bar.d } as CSSProperties}
           />
         ))}

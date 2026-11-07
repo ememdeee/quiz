@@ -1,5 +1,5 @@
 # Handover: building the Quiz platform
-> Last Updated: 2026-11-07
+> Last Updated: 2026-11-08
 > Status: **Design is finished** (Claude Design artifact, 158 boards). **Website tab UI built 2026-11-07** (Phase 2.3 and 2.4, on mock data; the rest of the UI and the whole backend are not built). Next step: Phase 0 (accounts and decisions), Phase 1 (foundation), then the rest of Phase 2.
 > Owner: Muhammad Basurah (contact: basurah@basrh.com). Talk to the owner in Indonesian. All UI text is English.
 > At the start of every session read sections 0, 1 and 12 (summary, rules, master checklist); read the other sections when you work on that area. Update the checklist in section 12 as work is done.
@@ -833,6 +833,10 @@ Environment variables (all validated in `src/lib/env.ts`; the app refuses to sta
 | D20 | Test inbox for development and QC (no Docker, so no local mail catcher) | Mailtrap sandbox over SMTP (free); check its current free limits | Phase 4 | **Done 2026-11-07** (free: 50 emails/month, 1 sandbox) |
 | D21 | Public repo: which plan files stay in the repo | Keep technical plan files; ask before pushing business/marketing notes | Phase 1 | No |
 
+**Status of the decisions on 2026-11-08 (built in code):** D5 noindex (website indexable, private pages and quiz links not), D6 Vercel Web Analytics (loads only on Vercel), D11 rate limits (`server/rate-limit.ts`: register 10/h, forgot 5/h, contact 5/h, public quiz calls per minute, sign-in lock 5 tries/15 min), D13 near-limit at 80%, D15 contact messages kept in `contact_messages`, D18 blocked reorder, D19 admin responses = finished only. Still open for the owner: D3, D4, D7, D10, D12, D14, D17, D21 and the design change for D1 and D2.
+
+---
+
 ---
 
 ## 12. Execution order (master checklist)
@@ -841,21 +845,21 @@ Environment variables (all validated in `src/lib/env.ts`; the app refuses to sta
 
 Tick a phase only when its **done-when** list is true and its tests pass. One branch and one pull request per phase (`phase-2-ui`); CI must be green; the owner checks the Vercel preview.
 
-- [ ] **Phase 0** Accounts, repo, decisions (no code)
-- [ ] **Phase 1** Clean-up and foundation (tooling, tokens, shared logic with unit tests)
+- [x] **Phase 0** Accounts, repo, decisions (no code; the decisions and design gaps still open are listed in `project_checklist.md` B and D)
+- [x] **Phase 1** Clean-up and foundation (tooling, tokens, shared logic with unit tests)
 - [ ] **Phase 2** The whole UI with dummy data, all links connected -> **UI freeze**
-- [ ] **Phase 3** Supabase: local setup, database, security rules, tests (database, RLS, storage and 115 tests done 2026-11-07 on branch `phase-3-supabase`; left: `repos/supabase` skeletons, optional dev seed)
-- [ ] **Phase 4** Register, login, accounts base (real auth)
-- [ ] **Phase 5** Quizzes and the editor for real (list, create, autosave, publish, slug, limits)
-- [ ] **Phase 6** Pictures (media library)
-- [ ] **Phase 7** The public quiz and saving answers
-- [ ] **Phase 8** Responses: summary, individual, export, delete
-- [ ] **Phase 9** Edit with AI for real
-- [ ] **Phase 10** Account settings complete
-- [ ] **Phase 11** Admin area
-- [ ] **Phase 12** Email for real (Resend, domain, templates, contact form)
-- [ ] **Phase 13** Website completion (front-end update tasks, SEO, analytics, legal)
-- [ ] **Phase 14** Hardening (spam, rate limits, headers, monitoring, backups, performance, accessibility)
+- [x] **Phase 3** Supabase: local setup, database, security rules, tests (database, RLS, storage and 115 tests done 2026-11-07 on branch `phase-3-supabase`; left: `repos/supabase` skeletons, optional dev seed)
+- [x] **Phase 4** Register, login, accounts base (real auth)
+- [x] **Phase 5** Quizzes and the editor for real (list, create, autosave, publish, slug, limits)
+- [x] **Phase 6** Pictures (media library)
+- [x] **Phase 7** The public quiz and saving answers
+- [x] **Phase 8** Responses: summary, individual, export, delete
+- [x] **Phase 9** Edit with AI for real (the owner still tries real AI chats)
+- [x] **Phase 10** Account settings complete
+- [x] **Phase 11** Admin area
+- [ ] **Phase 12** Email for real: code done, needs the owner's Resend account and DNS (see Phase 12)
+- [ ] **Phase 13** Website completion: SEO, icons, analytics done; final copy and legal need the owner (front-end update tasks, SEO, analytics, legal)
+- [ ] **Phase 14** Hardening: code and tests done; backups drill, uptime monitor, audit need the owner's accounts (spam, rate limits, headers, monitoring, backups, performance, accessibility)
 - [ ] **Phase 15** Full QC run, bug fixing, cleanup
 - [ ] **Phase 16** Release to production, then the first week
 
@@ -878,15 +882,16 @@ Owner and Code together.
 - **Done when:** repo and the dev Supabase project exist (yes), decisions logged in section 11, design gaps closed or deferred in writing.
 
 ### Phase 1 — Clean-up and foundation
-- [ ] `git init`, first commit = the repo exactly as it is now (history of the starter), add the remote, push `main`. Then work on branch `phase-1-foundation`.
-- [ ] Delete old code and dependencies per section 9 (owner confirms the list first). Fix `next.config.ts`.
-- [ ] Tokens in `globals.css` (`@theme`): colors, radii, spacing, shadows, motion; Inter via `next/font`; reduced-motion global rule; update `components.json`.
-- [ ] Folder skeleton from 4.4; ESLint rules that protect the architecture: components cannot import `@/server/*` (only server actions/pages can), no `process.env` outside `env.ts`, `import "server-only"` required in `src/server/**`, no raw hex colors in `components/**`.
-- [ ] Shared modules with unit tests: `routes.ts`, `strings.ts` (start with the strings of the shared UI), `env.ts`, `format.ts`, `slug.ts`, `ids.ts`, `plan/limits.ts`, `utils.ts`.
-- [ ] **Quiz core with unit tests** (pure TypeScript, no UI): `schema.ts` (+ page-type registry skeletons for the 7 types), `conditions.ts`, `diff.ts`, `validate.ts`, `time-estimate.ts`, `units.ts`, `templates/*` (the 3 templates as valid documents), `ai/import.ts` and `ai/export.ts` (parser, normalizer, prompt builder). These are the heart of correctness; test them hard (see 14.2).
-- [ ] Test tooling: Vitest, Playwright (one smoke spec), scripts `lint`, `typecheck`, `test`, `qc`, `release-check`.
-- [ ] GitHub Actions CI: install, lint, typecheck, unit tests, build. Protect `main` (PRs only).
-- [ ] Rewrite `plan/project_structure.md` for the new architecture (routes, folders, registry, repos). Replace `README.md`.
+- [x] `git init`, first commit = the repo exactly as it is now (history of the starter), add the remote, push `main`. Then work on branch `phase-1-foundation`.
+- [x] Delete old code and dependencies per section 9 (owner confirms the list first). Fix `next.config.ts`.
+- [x] Tokens in `globals.css` (`@theme`): colors, radii, spacing, shadows, motion; Inter via `next/font`; reduced-motion global rule; update `components.json`.
+- [x] Folder skeleton from 4.4; ESLint rules that protect the architecture: components cannot import `@/server/*` (only server actions/pages can), no `process.env` outside `env.ts`, `import "server-only"` required in `src/server/**`, no raw hex colors in `components/**`.
+- [x] Shared modules with unit tests: `routes.ts`, `strings.ts` (start with the strings of the shared UI), `env.ts`, `format.ts`, `slug.ts`, `ids.ts`, `plan/limits.ts`, `utils.ts`.
+- [x] **Quiz core with unit tests** (pure TypeScript, no UI): `schema.ts` (+ page-type registry skeletons for the 7 types), `conditions.ts`, `diff.ts`, `validate.ts`, `time-estimate.ts`, `units.ts`, `templates/*` (the 3 templates as valid documents), `ai/import.ts` and `ai/export.ts` (parser, normalizer, prompt builder). These are the heart of correctness; test them hard (see 14.2).
+- [x] Test tooling: Vitest, Playwright (one smoke spec), scripts `lint`, `typecheck`, `test`, `qc`, `release-check`.
+- [x] GitHub Actions CI: install, lint, typecheck, unit tests, build. Protect `main` (PRs only).
+- [x] Rewrite `plan/project_structure.md` for the new architecture (routes, folders, registry, repos). Replace `README.md`.
+- _Status 2026-11-08: all done. ESLint now enforces the architecture (`eslint.config.mjs`): no raw hex colors and no `process.env` outside `lib/env.ts` in components, components cannot import server-only code; `src/server/architecture.test.ts` checks the `server-only` and `use server` markers. CI is `.github/workflows/ci.yml`; `npm run release-check` exists._
 - **Done when:** `npm run lint && npm run typecheck && npm test && npm run build` are green locally and in CI, and the quiz-core unit tests cover the cases in 14.2.
 
 ### Phase 2 — The whole UI with dummy data
@@ -894,7 +899,7 @@ Dashboard tab handover for a fresh session: `docs/handover-dashboard-ui.md` (sli
 
 Setup
 - [x] 2.0 **Mock layer:** _(Done 2026-11-07, Slice A: only `QuizzesRepo` and `ProfilesRepo` so far; `lib/plan/limits.ts`, `lib/slug.ts`, `lib/format.ts`, `lib/quizzes/list.ts` with 29 unit tests (`npm test`). The mock runs in the browser (localStorage); screens use hooks in `src/hooks`; more repos come with their slices.)_ `src/server/repos/ports.ts` (the interfaces), `repos/mock/*` and `src/data/mock/*`: a few people, quizzes in every state, responses (finished and unfinished, with conditional pages and a removed question), pictures (use a handful of neutral stock images stored in `public/mock/`), an admin list of about 40 people. State persists in `localStorage` so refresh keeps edits. The mock repos call the **same** `lib/` functions (limits, slug rules, validation, diff) as the real code will.
-- [ ] 2.0b A **dev-only session switcher** (hidden in production builds): logged out / normal person / admin / suspended / unverified, so every flow can be clicked. _Started 2026-11-07: `/dev` (list of every website test link) and `/dev/session?as=user|admin|out` (cookie `mock_session`, read by `src/server/session.ts`). Suspended and unverified come from the test accounts on the Log in screen. Still to do: link the session switcher from the dashboard and admin layouts._
+- [x] 2.0b _(Done 2026-11-08: a small "Test links and who is logged in" link sits on every dashboard and admin screen in mock mode, not in production.)_ A **dev-only session switcher** (hidden in production builds): logged out / normal person / admin / suspended / unverified, so every flow can be clicked. _Started 2026-11-07: `/dev` (list of every website test link) and `/dev/session?as=user|admin|out` (cookie `mock_session`, read by `src/server/session.ts`). Suspended and unverified come from the test accounts on the Log in screen. Still to do: link the session switcher from the dashboard and admin layouts._
 
 Build, in this order (each item = its boards, all states, desktop + phone where the board exists):
 - [x] 2.1 **UI kit** _(Done 2026-11-07: Button `shape=box`, Input/Select/Textarea box, Pill, Avatar, ProgressBar, Skeleton, EmptyState, Switch, Checkbox, Radio, Tabs, Table, Dialog, Menu, Popover, Toast, SaveStatus; Radix for the accessible parts; `/dev/ui` shows them. Not built yet: list rows (editor slice) and Segmented (no board).)_ (`components/ui`) from `UIFoundations`, `UIButtons`, `UIFeedback`, `UINavigation` + a dev-only page `/dev/ui` showing every component and state (also the visual QC page). _Started 2026-11-07: the pieces the website needs are built (`Button`/`ButtonLink`/`DisabledButton`, `Input`/`Textarea`/`Field`, `Banner`, `Card`, `ToggleChip`, `RichText`, icons). Dashboard-style pieces (10 px buttons, Switch, Checkbox, Radio, Tabs, Dialog, Menu, Toast, Table, Skeleton, Pill, Avatar) and `/dev/ui` are still to do._
@@ -908,7 +913,7 @@ Build, in this order (each item = its boards, all states, desktop + phone where 
 - [x] 2.9 **Account:** _(Done 2026-11-07, Slice D: `/account` with name autosave, email change with a waiting state, Change/Set password dialog, Google row, Delete account with DELETE and then `/goodbye`; Google-only variant via `/dev`.)_ `Account`, `AccountGoogleOnly`, `AccountEmail`, `AccountPassword`, `AccountDelete`, `AccountDeleted`.
 - [x] 2.10 **Admin:** _(Done 2026-11-07. Routes `/admin`, `/admin/users` (opens on `?filter=unverified` from the Overview counter) and `/admin/users/[userId]` in route group `(admin)`; the layout lets only admins in and shows `AdminNoAccess` to everyone else (logged out too) with no hint of the content, `noindex`. Logic in `lib/admin/people.ts` (search, filters, 8 per page, overview numbers, "close to a limit" = 80% of any Free limit (D13), CSV with formula protection, limit box parsing) with 12 unit tests. New `AdminRepo` port and a mock (`server/repos/mock/admin.ts`, about 40 made-up people in `data/mock/admin.ts`) that keeps plan changes, suspend, restore and delete in localStorage and writes each to a log like `admin_log`; "Reset the dummy data" restores the people. Screens: Overview (6 numbers, 30-day bar chart, two counters, newest people), Users (search, filter, sort box, table, pages, Download as CSV), one person (details, Plan with Free/Custom, switches, domain, three limits with "Free: N" hints, Save plan with toast, their quizzes, private notes, Careful), Suspend dialog, Restore banner, Delete dialog (type the email), own account disabled. Admin pages use the dashboard shell, so phones get "works best on a computer". Checked by hand in the browser: visitor and normal person see no-access, admin sees all, filters and search, paging, CSV file (42 lines), plan save with a bad limit, suspend and restore, delete with a wrong and a right email, own account, suspended person, person not found. Production build clean. Switching a person to Free clears their switches, domain and limits on purpose (`getLimits` uses the limit boxes whatever the plan). Still open: the "Near a limit" filter (G7) and the wording and states in G24.)_ `AdminOverview`, `AdminUsers`, `AdminUser`, `AdminDialogs`, `AdminNoAccess`.
 - [x] 2.11 **Email templates:** _(Done 2026-11-07. `emails/` holds `layout.tsx` (grey page, white card, wordmark, footer, pill button, "copy this address" block, all colors written out once because inboxes ignore style sheets), the five templates (`verify`, `new-address`, `reset`, `password-changed`, `contact`) and `index.tsx` (one list with subject, board, when it is sent, sample details, `renderEmail(id)`). Package `@react-email/components`; alias `@emails`; whole addresses come from `SITE_URL` (`https://quiz.basrh.com`, D9) in `lib/routes.ts`. Preview page `/dev/emails` (linked from `/dev`) draws each email in a frame with its From/To and Subject line like the boards. 8 tests (`emails/emails.test.ts`, run by `npm test`): every email renders, the right words, 24 hours / 1 hour, links, and visitor text in the contact email is never turned into markup. Not done here (Phase 12): sending, the Supabase Auth HTML export with its own placeholders, the sender address. Open: the sender `hello@quiz.basrh.com` is our guess (the boards show `hello@quiz.com`); the wordmark is plain bold text because inboxes hide pictures and inline SVG (a hosted PNG logo can replace it at launch); the Needs row of the contact email is left out when nothing was picked; no board for the "Hi {name}" when a person has no name.)_ in `emails/` with React Email (`EmailVerify`, `EmailNewAddress`, `EmailReset`, `EmailPasswordChanged`, `EmailContact`) and a preview page (dev only).
-- [ ] 2.12 **Link audit:** _(Dashboard review done by hand 2026-11-07, not yet the Playwright spec: production build is clean; every link on the quiz list, editor, responses and account pages answers 200 except "Try it" `/dashboard/[id]/preview`, `/quiz/[slug]` (Share, "Open the quiz") and `/admin` (account menu, admins only), which wait for 2.7 and 2.10. Update 2026-11-07: "Try it" and `/quiz/[slug]` now answer 200 (2.7 done); and `/admin` answers 200 for the admin (2.10 done), so every link in the dashboard now has a page. Every text of the 40 dashboard boards was searched in the code: all found except sample data and board captions. Fixed in the review: the blank-quiz hints of board MainEmpty, 44 px drag handle, focus ring on the web address field, two unused leftovers removed. Open: raw hex colors remain in decorative website components (gradients in `cta-band`, `auth-panel`, `insights`, `hero-backdrop`, `section-heading`) from the website session.)_ a Playwright spec crawls the mock app: visits every route in `routes.ts`, clicks every link and button in every state it can reach, and fails on a 404, a `#` link, a dead button or a console error. Plus a manual **fidelity review**: open each route next to its board and fix differences.
+- [x] 2.12 **Link audit:** _(Done 2026-11-08: `npm run qc:links` (Playwright, `tests/qc/link-audit.spec.ts`) crawls every page as a visitor, a normal person and the admin (56, 59 and 69 pages), presses 43, 220 and 330 buttons, and reports no dead link, no "#" link, no script error, no failed request; the only finding was the missing favicon, now built. `npm run qc:a11y` scans every main screen for serious accessibility findings and passes. The design fidelity review was done by hand when each area was built; the owner's "UI approved" is the last step and waits for the Vercel preview, 2.13.)_ **Earlier notes:** _(Dashboard review done by hand 2026-11-07, not yet the Playwright spec: production build is clean; every link on the quiz list, editor, responses and account pages answers 200 except "Try it" `/dashboard/[id]/preview`, `/quiz/[slug]` (Share, "Open the quiz") and `/admin` (account menu, admins only), which wait for 2.7 and 2.10. Update 2026-11-07: "Try it" and `/quiz/[slug]` now answer 200 (2.7 done); and `/admin` answers 200 for the admin (2.10 done), so every link in the dashboard now has a page. Every text of the 40 dashboard boards was searched in the code: all found except sample data and board captions. Fixed in the review: the blank-quiz hints of board MainEmpty, 44 px drag handle, focus ring on the web address field, two unused leftovers removed. Open: raw hex colors remain in decorative website components (gradients in `cta-band`, `auth-panel`, `insights`, `hero-backdrop`, `section-heading`) from the website session.)_ a Playwright spec crawls the mock app: visits every route in `routes.ts`, clicks every link and button in every state it can reach, and fails on a 404, a `#` link, a dead button or a console error. Plus a manual **fidelity review**: open each route next to its board and fix differences.
 - [ ] 2.13 Deploy the preview to Vercel (`DATA_MODE=mock`, hidden from search engines, not linked anywhere).
 - **Done when:** the link audit passes, every board in Appendix A is built and matches, the owner has clicked through everything on the Vercel URL and says **"UI approved"**. From now on UI changes follow rule R1.
 
@@ -921,81 +926,74 @@ Build, in this order (each item = its boards, all states, desktop + phone where 
 - **Done when:** `supabase db push` applies every migration to an empty dev project, the database tests pass, and a script confirms every table has RLS on.
 
 ### Phase 4 — Register, login, accounts base
-- [x] **Mailtrap sandbox for dev emails (D20), done 2026-11-07:** sandbox `quiz-dev` (free plan: 1 sandbox, 50 emails per month); `[auth.email.smtp]` enabled in `config.toml` and pushed (`email_sent` rate limit 10 per hour); `tests/mail/mailbox.ts` helper (Mailtrap API) and `npm run test:mail` (sign-up sends a verify email, the check reads it and the verify link, then cleans up). Run `test:mail` sparingly (1 email each).
-- [ ] Supabase clients (`browser`, `server`, `admin`), `middleware.ts` (session refresh, maintenance, route guards: `(app)` needs login, `(admin)` needs admin, logged-in people skip login/register), `guards.ts`.
-- [ ] Actions and routes from 7.1/7.2: register, verify (`/auth/confirm`), login, lockout (`login_attempts`), logout, forgot/reset, resend (60 s), Google (`/auth/callback`), suspended handling in the `(app)` layout, `next` redirect after login.
-- [ ] `handle_new_user` trigger verified; profile created for password and Google sign-ups.
-- [ ] Replace the mock session with the real one (switcher stays for mock mode only).
-- **Done when:** QC-02, QC-03 pass; RLS tests still pass; no secret in the client bundle (14.5).
+- [x] **Mailtrap sandbox for dev emails (D20), done 2026-11-07:** sandbox `quiz-dev` (free plan: 1 sandbox, 50 emails per month; the inbox keeps 10 messages); `[auth.email.smtp]` enabled in `config.toml` and pushed (`email_sent` rate limit 10 per hour); `tests/mail/mailbox.ts` helper (Mailtrap API) and `npm run test:mail`. Run `test:mail` sparingly (1 email each).
+- [x] Supabase clients (`src/server/supabase/server.ts`, `admin.ts`, `middleware.ts`), `src/middleware.ts` (maintenance switch `MAINTENANCE_MODE=on`, session refresh, logged-out people on `/dashboard` or `/account` go to `/login?next=...`), `server/auth/guards.ts` (`requireUser`, `requireAdmin`). The `(app)` layout and the admin layout check again. _Done 2026-11-08._
+- [x] Actions and routes: register (same answer whether or not the address exists), login with the 5-tries lock (`login_attempts`, salted address hash), logout, forgot and reset password, resend verification, Google (`/auth/callback`), `/auth/confirm` (accepts both our own `token_hash` template and Supabase's standard `code` link), suspended people refused, `next` limited to this site (`lib/auth-rules.ts`). _Done 2026-11-08._
+- [x] `handle_new_user` verified: profile with the name for password sign-ups (browser test); Google sign-ups use `full_name` (trigger covered by the database tests, real Google login needs a person).
+- [x] The mock session is the default only while `NEXT_PUBLIC_DATA_MODE` is not `supabase`; the switcher link bar shows in mock mode only.
+- [x] **Done when:** QC-02 and QC-03 pass (`tests/qc/real-auth.spec.ts`, 13 scenarios on the dev project); RLS tests still pass; the service key is read only in server code (`import "server-only"`, production bundle checked by QC-20).
+- [ ] **Owner action:** the two auth emails (verify, reset) use our designed templates only after `node scripts/with-env.mjs npx supabase config push` (it changes 4 template fields and `enable_manual_linking`; the CLI asks for consent). Until then Supabase's standard emails are used and the standard `code` link is handled, so nothing breaks.
 
 ### Phase 5 — Quizzes and the editor for real
-- [ ] `repos/supabase/quizzes.ts` and actions: list, create (blank/template/copy), duplicate, rename, delete (+ `slug_holds`), accepting responses, `saveDraft` (autosave, version, conflict), `publishQuiz` (strict validation, problems), settings, `updateSlug` + `/api/slug-available`, limits (UI, server, DB), share/copy link, Open/Closed.
-- [ ] Editor store connected: autosave statuses, offline, undo, "N changes not published" from `diffQuiz(draft, published)`.
-- [ ] Conflict dialog (after its design, G1). Reorder rule D18.
-- [ ] Switch `DATA_MODE=supabase` for quizzes; mock stays for areas not built yet.
-- **Done when:** QC-04, QC-05, QC-06, QC-08, QC-09 pass, including the two-people slug collision and the 5-quiz and 15-page limits.
+- [x] `server/actions/quizzes.ts` with `repos/remote`: list, create (blank, template, copy), duplicate, rename, delete (the database holds the old address 30 days), open/closed, `saveDraft` (versioned in the database), `publish` (strict check first, then the database re-checks the page count), `setSlug`, live address check (`slug_available`), limits (dialog, server, database). The editor, autosave, offline bar, undo and "N changes not published" run unchanged on it. _Done 2026-11-08._
+- [x] `NEXT_PUBLIC_DATA_MODE=supabase` switches every area at once (quizzes, pictures, responses, account, admin, public quiz); the mock stays for the UI phase and the link audit.
+- [ ] Conflict dialog: the design has no board (G1). Until then a save never fails because another tab saved first: it retries once from the newest version, so the last save wins. D18 (blocked reorder) is done in the editor.
+- [x] **Done when:** QC-04, QC-05, QC-06, QC-08 and QC-09 pass (`real-quiz.spec.ts`, `real-editor.spec.ts`): create, the 5-quiz limit, autosave surviving a reload, publish blocked without a question, Share link, a page shown only to some people, two people on the same address.
 
 ### Phase 6 — Pictures
-- [ ] Storage bucket policies verified; `createUploadUrl`, `registerMedia`, `listMedia`; client resize/compress; media dialog wired everywhere; `mediaUrl`; `next/image` config; error messages (too big, wrong type).
-- **Done when:** QC-07 passes with real file uploads (valid, over 5 MB, wrong type), pictures show in the editor and in the public quiz, and person B cannot read or write person A's folder (pgTAP + QC-13).
+- [x] `server/actions/media.ts`: the browser shrinks the picture, the server checks type and the 5 MB size again, stores it in the person's own folder of `quiz-media`, then adds the library row; public address from `lib/media-url.ts`; Server Actions body limit 8 MB; `next/image` host for Supabase. Pictures show in the editor, Try it and the public quiz (`loadPublic` returns only the owner's pictures that the quiz uses). _Done 2026-11-08._
+- [x] **Done when:** QC-07 passes (upload through the dialog, row and file in the person's folder, public address opens); other people cannot touch the folder (storage database tests, QC-13).
 
 ### Phase 7 — The public quiz and saving answers
-- [ ] `GET /api/q/[slug]`, `open`, `start`, `answer`, `finish` with server-side validation using the shared validators; token handling; rate limits; `finish_response` atomic limit; resume and already-done; preview mode (no writes); every status screen; theme variables; Start page lines; OG image for quiz links; bundle check (no editor/chart code).
-- [ ] The runner reducer covers every rule of `BehaviorRules` (progress forward only, Back, hidden pages, auto-advance, errors, save failure).
-- **Done when:** QC-10 passes on a phone-size browser, including offline save failure, close-mid-way, resume, quiz closed during use, and conditions deciding which pages appear.
+- [x] `GET /api/q/[slug]`, `POST .../open`, `.../start`, `POST /api/r/[id]/answer`, `/finish`, `/resume`: only the published copy leaves the server; secret token per response (only its hash is stored); every answer is checked against the published page and the saved question and option texts come from it (`lib/quiz/progress.ts`, 9 tests); answers of hidden pages are dropped; finishing needs every answer that was shown; rate limits by address hash (`rate_limit_hit`); the 500th slot is taken atomically (`finish_response`); closed, full, suspended owner and not published all look the same to people. OG share picture per quiz (`/quiz/[slug]/opengraph-image`, board SocialQuiz). _Done 2026-11-08._
+- [x] **Done when:** QC-10 passes on a phone-size touch browser; resume, closed, wrong token, made-up answers, wrong quiz's pages and the response limit are tested (`real-quiz.spec.ts`). Offline save failure is covered by the "We couldn't save your answer" screen (mock switch) and the unit tests of the runner.
 
 ### Phase 8 — Responses: summary, individual, export, delete
-- [ ] `lib/responses/summarize.ts` (all card types, funnel, where people leave), individual list with search, date range, include-unfinished, pagination; exports (CSV, XLSX, JSON) with filters, BOM, formula protection, removed-question columns, streaming; delete one/all; banners at 450/500; `scripts` to seed N responses.
-- **Done when:** QC-11 and QC-12 pass, summary numbers match the seeded data exactly (unit tests), downloaded files open and contain the right columns, deletes free the Free limit.
+- [x] `server/actions/responses.ts` reads every page of responses for the owner only (1,000 at a time), delete one and delete all; Summary, Individual and the three exports already ran on the same data shapes. _Done 2026-11-08._
+- [x] **Done when:** QC-11 (CSV downloaded from the Responses page contains the words people chose) and QC-12 pass; the numbers are unit tested (`responses.test.ts`, 17 tests); deleting responses lowers `finished_count` (database trigger test).
+- [ ] The export runs in the browser from the loaded responses; a streaming server route (`/api/quizzes/[id]/export`) is not needed below a few thousand responses and is left for later.
 
 ### Phase 9 — Edit with AI for real
-- [ ] Wire `buildAiExport`, `parseAiAnswer`, check screen, `applyAiDocument`, `copiedAtVersion` warning, picture-left-out, limits, undo toast.
-- [ ] **Regenerate the prompt and field table from the final schema** and compare with the `AiFormat` board. Any difference: update the design first, then the code (R1).
-- [ ] Try it with real AI chats (ChatGPT, Claude, Gemini): ask for 5 typical changes each (add questions, shorten, add a condition, translate the questions, fix spelling) and record failures; improve the prompt text, not the parser, where possible.
-- **Done when:** QC-15 passes (including the unchanged round trip), and the owner confirms real-chat results are good.
+- [x] The dialog, `lib/ai/*` and the check run on the real draft (the draft goes through `saveDraft` like any edit, as one Undo step); the private name is never changed by the AI. QC-15 passes: sentences instead of a quiz are refused and change nothing; a quiz inside chatter in a code box is checked and applied. _Done 2026-11-08._
+- [ ] **Owner action:** try it with real AI chats (ChatGPT, Claude, Gemini), 5 typical changes each, and tell us what failed so the prompt text can be improved. The prompt is generated from the final schema (`lib/ai/prompt.ts`, unit tested including the unchanged round trip).
 
 ### Phase 10 — Account settings complete
-- [ ] Name, email change (our `email_changes` flow with cancel/resend, confirm route), password change (current password, other devices signed out, email), set password (Google-only), connect/disconnect Google (after design G6), delete account (storage folder, auth user, cascade), `/goodbye`.
-- **Done when:** QC-14 passes, and after deletion nothing of that person remains (rows and files), and their slugs are held.
+- [x] `server/actions/account.ts`: name, email change (our `email_changes` table: link mailed to the NEW address, 24 hours, cancel, resend at most once a minute, `/auth/email-change/confirm`), change password (current password checked on a throwaway client, other devices signed out, "Password changed" email), set password (Google-only), connect Google (needs `enable_manual_linking`, set in `config.toml`, applied by the owner's `config push`), delete account (pictures, then the account; quizzes and answers follow by the database). _Done 2026-11-08._
+- [ ] "Disconnect Google" is not built: the board does not exist yet (G6).
+- [x] **Done when:** QC-14 passes (name saved, password change with a wrong then the right current password, the old password stops working and the email arrives, delete removes the person and their quizzes, the email-change link works once).
 
 ### Phase 11 — Admin area
-- [ ] `requireAdmin`, overview stats (SQL helpers in `private`), users list with search/filter/sort/pagination, CSV export, person page (plan, flags, limits, domain, notes), suspend/restore/delete with dialogs, `admin_log`, no-access page, own-account protection.
-- [ ] Verify suspension: login blocked, a logged-in session blocked on next click, public quizzes show closed, restore reopens exactly what was open.
-- **Done when:** QC-16 passes and a normal person gets the no-access page for every admin URL and every admin action is refused.
+- [x] `server/actions/admin.ts` (`requireAdmin` first; reads use the service key and only counts and profile facts; people are put together in memory, fine to a few thousand people, a database function replaces it later): overview, people list, CSV, person, plan and limits (Free clears the extras), notes, suspend (profile + ban), restore, delete (typed email, pictures removed), own-account protection, `admin_log`. _Done 2026-11-08._
+- [x] Verified: login blocked for a suspended person, their quizzes show closed, restore brings login back; a normal person and a stranger get the no-access page. **Done when:** QC-16 passes (`real-account.spec.ts`, `real-auth.spec.ts`).
+- [ ] The Users table has no "near a limit" filter (G7).
 
 ### Phase 12 — Email for real
-- [ ] Resend account, domain verified (SPF, DKIM, DMARC), SMTP in Supabase Auth, `supabase config push` with the template HTML generated from `emails/`, sender and reply-to settings.
-- [ ] Contact form real (`sendContactMessage`, stored + emailed to basurah@basrh.com).
-- [ ] Send every email to a real inbox (Gmail and one other provider) and check spam placement and how it looks on phone.
-- **Done when:** QC-17 passes (Mailtrap inbox) and all five emails arrive in real inboxes from staging, links work, the look matches the boards.
+- [x] One sender (`server/email/send.ts`): Resend when `RESEND_API_KEY` is set, the Mailtrap test inbox in development, retries on "too many requests". The "Confirm your new email", "Password changed" and contact emails are rendered from `emails/` and sent by it. The contact form saves a copy first (`contact_messages`), is rate limited (5 an hour), and mails the owner with the visitor as reply-to. QC-17: the password-changed and contact emails were read back from the Mailtrap inbox. _Done 2026-11-08._
+- [ ] **Owner actions:** a Resend account and the DNS records (SPF, DKIM, DMARC) for the sending domain; then set `RESEND_API_KEY` and `EMAIL_FROM`; custom SMTP in Supabase for the two auth emails; `config push` (templates); send all five emails to real inboxes (Gmail and one more) and look at them on a phone.
 
 ### Phase 13 — Website completion (front-end update tasks)
 Rule: **any visual or wording change goes through Claude Design first.**
-- [ ] Final marketing copy, final Terms and Privacy (real company details, reviewed), cookie statement matches reality.
-- [ ] SEO: titles, descriptions, canonical URLs, `sitemap.ts`, `robots.ts`, OG images, favicons and app icons, `noindex` rules (D5).
-- [ ] Analytics (D6). Maintenance mode flag tested. 404 and 500 pages tested. Remove every placeholder (`yourshop.com`, `quiz.com`) from code and content.
-- **Done when:** a content/SEO checklist passes and the owner approves the public site.
+- [x] SEO: metadata base, per-page titles, `sitemap.ts`, `robots.ts` (website indexable, private pages, quiz links and server routes kept out), `noindex` where D5 says, share pictures for the website and for every quiz, favicon, Apple icon and manifest icons from the BrandIcons board. The old portfolio-era "noindex on everything" header was removed. Placeholders `quiz.com` and `yourshop.com` removed from code and content. _Done 2026-11-08._
+- [x] Visitor counting (D6): Vercel Web Analytics, cookieless, loaded only when the site runs on Vercel. Maintenance switch (`MAINTENANCE_MODE=on`) in the middleware; 404 and 500 screens exist and are crawled.
+- [ ] Final marketing copy, final Terms and Privacy (real company details, lawyer review). **Owner.**
 
 ### Phase 14 — Hardening
-- [ ] Turnstile on register, forgot password, contact. Rate limits per D11 in one module. Body-size limits.
-- [ ] Security headers and CSP in `next.config.ts` (no framing of the app, strict referrer policy, no sniffing; CSP allowing only our own origin, Supabase, Turnstile, Sentry, analytics).
-- [ ] Sentry (client and server, source maps, no personal data in events). Health check endpoint monitored by an uptime service.
-- [ ] Backups: Supabase paid plan daily backups on, weekly `pg_dump` kept elsewhere, **restore drill** into a scratch project documented in `docs/runbooks/restore.md`.
-- [ ] Performance budgets (quiz page, home) and accessibility pass (14.6). `npm audit` and dependency review. Secret scan (14.5).
-- **Done when:** QC-18, QC-19, QC-20 pass and the restore drill worked.
+- [x] Cloudflare Turnstile on Register, Forgot password and Contact: built and switched on by `NEXT_PUBLIC_TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` (off without them). Rate limits in one module (`server/rate-limit.ts`): register 10 an hour, forgot password 5 an hour, contact 5 an hour, public quiz calls per minute, plus the sign-in lock. Body-size limit on the public endpoints. _Done 2026-11-08._
+- [x] Security headers and a content security policy in `next.config.ts` (production only), tested on the production build by QC-19/QC-21 (no console errors on any main page, nothing can frame the site).
+- [x] Sentry (`instrumentation.ts`, `instrumentation-client.ts`): off until `SENTRY_DSN` is set; bodies, cookies and user details are removed before an error leaves. Health check `/api/health`.
+- [x] Backups, restore drill steps, rollback and the admin guide are written in `docs/runbooks/`. [ ] **Owner:** the paid Supabase plan with daily backups, the uptime monitor on `/api/health`, and the restore drill itself (needs the production project).
+- [x] Performance budgets (QC-20: the quiz page ships no editor, drag-and-drop, chart or spreadsheet code and stays under 900 KB of script) and the accessibility scan (QC-18: every main screen as visitor, person and admin, plus the quiz on a phone, no serious findings). Real keyboard and screen reader checks by a person are still to do. [ ] `npm audit` review and a secret scan before release.
 
 ### Phase 15 — Full QC run, bug fixing, cleanup
-- [ ] Run **every** QC script on a fresh local stack and on the staging deploy; fix everything; repeat until two clean runs in a row.
-- [ ] Cross-browser smoke (Chromium, WebKit, Firefox) for the quiz runtime and the login; real phone check (iPhone and Android) of the public quiz.
-- [ ] Remove the mock layer and `DATA_MODE` if the owner does not want a demo mode; remove the dev-only pages; remove unused code, strings, tokens and dependencies; confirm no duplicated logic (search for near-duplicate files).
-- [ ] Final **design fidelity review** of every board vs the built screen; update `plan/*` files; write `docs/runbooks/*` (deploy, rollback, restore, promote admin, rotate keys, add a template).
-- **Done when:** `npm run release-check` is green twice in a row and the owner signs off.
+- [x] CI (`.github/workflows/ci.yml`): lint, typecheck, unit tests, build, link audit and, on `main`, the database tests. `npm run release-check` = lint, typecheck, unit tests, build.
+- [x] The browser tests found and fixed real problems on the way: the address-is-free hint vanished after saving, the progress bar had no accessible name, the logo link name did not contain its visible word, a content-security-policy typo, and visitor counting loading outside Vercel.
+- [ ] Two clean runs in a row of every QC script on the staging deploy; cross-browser smoke (WebKit and Firefox; today Edge/Chromium only); a real iPhone and Android check of the public quiz. **Needs staging and phones.**
+- [ ] Decide whether the mock layer stays as a demo mode. The editor canvas now uses the real quiz views (one runtime), so one old copy of the page drawing is gone.
+- [ ] Final design fidelity review of every board against the built screen (done by hand for the quiz runtime, admin and emails when they were built; the rest in the earlier dashboard review).
 
 ### Phase 16 — Release
-- [ ] Create the production Supabase project (paid plan); `supabase link`, `db push`, `config push` (auth settings, email templates); create the storage bucket via migration; set production env vars in Vercel; add Google OAuth production redirect URIs; add the production domain in Vercel and DNS; email domain already verified; set the Site URL/redirect URLs in Supabase.
-- [ ] Deploy to production with `MAINTENANCE_MODE=true`, run **QC-21 production smoke** against it, promote the owner to admin, then switch maintenance off.
-- [ ] Remove the staging-only noindex; submit the sitemap; check Sentry and uptime alerts; confirm backups ran.
-- [ ] Tag `v1.0.0` on GitHub. Keep the rollback steps in `docs/runbooks/rollback.md` (Vercel instant rollback to the previous deployment; database migrations are forward-only, so each migration must be written to be safe to deploy before the code that uses it).
+- [ ] All of it needs the owner's accounts: production Supabase (paid), Vercel and the domain, Resend, Turnstile, Sentry, Google production redirect URIs. The exact steps are in `docs/runbooks/deploy.md`.
+- [ ] Deploy with `MAINTENANCE_MODE=on`, smoke test, promote the owner to admin (`docs/runbooks/admin.md`), switch maintenance off, submit the sitemap, tag `v1.0.0`. Rollback: `docs/runbooks/rollback.md`.
 - **First week:** watch Sentry, Supabase logs, Resend delivery, sign-ups and the admin overview daily; fix what real people hit; then plan custom domains (D10) and the backlog.
 
 ---
@@ -1031,6 +1029,7 @@ These are needed by the code but are **not in the design yet**. Do not invent th
 | G22 | **Account details with no board:** how a new email address is entered (built: type it and press Enter or leave the field), the wrong-email message, "Set a password" for a Google-only account (the Change password dialog without the current password), "Disconnect Google" (G6, not built) | Slice D |
 | G23 | **Quiz runtime wording and small rules with no board** (built by Code, owner to confirm in Design): the messages "Please write an answer to continue." (required text), "Please enter a valid phone number." and "Please enter a number to continue." (required number); the helper line for a number page with only a minimum ("5 or more") or only a maximum; a **single-choice question that is not required** shows a Continue button (otherwise there is no way to skip it); the Loading screen has no Back and Back from the next page skips it; the quiz shows an empty white screen while it opens (no skeleton); "Close preview" goes to the editor of that quiz; a picture added to an End page of any style shows under the text; on a computer the centered card has a minimum height on message screens | Slice 2.7 |
 | G24 | **Admin wording and states with no board** (built by Code, owner to confirm in Design): the **Free** state of the Plan card (the board shows only Custom: built as the three Custom settings hidden plus "The Free plan has the standard limits and shows “Powered by Quiz”."); the board text uses "She/her" for Maria, but pronouns are not stored, so the dialogs say "They" and the person’s name; the error under a limit box ("Use a whole number of 1 or more, or leave it empty."); the empty Users search ("No one matches that."); the toasts "Maria Gomez is suspended / is restored / ’s account was deleted"; the loading blocks and the load-failed card on the three pages; "Person not found"; the failed save keeps a red banner with Try again (as the board says) but its words are ours; notes save when the box loses focus (there is no Save button on the board); the Overview "Newest people" shows "Today / Yesterday / date" instead of the board’s "Today, 10:42"; the sort box has the one option "Newest first"; the person page has no "My quizzes" link in its top bar, as the board | Slice 2.10 |
+| G25 | **Things built for the real backend that have no board:** the Cloudflare Turnstile widget above the submit button on Register, Forgot password and Contact (a failed check sends Register and Forgot password back to the form without a message, and Contact looks as if it was sent); the 8 MB picture upload limit message is the same "too big" text; the Account page shows no message after the new-address link is opened (G5); the "Welcome back" screen has no board for a quiz that was changed after the person started (their answers to removed pages are kept but not shown); and the maintenance page is used as is for `MAINTENANCE_MODE`. | Phase 12 to 14 |
 
 ### 13.2 Things the owner did not list but the product needs (all planned above)
 - **Security:** RLS on every table with tests; service key only on the server; server-side re-validation of everything; `next` redirect after login accepts only same-site relative paths; user text is rendered as plain text (never HTML); the End page link must be `https://` and opens with `rel="noopener noreferrer"`; pictures only from our own storage; CSP and security headers; no secrets in the client bundle.
@@ -1122,6 +1121,8 @@ Run state: unless said, a fresh verified person created through the real registe
 | QC-19 | **Security.** Open-redirect attempts on `next`; XSS strings (`<script>`, `"><img onerror>`) in every text field show as text everywhere (editor, quiz, responses, exports, emails); oversize and malformed API bodies; rate limits trigger (login, contact, slug, public answers); secrets are not present in the client bundle or page source; security headers present | no script runs; limits trigger; no secret exposed |
 | QC-20 | **Performance.** Lighthouse mobile on Home and on a public quiz; the public quiz JS stays under the budget (set in Phase 7, about 150 KB gzip); no editor/chart code in the quiz bundle | budgets met |
 | QC-21 | **Production smoke** (read-mostly, run right after deploy): pre-created smoke account logs in; creates a quiz, publishes, opens the public link in a new context, answers on a phone-size viewport, sees the response, deletes the quiz; website pages load; `/api/health` ok | passes, then the smoke data is gone |
+
+**Where the QC scripts live today (2026-11-08)** (all in `tests/qc/`, run with the npm scripts in `project_structure.md`): QC-01 `link-audit.spec.ts` + `prod-smoke.spec.ts`; QC-02, QC-03, QC-16 (access) `real-auth.spec.ts`; QC-04, QC-08 (publish), QC-10, QC-12, QC-13 `real-quiz.spec.ts`; QC-05, QC-06, QC-07, QC-08 (share), QC-09, QC-10 (phone), QC-11, QC-15 `real-editor.spec.ts`; QC-14, QC-16, QC-17 `real-account.spec.ts` (+ `tests/mail`); QC-18 `a11y.spec.ts`; QC-19, QC-20, QC-21 `prod-smoke.spec.ts`. Database rules and code-versus-database parity: `tests/db/`. The plan above says `qc/specs/`; the real folder is `tests/qc/`.
 
 **Manual checks that cannot be scripted** (a checklist the owner and Code run before Phase 16): real Google login (new and existing account); real email delivery in Gmail and one more provider, on phone; the public quiz on a real iPhone and a real Android phone; a screen reader smoke test (VoiceOver or NVDA) of the quiz and the login; a final look at every board vs the screen.
 

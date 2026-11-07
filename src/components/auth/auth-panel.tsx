@@ -21,12 +21,12 @@ function LeaveCard() {
         {panel.rows.map((row, i, all) => (
           <div
             key={row.label}
-            className="grid grid-cols-[90px_minmax(0,1fr)_40px] items-center gap-2.5 text-sm text-[#E1E8F2]"
+            className="grid grid-cols-[90px_minmax(0,1fr)_40px] items-center gap-2.5 text-sm text-on-dark"
             style={{ marginBottom: i === all.length - 1 ? 0 : 12 }}
           >
             <span>{row.label}</span>
             <span className="block h-2.5 rounded-md bg-white/20">
-              <span className="block h-2.5 rounded-md bg-[#D6E0EF]" style={{ width: `${row.percent}%` }} />
+              <span className="block h-2.5 rounded-md bg-on-dark-5" style={{ width: `${row.percent}%` }} />
             </span>
             <span>{row.percent}%</span>
           </div>
@@ -63,12 +63,12 @@ function BuildChips() {
 /** The dark panel on the right of every sign-in screen. It is hidden below 900 px. */
 export function AuthPanel({ spec }: { spec: AuthPanelSpec }) {
   return (
-    <div className="relative flex flex-col items-center justify-center overflow-hidden bg-[linear-gradient(135deg,#3B4A60,#1E293B)] p-16 text-white max-nav:hidden">
-      <div aria-hidden="true" className="orb -left-30 -top-30 size-[420px]" style={{ background: "radial-gradient(circle, #6E86AB, transparent 70%)" }} />
+    <div className="relative flex flex-col items-center justify-center overflow-hidden bg-[linear-gradient(135deg,var(--color-night),var(--color-ink))] p-16 text-white max-nav:hidden">
+      <div aria-hidden="true" className="orb -left-30 -top-30 size-[420px]" style={{ background: "radial-gradient(circle, var(--color-orb-a), transparent 70%)" }} />
       <div
         aria-hidden="true"
         className="orb -bottom-30 -right-25 size-[420px]"
-        style={{ background: "radial-gradient(circle, #50678A, transparent 70%)", animationDelay: "-8s" }}
+        style={{ background: "radial-gradient(circle, var(--color-orb-b), transparent 70%)", animationDelay: "-8s" }}
       />
       {spec.kind === "leave" ? <LeaveCard /> : null}
       {spec.kind === "build" ? <BuildChips /> : null}

@@ -8,13 +8,13 @@ const wobble = "animate-[wobble_4s_ease-in-out_infinite_alternate]";
 function Ring({ variant }: { variant: "dot" | "clock" }) {
   return variant === "dot" ? (
     <svg viewBox="0 0 64 64" fill="none" className={`h-[0.72em] w-auto ${wobble}`}>
-      <circle cx="32" cy="32" r="22" stroke="#334155" strokeWidth="10" />
-      <circle cx="32" cy="32" r="8" fill="#7F93B2" />
+      <circle cx="32" cy="32" r="22" stroke="var(--color-slate)" strokeWidth="10" />
+      <circle cx="32" cy="32" r="8" fill="var(--color-steel)" />
     </svg>
   ) : (
     <svg viewBox="0 0 64 64" fill="none" className={`h-[120px] w-auto ${wobble}`}>
-      <circle cx="32" cy="32" r="22" stroke="#334155" strokeWidth="8" />
-      <path d="M32 18v14l9 6" stroke="#334155" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="32" cy="32" r="22" stroke="var(--color-slate)" strokeWidth="8" />
+      <path d="M32 18v14l9 6" stroke="var(--color-slate)" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }

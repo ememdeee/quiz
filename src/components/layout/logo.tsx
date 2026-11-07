@@ -24,7 +24,7 @@ export function Logo({
       style={{ display: "block", overflow: "visible" }}
     >
       <circle cx="26" cy="28" r="15" stroke="currentColor" strokeWidth="8" />
-      <circle cx="26" cy="28" r="5.5" fill="#7F93B2" />
+      <circle cx="26" cy="28" r="5.5" fill="var(--color-steel)" />
       <path d="M41 28V60" stroke="currentColor" strokeWidth="8" strokeLinecap="round" />
       <text
         x="52"
