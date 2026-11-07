@@ -16,7 +16,8 @@
     "typecheck": "tsc --noEmit",
     "qc:real": "playwright test --project=real",
     "release-check": "npm run lint && npm run typecheck && npm test && npm run build",
-    "qc:prod": "playwright test --project=prod"
+    "qc:prod": "playwright test --project=prod",
+    "qc:a11y": "playwright test --project=a11y"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -48,6 +49,7 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@eslint/eslintrc": "^3",
     "@next/bundle-analyzer": "^16.2.10",
     "@playwright/test": "^1.65.0",

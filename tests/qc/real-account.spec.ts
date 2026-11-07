@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { readHtml, waitForMessage } from "../mail/mailbox.ts";
 import { admin, cleanup, makePerson, PASSWORD } from "./helpers/supabase";
 
 /**
@@ -43,6 +44,11 @@ test.describe("the account page", () => {
     await dialog.getByLabel("Current password").fill(PASSWORD);
     await dialog.getByRole("button", { name: /Update/ }).click();
     await expect(dialog).toBeHidden({ timeout: 30_000 });
+
+    // QC-17: the "password changed" email reached the test inbox, written from the template
+    const mail = await waitForMessage(person.email, 45_000);
+    expect(mail.subject).toBe("Your Quiz password was changed");
+    expect(await readHtml(mail.id)).toContain("Your password was changed");
 
     await page.context().clearCookies();
     await login(page, person.email, PASSWORD, false);
@@ -152,6 +158,12 @@ test.describe("the contact form", () => {
     await page.getByRole("button", { name: /Send/ }).click();
     await expect(page.getByText(/sent|thank/i).first()).toBeVisible({ timeout: 45_000 });
     await expect.poll(async () => (await admin.from("contact_messages").select("email_sent, message").eq("email", email).single()).data, { timeout: 20_000 }).toMatchObject({ email_sent: true, message: "Hello from the browser test" });
+    // QC-17: and the owner got the email, with the visitor's words in it
+    const mail = await waitForMessage("basurah@basrh.com", 45_000);
+    expect(mail.subject).toBe("New message from the Quiz contact form");
+    const html = await readHtml(mail.id);
+    expect(html).toContain("Hello from the browser test");
+    expect(html).toContain(`mailto:${email}`);
     await admin.from("contact_messages").delete().eq("email", email);
   });
 });

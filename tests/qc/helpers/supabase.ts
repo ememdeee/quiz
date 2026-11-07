@@ -13,6 +13,8 @@ function loadEnv(): Record<string, string> {
 }
 
 const env = loadEnv();
+// The mailbox helper reads process.env, so make the values of .env.local available to it too
+for (const [key, value] of Object.entries(env)) process.env[key] ??= value;
 
 /** The service-role client of the dev project: it makes and removes the test people. */
 export const admin: SupabaseClient = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {

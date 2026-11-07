@@ -9,7 +9,7 @@ import { Body, Footer, Heading, Lead, MainButton, OutlineButton } from "./blocks
 function Message({ icon, title, text, children, footer }: { icon: ReactNode; title: string; text: string; children?: ReactNode; footer?: ReactNode }) {
   return (
     <>
-      <Body className="items-center justify-center gap-3.5 px-7 text-center sm:min-h-[420px]">
+      <Body className="items-center justify-center gap-3.5 px-7 text-center @md:min-h-[420px]">
         {icon}
         <Heading className="mt-2 text-[26px] leading-8">{title}</Heading>
         <Lead>{text}</Lead>
@@ -50,7 +50,7 @@ export function ResumeScreen({ page, total, progress, onContinue, onStartOver }:
         </>
       }
     >
-      <div role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress * 100)} className="mt-2.5 h-1.5 w-full rounded-full bg-quiz-line">
+      <div role="progressbar" aria-label={quizText.progress} aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress * 100)} className="mt-2.5 h-1.5 w-full rounded-full bg-quiz-line">
         <div className="h-1.5 rounded-full bg-quiz-primary" style={{ width: `${Math.round(progress * 100)}%` }} />
       </div>
     </Message>

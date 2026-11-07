@@ -4,6 +4,16 @@ import { emailEnv } from "@/lib/env";
 export type OutgoingEmail = { to: string; subject: string; html: string; replyTo?: string };
 export type SendResult = { ok: true; via: "resend" | "mailtrap" | "none" } | { ok: false; error: string };
 
+/** One try plus up to two more when the service says "too many requests" or has a hiccup, a moment apart. */
+async function post(url: string, init: RequestInit): Promise<Response> {
+  let response = await fetch(url, init);
+  for (let retry = 1; retry <= 2 && (response.status === 429 || response.status >= 500); retry += 1) {
+    await new Promise((resolve) => setTimeout(resolve, retry * 1500));
+    response = await fetch(url, init);
+  }
+  return response;
+}
+
 const parse = (from: string) => {
   const match = /^(.*)<(.+)>$/.exec(from.trim());
   return match ? { name: match[1].trim().replace(/^"|"$/g, ""), email: match[2].trim() } : { name: "Quiz", email: from.trim() };
@@ -18,7 +28,7 @@ export async function sendEmail(email: OutgoingEmail): Promise<SendResult> {
   const env = emailEnv();
 
   if (env.resendKey) {
-    const response = await fetch("https://api.resend.com/emails", {
+    const response = await post("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${env.resendKey}`, "Content-Type": "application/json" },
       body: JSON.stringify({ from: env.from, to: [email.to], subject: email.subject, html: email.html, ...(email.replyTo ? { reply_to: email.replyTo } : {}) }),
@@ -28,7 +38,7 @@ export async function sendEmail(email: OutgoingEmail): Promise<SendResult> {
 
   if (env.mailtrapToken && env.mailtrapInbox) {
     const sender = parse(env.from);
-    const response = await fetch(`https://sandbox.api.mailtrap.io/api/send/${env.mailtrapInbox}`, {
+    const response = await post(`https://sandbox.api.mailtrap.io/api/send/${env.mailtrapInbox}`, {
       method: "POST",
       headers: { Authorization: `Bearer ${env.mailtrapToken}`, "Content-Type": "application/json" },
       body: JSON.stringify({

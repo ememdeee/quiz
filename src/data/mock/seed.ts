@@ -57,7 +57,7 @@ const bodyReset: QuizDocument = {
       price: "$29",
       priceNote: "One-time payment",
       buttonText: "GET MY PLAN",
-      link: "https://yourshop.com/checkout",
+      link: "https://example.com/checkout",
       note: "60-day money-back guarantee",
     },
   ],

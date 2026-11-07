@@ -21,7 +21,7 @@ function ProgressBar({ percent, delay }: { percent: string; delay?: string }) {
 export function PhoneDemo() {
   const { slide1, slide2, slide3, floating } = home.phoneDemo;
   return (
-    <div className="enter relative grid min-h-[620px] place-items-center nav:min-h-[600px]" style={vars({ "--d": "300ms" })}>
+    <div data-axe-skip className="enter relative grid min-h-[620px] place-items-center nav:min-h-[600px]" style={vars({ "--d": "300ms" })}>
       <div
         aria-hidden="true"
         className="relative h-[580px] w-[290px] animate-[float_7s_ease-in-out_infinite_alternate] overflow-hidden rounded-[44px] border-[9px] border-slate bg-white shadow-[0_40px_80px_rgba(51,65,85,0.28)]"

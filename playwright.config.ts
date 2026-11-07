@@ -21,6 +21,8 @@ export default defineConfig({
   projects: [
     // The whole mock app: every link and button
     { name: "links", testMatch: /link-audit/, use: { baseURL: `http://localhost:${links}` } },
+    // Accessibility scan of every main screen on the dummy-data app
+    { name: "a11y", testMatch: /a11y/, timeout: 300_000, use: { baseURL: `http://localhost:${links}` } },
     // The app on the real Supabase dev project: sign-in and everything after it
     { name: "real", testMatch: /real-.*.spec.ts/, fullyParallel: false, workers: 1, timeout: 120_000, use: { baseURL: `http://localhost:${real}` } },
     // The production build with the real data: headers, the content security policy, robots, icons, and that dev tools are gone

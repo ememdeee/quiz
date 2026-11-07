@@ -6,6 +6,7 @@ export const quizText = {
   startQuiz: "Start the quiz",
   continue: "Continue",
   back: "Go back",
+  progress: "Quiz progress",
   sharedNote: "Your answers are shared with the quiz owner.",
   poweredBy: "Powered by Quiz",
   privacy: "Privacy",

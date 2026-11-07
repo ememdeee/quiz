@@ -52,7 +52,7 @@ export const home = {
       { title: "See the answers", text: "Watch responses come in, check the charts, and download everything when you need it." },
     ],
     buildRows: ["1 · Welcome", "2 · What is your goal?", "3 · Thank you"],
-    sampleLink: "quiz.com/your-quiz",
+    sampleLink: "quiz.basrh.com/your-quiz",
     copyLink: "Copy link",
   },
 

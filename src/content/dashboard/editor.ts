@@ -36,12 +36,6 @@ export const pageList = {
 export const canvas = {
   title: (n: number) => `What people see on page ${n}`,
   hint: "Changes show here as you type. Everyone sees this mobile view, on any device.",
-  startQuiz: "Start the quiz",
-  continue: "Continue",
-  typeAnswer: "Type your answer",
-  pickDate: "Day / Month / Year",
-  yourPicture: "Your picture",
-  sharedNote: "Your answers are shared with the quiz owner.",
 } as const;
 
 export const addPageDialog = {

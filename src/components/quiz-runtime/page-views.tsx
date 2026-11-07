@@ -21,6 +21,8 @@ export type ViewContext = {
   saving: boolean;
   saveFailed: boolean;
   showPoweredBy: boolean;
+  /** Pages whose answers are shown as picture tiles although no answer has a picture yet (the editor's "Add pictures to the answers") */
+  answerPicturesOn?: Record<string, boolean>;
   setAnswer: (pageId: string, value: Answers[string], moveOn?: boolean) => void;
   next: () => void;
   retry: () => void;
@@ -62,10 +64,10 @@ function WelcomeView({ page, ctx }: ViewProps<"welcome">) {
       }}
       className="flex flex-1 flex-col"
     >
-      <Body className="gap-5 pb-4 pt-10 sm:px-12 sm:pb-8">
+      <Body className="gap-5 pb-4 pt-10 @md:px-12 @md:pb-8">
         <Picture
           src={picture(ctx, page.picture)}
-          className="h-[280px] sm:-mx-12 sm:-mt-10 sm:h-[240px] sm:w-[calc(100%+6rem)] sm:max-w-none sm:rounded-b-none sm:rounded-t-3xl"
+          className="h-[280px] @md:-mx-12 @md:-mt-10 @md:h-[240px] @md:w-[calc(100%+6rem)] @md:max-w-none @md:rounded-b-none @md:rounded-t-3xl"
         />
         <Heading size="lg">{page.title}</Heading>
         {page.text ? <Lead>{page.text}</Lead> : null}
@@ -87,7 +89,7 @@ const optionBase =
 function ChoiceView({ page, ctx }: ViewProps<"choice">) {
   const chosen = (Array.isArray(ctx.answers[page.id]) ? ctx.answers[page.id] : []) as string[];
   const problem = ctx.problem === "pick_one";
-  const pictures = showsAnswerPictures(page);
+  const pictures = showsAnswerPictures(page) || ctx.answerPicturesOn?.[page.id] === true;
 
   const toggle = (id: string) => {
     if (!page.multiple) return ctx.setAnswer(page.id, [id], true);
@@ -275,7 +277,7 @@ function LoadingView({ page, ctx }: ViewProps<"loading">) {
   }, [page.id, page.seconds, page.steps]);
 
   return (
-    <Body className="items-center justify-center gap-5 px-8 sm:min-h-[420px]">
+    <Body className="items-center justify-center gap-5 px-8 @md:min-h-[420px]">
       <svg width="80" height="80" viewBox="0 0 72 72" fill="none" aria-hidden="true" className="animate-spin">
         <circle cx="36" cy="36" r="30" stroke="var(--color-fill)" strokeWidth="8" />
         <path d="M36 6a30 30 0 0 1 30 30" stroke="var(--color-quiz-primary)" strokeWidth="8" strokeLinecap="round" />
@@ -307,7 +309,7 @@ function EndView({ page, ctx }: ViewProps<"end">) {
   const hasButton = page.style !== "thanks" && !!page.buttonText && isHttps(page.link);
   return (
     <>
-      <Body className={cn("items-center text-center", offer ? "justify-start gap-5 pb-4 pt-12" : "justify-center gap-4 px-8 sm:min-h-[420px]")}>
+      <Body className={cn("items-center text-center", offer ? "justify-start gap-5 pb-4 pt-12" : "justify-center gap-4 px-8 @md:min-h-[420px]")}>
         {offer ? null : (
           <span className="mb-2 grid size-[72px] place-items-center rounded-full bg-quiz-primary text-quiz-on-primary">
             <CheckIcon size={36} />

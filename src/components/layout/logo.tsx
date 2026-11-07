@@ -20,7 +20,7 @@ export function Logo({
       viewBox="0 -10 180 76"
       fill="none"
       role="img"
-      aria-label="quiz"
+      aria-label={href === null ? "quiz" : "quiz home"}
       style={{ display: "block", overflow: "visible" }}
     >
       <circle cx="26" cy="28" r="15" stroke="currentColor" strokeWidth="8" />
@@ -44,7 +44,6 @@ export function Logo({
   return (
     <Link
       href={href}
-      aria-label="Quiz home"
       className={cn(
         "inline-flex items-center rounded-lg no-underline focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-slate",
         color,

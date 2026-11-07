@@ -43,6 +43,26 @@ describe("sendEmail", () => {
     expect(await sendEmail(email)).toEqual({ ok: false, error: "Resend answered 422" });
   });
 
+  it("tries again when the service says too many requests, and gives up after three tries", async () => {
+    vi.stubEnv("RESEND_API_KEY", "re_test");
+    vi.useFakeTimers();
+    const fetchMock = vi.fn().mockResolvedValueOnce({ ok: false, status: 429 }).mockResolvedValueOnce({ ok: true, status: 200 });
+    vi.stubGlobal("fetch", fetchMock);
+    const { sendEmail } = await import("./send");
+    const pending = sendEmail(email);
+    await vi.runAllTimersAsync();
+    expect(await pending).toEqual({ ok: true, via: "resend" });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+
+    const always = vi.fn().mockResolvedValue({ ok: false, status: 429 });
+    vi.stubGlobal("fetch", always);
+    const again = sendEmail(email);
+    await vi.runAllTimersAsync();
+    expect(await again).toEqual({ ok: false, error: "Resend answered 429" });
+    expect(always).toHaveBeenCalledTimes(3);
+    vi.useRealTimers();
+  });
+
   it("only skips when nothing is configured", async () => {
     vi.stubEnv("RESEND_API_KEY", "");
     vi.stubEnv("MAILTRAP_API_TOKEN", "");

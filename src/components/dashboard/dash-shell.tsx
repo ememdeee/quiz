@@ -1,10 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { createContext, useContext, type ReactNode } from "react";
 import { Banner } from "@/components/ui/banner";
 import { WifiOffIcon } from "@/components/ui/icons";
 import { ToastProvider } from "@/components/ui/toast";
 import { dashErrors } from "@/content/dashboard/common";
+import { dataMode, isProduction } from "@/lib/env";
+import { routes } from "@/lib/routes";
 import { useOffline } from "@/hooks/use-offline";
 import type { SessionUser } from "@/server/session";
 import { DashEventsProvider } from "./dash-events";
@@ -32,6 +35,12 @@ export function DashShell({ user, children }: { user: SessionUser; children: Rea
         <div className="min-h-dvh bg-dash font-inter text-slate max-nav:hidden">
           <OfflineBar />
           {children}
+          {/* Building aid: a way back to the test links and the person switcher. Not in production, not on real data. */}
+          {!isProduction && dataMode === "mock" ? (
+            <Link href={routes.dev} className="fixed bottom-3 left-3 z-30 rounded-full border border-line bg-white/90 px-3 py-1.5 text-xs font-semibold text-slate shadow-sm no-underline hover:bg-soft">
+              Test links and who is logged in
+            </Link>
+          ) : null}
         </div>
       </DashEventsProvider>
     </ToastProvider>

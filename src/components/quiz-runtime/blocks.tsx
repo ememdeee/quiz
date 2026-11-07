@@ -18,7 +18,7 @@ export function QuizFrame({ theme, previewOf, children }: { theme: QuizTheme | n
     <div style={themeVars(theme) as CSSProperties} className="flex min-h-dvh flex-col bg-quiz-bg font-inter text-quiz-fg sm:bg-stage">
       {previewOf ? <PreviewBar quizId={previewOf} /> : null}
       <div className="flex flex-1 sm:items-center sm:justify-center sm:p-6">
-        <div className="relative flex w-full flex-1 flex-col bg-quiz-bg sm:max-w-[520px] sm:flex-none sm:rounded-3xl sm:shadow-[0_1px_2px_rgba(51,65,85,0.06),0_16px_48px_rgba(51,65,85,0.12)]">
+        <div className="@container relative flex w-full flex-1 flex-col bg-quiz-bg sm:max-w-[520px] sm:flex-none sm:rounded-3xl sm:shadow-[0_1px_2px_rgba(51,65,85,0.06),0_16px_48px_rgba(51,65,85,0.12)]">
           {children}
         </div>
       </div>
@@ -56,7 +56,7 @@ export function TopBar({ progress, onBack }: { progress: number; onBack?: () => 
           <ArrowLeftIcon size={22} strokeWidth={2.2} />
         </button>
       ) : null}
-      <div role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent} className="h-1.5 flex-1 rounded-full bg-quiz-line">
+      <div role="progressbar" aria-label={quizText.progress} aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent} className="h-1.5 flex-1 rounded-full bg-quiz-line">
         <div className="h-1.5 rounded-full bg-quiz-primary transition-[width] duration-300 ease-out" style={{ width: `${percent}%` }} />
       </div>
     </div>
@@ -121,7 +121,7 @@ export function SaveError({ children }: { children: ReactNode }) {
 /** "Powered by Quiz · Privacy". On a computer it hangs below the card instead of inside it. */
 export function PoweredBy({ withPrivacy = false }: { withPrivacy?: boolean }) {
   return (
-    <p className="m-0 text-center text-[13px] text-quiz-muted sm:absolute sm:inset-x-0 sm:top-full sm:pt-5 sm:text-sm">
+    <p className="m-0 text-center text-[13px] text-quiz-muted @md:absolute @md:inset-x-0 @md:top-full @md:pt-5 @md:text-sm">
       {quizText.poweredBy}
       {withPrivacy ? (
         <>
@@ -138,7 +138,7 @@ export function PoweredBy({ withPrivacy = false }: { withPrivacy?: boolean }) {
 export const Heading = ({ children, size = "md", className }: { children: ReactNode; size?: "md" | "lg"; className?: string }) => (
   <h1
     tabIndex={-1}
-    className={cn("m-0 font-bold outline-none", size === "lg" ? "text-[30px] leading-9 sm:text-[32px] sm:leading-10" : "text-[28px] leading-[34px] sm:text-[30px] sm:leading-[38px]", className)}
+    className={cn("m-0 font-bold outline-none", size === "lg" ? "text-[30px] leading-9 @md:text-[32px] @md:leading-10" : "text-[28px] leading-[34px] @md:text-[30px] @md:leading-[38px]", className)}
   >
     {children}
   </h1>
