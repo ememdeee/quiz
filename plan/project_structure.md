@@ -73,6 +73,13 @@ Screens with several states open directly through a query: `/login?state=error|u
 
 ---
 
+## Dashboard foundation and quiz list (Slice A, 2026-11-07, branch `phase-2-dashboard-ui`)
+- Old app deleted (commit "Remove the old app"). Dashboard code: route group `src/app/(app)/` (layout checks the mock session; logged out goes to `/login`), `src/components/dashboard/*` (`dash-shell`, `phone-gate` below 900 px, `dash-events` for the logged-out and suspended dialogs, `quiz-list/*`, `quiz-placeholder` for `/dashboard/[quizId]` until the editor exists), words in `src/content/dashboard/*`, URLs in `routes.ts` (`quizHref.*`).
+- Data: ports `src/server/repos/ports.ts` (async); mock in `src/server/repos/mock/*` runs in the browser with localStorage; wired in `src/server/repos/index.ts`; screens use only the hooks in `src/hooks/use-quizzes.ts`. Phase 5 replaces the inside of `repos` with server actions. Seed `src/data/mock/seed.ts`, templates `src/data/mock/templates.ts`. Test switches (slow, fail, offline, suspended, logged out, empty, full) are on `/dev` (`mock/flags.ts`, `mock/dev.ts`).
+- Shared logic with tests (`npm test`, `vitest.config.ts`): `lib/plan/limits.ts`, `lib/slug.ts`, `lib/format.ts`, `lib/quizzes/list.ts`; error codes in `lib/errors.ts`.
+- UI kit in `src/components/ui/` (Radix: dialog, dropdown-menu, popover, switch, checkbox, radio-group, tabs). `Button` and `Input` take `shape="box"` for the dashboard. `/dev/ui` shows all of it; `/dev/templates` shows the template contents.
+- Decisions: card "Full" state not built (G8); Copy link copies directly (the Share dialog is slice C); tokens added: `fill`, `dashline`, `scrim`.
+
 ## What This Is
 
 A **Next.js 15** quiz/assessment platform that sells a personalized health plan (BodyReset). Users complete a multi-step quiz, receive a result page with health insights calculated from their answers, and are presented with a $29 offer. The product name in-code is "quiz" (historical artifact — the project is not Svelte).

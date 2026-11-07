@@ -199,3 +199,72 @@ export const GoogleIcon = () => (
     />
   </svg>
 );
+
+/* Dashboard icons */
+export const PlusIcon = (p: IconProps) => (
+  <Svg size={18} strokeWidth={2.5} {...p}>
+    <path d="M12 5v14M5 12h14" />
+  </Svg>
+);
+export const SearchIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <circle cx="11" cy="11" r="7" />
+    <path d="m20 20-3.5-3.5" />
+  </Svg>
+);
+export const DotsIcon = (p: IconProps) => (
+  <Svg size={18} fill="currentColor" stroke="none" {...p}>
+    <circle cx="5" cy="12" r="1.6" />
+    <circle cx="12" cy="12" r="1.6" />
+    <circle cx="19" cy="12" r="1.6" />
+  </Svg>
+);
+export const LinkIcon = (p: IconProps) => (
+  <Svg size={16} {...p}>
+    <path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" />
+  </Svg>
+);
+export const PencilIcon = (p: IconProps) => (
+  <Svg size={18} {...p}>
+    <path d="M4 20h4L19 9l-4-4L4 16z" />
+  </Svg>
+);
+export const CopyIcon = (p: IconProps) => (
+  <Svg size={18} {...p}>
+    <rect x="9" y="9" width="11" height="11" rx="2" />
+    <path d="M5 15V6a2 2 0 0 1 2-2h9" />
+  </Svg>
+);
+export const LockIcon = (p: IconProps) => (
+  <Svg size={18} {...p}>
+    <rect x="5" y="11" width="14" height="9" rx="2" />
+    <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+  </Svg>
+);
+export const UnlockIcon = (p: IconProps) => (
+  <Svg size={18} {...p}>
+    <rect x="5" y="11" width="14" height="9" rx="2" />
+    <path d="M8 11V8a4 4 0 0 1 7.5-2" />
+  </Svg>
+);
+export const TrashIcon = (p: IconProps) => (
+  <Svg size={18} {...p}>
+    <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />
+  </Svg>
+);
+export const WifiOffIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M2 8.8a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M12 20h0M3 3l18 18" />
+  </Svg>
+);
+export const ChatIcon = (p: IconProps) => (
+  <Svg size={26} {...p}>
+    <path d="M4 5h16v11H8l-4 4z" />
+  </Svg>
+);
+export const InfoIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 11v5M12 8h0" />
+  </Svg>
+);

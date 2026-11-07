@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { AuthLayout } from "@/components/auth/auth-layout";
 import { LoginForm } from "@/components/auth/login-form";
 import { auth } from "@/content/auth";
-import { loginStates, type LoginState } from "@/lib/routes";
-import { getPendingEmail } from "@/server/session";
+import { loginStates, routes, type LoginState } from "@/lib/routes";
+import { getPendingEmail, getSessionUser } from "@/server/session";
 
 export const metadata: Metadata = { title: "Log in · Quiz", robots: { index: false } };
 
@@ -12,6 +13,7 @@ const prefilled: LoginState[] = ["error", "suspended", "google-exists"];
 
 /** ?state=... opens each login screen directly (the dev link list uses this). */
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ state?: string }> }) {
+  if (await getSessionUser()) redirect(routes.dashboard);
   const { state } = await searchParams;
   const initial = loginStates.find((s) => s === state) ?? null;
   const email = initial && prefilled.includes(initial) ? ((await getPendingEmail()) ?? auth.placeholderEmail) : "";

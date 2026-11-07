@@ -16,6 +16,12 @@
   --color-page: #f7f9fb;
   --color-tint: #c9d6ea;
   --color-steel: #7f93b2;
+  /* Skeleton blocks and the grey "Closed" label */
+  --color-fill: #e1e6ed;
+  /* Dashed outline of empty states and the "new quiz" tile */
+  --color-dashline: #9aa5b4;
+  /* Dimmed page behind a dialog */
+  --color-scrim: rgb(51 65 85 / 0.45);
   --color-danger: #b3261e;
   --color-danger-soft: #fbeae8;
   --color-danger-line: #e4a9a4;

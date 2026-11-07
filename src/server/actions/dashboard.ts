@@ -1,0 +1,17 @@
+"use server";
+
+import { redirect } from "next/navigation";
+import { routes } from "@/lib/routes";
+import { endSession } from "@/server/session";
+
+/** "You've been logged out" dialog: end whatever is left of the session and go to the log in screen. */
+export async function sessionEndedAction() {
+  await endSession();
+  redirect(routes.login);
+}
+
+/** Phone message "Email me a link" (mock: nothing is sent; Phase 12 sends the real email). */
+export async function emailDashboardLinkAction(): Promise<{ ok: true }> {
+  await new Promise((resolve) => setTimeout(resolve, 700));
+  return { ok: true };
+}

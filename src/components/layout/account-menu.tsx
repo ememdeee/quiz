@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { Avatar } from "@/components/ui/avatar";
 import { HelpIcon, LogoutIcon, ShieldCheckIcon, StarIcon, UserIcon } from "@/components/ui/icons";
 import { softHover } from "@/components/ui/link-styles";
 import { accountMenuItems, siteLabels } from "@/content/site";
@@ -53,9 +54,7 @@ export function AccountMenu({ user }: { user: SessionUser }) {
           className="absolute right-0 top-[calc(100%+12px)] z-40 w-[300px] animate-[appear_0.2s_ease-out] rounded-2xl border border-line bg-white p-2 shadow-[0_16px_40px_rgba(51,65,85,0.18)]"
         >
           <div className="mb-1.5 flex items-center gap-3 border-b border-line p-3">
-            <span className="grid size-11 flex-none place-items-center rounded-full bg-soft text-slate">
-              <UserIcon />
-            </span>
+            <Avatar className="border-0" />
             <span className="min-w-0">
               <span className="block truncate text-base font-bold text-slate">{user.name}</span>
               <span className="block truncate text-sm text-mute">{user.email}</span>

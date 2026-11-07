@@ -42,7 +42,7 @@
 - [ ] **Phase 0** Accounts, repo, decisions
 - [ ] **Phase 1** Clean-up and foundation (tooling, tokens, shared logic with unit tests)
 - [ ] **Phase 2** Whole UI with dummy data, all links connected, owner says "UI approved"
-  - [ ] UI kit (website parts done, dashboard parts not)  - [ ] layouts and shared components (site and sign-in done, dashboard/admin/quiz not)  - [x] website  - [x] auth screens  - [ ] quiz list and new quiz
+  - [x] UI kit  - [ ] layouts and shared components (site and sign-in done, dashboard/admin/quiz not)  - [x] website  - [x] auth screens  - [x] quiz list and new quiz (Slice A, 2026-11-07; "Full" card state waits for design G8)
   - [ ] editor (all page types, conditions, publish, share, settings, media dialog, Edit with AI)  - [ ] quiz runtime
   - [ ] responses (summary, individual, export, delete)  - [ ] account  - [ ] admin  - [ ] email templates
   - [ ] link audit passes  - [ ] staging preview deployed

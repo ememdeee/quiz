@@ -28,6 +28,18 @@ export const routes = {
   dev: "/dev",
   devSession: "/dev/session",
   dev500: "/dev/500",
+  devUi: "/dev/ui",
+  devTemplates: "/dev/templates",
+} as const;
+
+/** Pages of one quiz in the dashboard. They use the quiz id, never the web address. */
+export const quizHref = {
+  edit: (id: string) => `/dashboard/${id}`,
+  responses: (id: string) => `/dashboard/${id}/responses`,
+  settings: (id: string) => `/dashboard/${id}/settings`,
+  preview: (id: string) => `/dashboard/${id}/preview`,
+  /** What the people who answer open. */
+  public: (slug: string) => `/quiz/${slug}`,
 } as const;
 
 export const CONTACT_EMAIL = "basurah@basrh.com";

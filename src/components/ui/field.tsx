@@ -8,15 +8,26 @@ const control =
   "focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-slate " +
   "aria-[invalid=true]:border-2 aria-[invalid=true]:border-danger disabled:opacity-50 transition-colors duration-200";
 
-export function Input({ className, invalid, ...rest }: ComponentProps<"input"> & { invalid?: boolean }) {
-  return <input aria-invalid={invalid || undefined} className={cn(control, "min-h-14 px-4", className)} {...rest} />;
+/** shape="pill" is the website (taller, 12 px corners); shape="box" is the dashboard (48 px, 10 px corners). */
+type Shape = "pill" | "box";
+type FieldProps = { invalid?: boolean; shape?: Shape };
+
+const box = "rounded-[10px] text-base disabled:border-line disabled:bg-dash disabled:text-ctrl disabled:opacity-100";
+const height = { pill: "min-h-14 px-4", box: cn("min-h-12 px-3.5", box) } as const;
+
+export function Input({ className, invalid, shape = "pill", ...rest }: ComponentProps<"input"> & FieldProps) {
+  return <input aria-invalid={invalid || undefined} className={cn(control, height[shape], className)} {...rest} />;
 }
 
-export function Textarea({ className, invalid, ...rest }: ComponentProps<"textarea"> & { invalid?: boolean }) {
+export function Select({ className, invalid, shape = "box", ...rest }: ComponentProps<"select"> & FieldProps) {
+  return <select aria-invalid={invalid || undefined} className={cn(control, height[shape], "text-[15px]", className)} {...rest} />;
+}
+
+export function Textarea({ className, invalid, shape = "pill", ...rest }: ComponentProps<"textarea"> & FieldProps) {
   return (
     <textarea
       aria-invalid={invalid || undefined}
-      className={cn(control, "resize-none px-4 py-3.5 leading-[26px]", className)}
+      className={cn(control, "resize-none", shape === "box" ? cn(box, "px-3.5 py-3 leading-6") : "px-4 py-3.5 leading-[26px]", className)}
       {...rest}
     />
   );

@@ -1,7 +1,8 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { DashboardDevTools } from "@/components/dev/dashboard-tools";
 import { MOCK_PASSWORD, mockAccounts } from "@/data/mock/accounts";
-import { contactHref, loginHref, routes, verifyEmailHref } from "@/lib/routes";
+import { contactHref, loginHref, quizHref, routes, verifyEmailHref } from "@/lib/routes";
 import { getSessionUser } from "@/server/session";
 
 export const metadata: Metadata = { title: "Test links · Quiz", robots: { index: false } };
@@ -59,6 +60,18 @@ const groups: { title: string; note?: string; links: { label: string; href: stri
   },
 ];
 
+const dashboardGroup = {
+  title: "Dashboard (log in first)",
+  note: "Log in as a normal person above. Phones and narrow windows (under 900 px) show “The dashboard works best on a computer”.",
+  links: [
+    { label: "Your quizzes", href: routes.dashboard },
+    { label: "A quiz (the editor comes later)", href: quizHref.edit("quiz-body-reset") },
+    { label: "Quiz not found", href: quizHref.edit("does-not-exist") },
+    { label: "UI kit: every component", href: routes.devUi },
+    { label: "What each template contains", href: routes.devTemplates },
+  ],
+};
+
 const linkClass =
   "flex min-h-11 items-center justify-between gap-3 rounded-[10px] border border-line bg-white px-3.5 text-[15px] font-medium text-slate no-underline hover:bg-soft focus-visible:outline-[3px] focus-visible:outline-slate";
 
@@ -85,9 +98,11 @@ export default async function DevPage() {
           </div>
         </section>
 
-        {groups.map((group) => (
+        {[dashboardGroup, ...groups].map((group) => (
           <section key={group.title} className="mt-8">
             <h2 className="m-0 text-lg font-bold">{group.title}</h2>
+            {"note" in group && group.note ? <p className="mb-0 mt-1 text-[15px] text-mute">{group.note}</p> : null}
+            {group.title.startsWith("Dashboard") ? <DashboardDevTools /> : null}
             <ul className="mt-3 grid list-none gap-2.5 p-0 sm:grid-cols-2">
               {group.links.map((link) => (
                 <li key={link.href}>
