@@ -146,3 +146,70 @@ test("a page that only some people see is shown to them and skipped for the othe
     await context.close();
   }
 });
+
+test("QC-11 the owner downloads the answers as a CSV and the words people chose are in it", async ({ page, browser }) => {
+  const owner = await makePerson();
+  const quiz = await makeQuiz(owner.id, { published: true });
+  const context = await browser.newContext();
+  const tab = await context.newPage();
+  await tab.goto(`/quiz/${quiz.slug}`);
+  await tab.getByRole("button", { name: "Start the quiz" }).click();
+  await tab.getByRole("radio", { name: "Tone" }).click();
+  await expect(tab.getByText("Thanks")).toBeVisible({ timeout: 30_000 });
+  await context.close();
+
+  await login(page, owner.email);
+  await page.goto(`/dashboard/${quiz.id}/responses`);
+  await page.getByRole("button", { name: /Export/ }).first().click({ timeout: 30_000 });
+  const download = page.waitForEvent("download", { timeout: 30_000 });
+  await page.getByRole("menuitem", { name: /CSV/ }).click();
+  const file = await download;
+  expect(file.suggestedFilename()).toMatch(/\.csv$/);
+  const { createReadStream } = await import("node:fs");
+  const chunks: Buffer[] = [];
+  for await (const chunk of createReadStream((await file.path())!)) chunks.push(chunk as Buffer);
+  const text = Buffer.concat(chunks).toString("utf8");
+  expect(text).toContain("Your goal?");
+  expect(text).toContain("Tone");
+});
+
+test("QC-10 on a phone the whole quiz works: touch screen, 390 px wide, from Start to the End page", async ({ browser }) => {
+  const owner = await makePerson();
+  const quiz = await makeQuiz(owner.id, { published: true });
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+  const tab = await context.newPage();
+  await tab.goto(`/quiz/${quiz.slug}`);
+  await tab.getByRole("button", { name: "Start the quiz" }).tap();
+  await tab.getByRole("radio", { name: "Tone" }).tap();
+  await expect(tab.getByText("Thanks")).toBeVisible({ timeout: 30_000 });
+  // No sideways scrolling on a phone
+  expect(await tab.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await context.close();
+});
+
+test("QC-15 Edit with AI: a pasted answer is checked, shown as a change, applied as one step, and a wrong answer changes nothing", async ({ page }) => {
+  const owner = await makePerson();
+  const quiz = await makeQuiz(owner.id);
+  await login(page, owner.email);
+  await page.goto(`/dashboard/${quiz.id}`);
+  await page.getByRole("button", { name: /Edit with AI/ }).first().click({ timeout: 30_000 });
+
+  const edited = { format: "quiz-v1", name: "ignored", pages: [welcome, { ...goal, question: "What do you want most?" }, height, end] };
+  const box = page.getByLabel("The AI’s answer");
+
+  // Sentences instead of a quiz: refused, nothing changes
+  await box.fill("Sure! Here is how I would improve your quiz in words only.");
+  await page.getByRole("button", { name: "Check it" }).click();
+  await expect(page.getByText("We couldn’t find a quiz in that text")).toBeVisible({ timeout: 30_000 });
+  const untouched = (await admin.from("quizzes").select("draft").eq("id", quiz.id).single()).data!.draft as { pages: { question?: string }[] };
+  expect(untouched.pages[1].question).toBe("Your goal?");
+
+  // A real answer, with chatter around it, in a code box
+  await page.getByRole("button", { name: "Paste again" }).click();
+  await page.getByLabel("The AI’s answer").fill("Here you go:\n```json\n" + JSON.stringify(edited) + "\n```\nHope that helps!");
+  await page.getByRole("button", { name: "Check it" }).click();
+  await page.getByRole("button", { name: "Update my quiz" }).click({ timeout: 30_000 });
+  await expect.poll(async () => ((await admin.from("quizzes").select("draft").eq("id", quiz.id).single()).data!.draft as { pages: { question?: string }[] }).pages[1].question, { timeout: 30_000 }).toBe("What do you want most?");
+  // The private name is never changed by the AI
+  expect((await admin.from("quizzes").select("name").eq("id", quiz.id).single()).data!.name).not.toBe("ignored");
+});

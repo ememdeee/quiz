@@ -148,3 +148,39 @@ test.describe("production smoke", () => {
     expect(page).toContain("og:image");
   });
 });
+
+test.describe("QC-20 performance", () => {
+  /** All the script files a page asks for, with their sizes and text. */
+  async function scripts(page: import("@playwright/test").Page, path: string) {
+    const files: { url: string; bytes: number; text: string }[] = [];
+    page.on("response", async (response) => {
+      if (response.request().resourceType() !== "script" || !response.url().includes("/_next/")) return;
+      const body = await response.body().catch(() => Buffer.alloc(0));
+      files.push({ url: response.url(), bytes: body.length, text: body.toString("utf8") });
+    });
+    await page.goto(path, { waitUntil: "networkidle" });
+    return files;
+  }
+
+  test("the quiz page ships no editor, drag-and-drop, chart or admin code, and stays light", async ({ page }) => {
+    const files = await scripts(page, "/quiz/no-such-quiz");
+    const total = files.reduce((sum, file) => sum + file.bytes, 0);
+    const all = files.map((file) => file.text).join("\n");
+    for (const forbidden of ["@dnd-kit", "DndContext", "useSortable", "recharts", "exceljs"]) expect(all, forbidden).not.toContain(forbidden);
+    expect(total, `quiz page scripts: ${Math.round(total / 1024)} KB`).toBeLessThan(900 * 1024);
+  });
+
+  test("the home page stays light", async ({ page }) => {
+    const files = await scripts(page, "/");
+    const total = files.reduce((sum, file) => sum + file.bytes, 0);
+    expect(total, `home page scripts: ${Math.round(total / 1024)} KB`).toBeLessThan(900 * 1024);
+  });
+
+  test("pages answer fast: the quiz API and the home page", async ({ request }) => {
+    for (const path of ["/", "/api/health", "/api/q/no-such-quiz"]) {
+      const start = Date.now();
+      expect((await request.get(path)).status()).toBe(200);
+      expect(Date.now() - start, path).toBeLessThan(3000);
+    }
+  });
+});
