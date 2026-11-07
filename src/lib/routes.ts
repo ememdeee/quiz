@@ -42,6 +42,13 @@ export const quizHref = {
   public: (slug: string) => `/quiz/${slug}`,
 } as const;
 
+/** Pages of the admin area (owner only). They use a person's id, never their email. */
+export const adminHref = {
+  overview: "/admin",
+  users: "/admin/users",
+  user: (id: string) => `/admin/users/${id}`,
+} as const;
+
 export const CONTACT_EMAIL = "basurah@basrh.com";
 export const mailto = (address: string = CONTACT_EMAIL) => `mailto:${address}`;
 

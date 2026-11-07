@@ -13,12 +13,16 @@ export type MockFlags = {
   suspended: boolean;
   /** Pretend the session ended */
   loggedOut: boolean;
+  /** The next answer saved in a quiz fails once ("We couldn't save your answer") */
+  failNextSave: boolean;
+  /** The next quiz opened by its link fails once ("Something went wrong") */
+  failNextQuizLoad: boolean;
 };
 
 const KEY = "quiz.mock.flags.v1";
 const EVENT = "quiz-mock-flags";
 
-export const defaultFlags: MockFlags = { slow: false, failNextLoad: false, offline: false, suspended: false, loggedOut: false };
+export const defaultFlags: MockFlags = { slow: false, failNextLoad: false, offline: false, suspended: false, loggedOut: false, failNextSave: false, failNextQuizLoad: false };
 
 export function readFlags(): MockFlags {
   if (typeof window === "undefined") return defaultFlags;

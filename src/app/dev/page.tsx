@@ -2,12 +2,40 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { DashboardDevTools } from "@/components/dev/dashboard-tools";
 import { MOCK_PASSWORD, mockAccounts } from "@/data/mock/accounts";
-import { contactHref, loginHref, quizHref, routes, verifyEmailHref } from "@/lib/routes";
+import { adminHref, contactHref, loginHref, quizHref, routes, verifyEmailHref } from "@/lib/routes";
 import { getSessionUser } from "@/server/session";
 
 export const metadata: Metadata = { title: "Test links · Quiz", robots: { index: false } };
 
 const as = (who: "user" | "admin" | "out", next: string = routes.dev) => `${routes.devSession}?as=${who}&next=${encodeURIComponent(next)}`;
+
+const quizGroup = {
+  title: "The quiz people take",
+  note: "No login needed. Answers are saved in the dummy data, so they appear in Responses. Use the switches above to see “We couldn’t save your answer” and “Something went wrong”. Open a quiz, stop half way, and open it again for “Welcome back”.",
+  links: [
+    { label: "Body Reset (live, one question only for “Lose weight”)", href: quizHref.public("body-reset") },
+    { label: "Debug quiz (closed)", href: quizHref.public("debug-quiz") },
+    { label: "Customer feedback (not published)", href: quizHref.public("customer-feedback") },
+    { label: "A link that does not exist", href: quizHref.public("no-such-quiz") },
+    { label: "Try it: Body Reset, draft with 3 changes (log in first)", href: quizHref.preview("quiz-body-reset") },
+    { label: "Try it: Customer feedback, never published (log in first)", href: quizHref.preview("quiz-customer-feedback") },
+  ],
+};
+
+const adminGroup = {
+  title: "Admin (log in as the admin first)",
+  note: "Only the admin can open these. A normal person or a visitor sees “You don’t have access to this page”. Suspend, delete and plan changes are kept in the dummy data; “Reset the dummy data” puts the people back.",
+  links: [
+    { label: "Overview", href: adminHref.overview },
+    { label: "Users", href: adminHref.users },
+    { label: "Users: not verified", href: `${adminHref.users}?filter=unverified` },
+    { label: "A person on the Custom plan (Maria Gomez)", href: adminHref.user("u-maria") },
+    { label: "A person on the Free plan (Sarah Lee)", href: adminHref.user("u-sarah-lee") },
+    { label: "A suspended person (Kevin Ross)", href: adminHref.user("u-suspended") },
+    { label: "Your own account (cannot suspend or delete)", href: adminHref.user("u-self") },
+    { label: "A person that does not exist", href: adminHref.user("nobody") },
+  ],
+};
 
 const groups: { title: string; note?: string; links: { label: string; href: string }[] }[] = [
   {
@@ -105,7 +133,7 @@ export default async function DevPage() {
           </div>
         </section>
 
-        {[dashboardGroup, ...groups].map((group) => (
+        {[dashboardGroup, quizGroup, adminGroup, ...groups].map((group) => (
           <section key={group.title} className="mt-8">
             <h2 className="m-0 text-lg font-bold">{group.title}</h2>
             {"note" in group && group.note ? <p className="mb-0 mt-1 text-[15px] text-mute">{group.note}</p> : null}

@@ -24,6 +24,8 @@
   --color-dashline: #9aa5b4;
   /* Dimmed page behind a dialog */
   --color-scrim: rgb(51 65 85 / 0.45);
+  /* Behind the quiz card on a computer screen (board FEDesktop) */
+  --color-stage: #eef1f5;
   --color-danger: #b3261e;
   --color-danger-soft: #fbeae8;
   --color-danger-line: #e4a9a4;

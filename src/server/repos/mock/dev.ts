@@ -6,6 +6,7 @@ import type { QuizBundle } from "@/lib/quizzes/types";
 import { defaultFlags, writeFlags } from "./flags";
 import { generateResponses } from "@/data/mock/responses";
 import { resetAccount } from "./account";
+import { resetAdmin } from "./admin";
 import { resetMedia } from "./media";
 import { resetResponses, setForQuiz } from "./responses";
 import { loadBundles, resetBundles } from "./store";
@@ -17,6 +18,7 @@ export function resetAll() {
   resetMedia();
   resetResponses();
   resetAccount();
+  resetAdmin();
   writeFlags(defaultFlags);
 }
 

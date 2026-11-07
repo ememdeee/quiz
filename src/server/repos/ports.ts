@@ -1,6 +1,8 @@
+import type { AdminOverviewData, AdminPerson, PeopleQuery, PersonRow, PlanPatch } from "@/lib/admin/types";
 import type { ActionResult } from "@/lib/errors";
 import type { QuizDocument } from "@/lib/quiz/schema";
-import type { ResponseSet } from "@/lib/responses/types";
+import type { QuizTheme } from "@/lib/quiz/theme";
+import type { ResponseSet, StoredAnswer } from "@/lib/responses/types";
 import type { Profile, QuizBundle, QuizStart, QuizSummary } from "@/lib/quizzes/types";
 
 /**
@@ -65,4 +67,64 @@ export interface ProfilesRepo {
   getCurrent(): Promise<ActionResult<Profile>>;
 }
 
-export type Repos = { quizzes: QuizzesRepo; profiles: ProfilesRepo; media: MediaRepo; responses: ResponsesRepo; account: AccountRepo };
+/** What the quiz screen needs to show one quiz: the pages, the pictures they point to and whether to say "Powered by Quiz". */
+export type PublicQuiz = {
+  quizId: string;
+  document: QuizDocument;
+  /** Picture id to address, for the pictures the document uses */
+  pictures: Record<string, string>;
+  showPoweredBy: boolean;
+  /** null: the default colors */
+  theme: QuizTheme | null;
+};
+
+/** A quiz either opens, or says why it does not (boards FEClosed, FENotPublished, FENotFound). */
+export type PublicLoad = { status: "live"; quiz: PublicQuiz } | { status: "closed" | "not_published" | "not_found" };
+
+/** What this device already did in a quiz (the saved place and answers of the same browser). */
+export type SavedRun = { responseId: string; finished: boolean; answers: Record<string, StoredAnswer>; pagesSeen: string[]; lastPageId: string };
+
+export type RunProgress = { answers: Record<string, StoredAnswer>; pagesSeen: string[]; lastPageId: string; finished: boolean };
+
+/** The people answering a quiz. No login: what remembers them is this browser (handover 8.7). */
+export interface RunnerRepo {
+  load(slug: string): Promise<ActionResult<PublicLoad>>;
+  /** The working copy, for the owner's "Try it". Never saves anything. */
+  loadPreview(quizId: string): Promise<ActionResult<PublicLoad>>;
+  /** Counts one visit (the caller makes sure it is once per tab session). */
+  trackOpen(quizId: string): Promise<void>;
+  /** The unfinished or finished response this browser has for the quiz, or null. */
+  resume(quizId: string): Promise<SavedRun | null>;
+  /** Creates a response when the person presses "Start the quiz". */
+  start(quizId: string): Promise<ActionResult<{ responseId: string }>>;
+  /** Saves everything so far. Fails with `quiz_closed` when the quiz closed in the meantime. */
+  save(quizId: string, responseId: string, progress: RunProgress): Promise<ActionResult<null>>;
+}
+
+/**
+ * What the admin area may ask for (board AdminOverview to AdminDialogs). Counts and details of people only,
+ * never what people answered in a quiz. Every change is also written to the admin log.
+ */
+export interface AdminRepo {
+  overview(): Promise<ActionResult<AdminOverviewData>>;
+  list(query: PeopleQuery): Promise<ActionResult<{ rows: PersonRow[]; total: number; page: number; pages: number }>>;
+  /** Everyone who matches the search and filter, for "Download as CSV" */
+  listAll(query: Omit<PeopleQuery, "page">): Promise<ActionResult<PersonRow[]>>;
+  get(id: string): Promise<ActionResult<AdminPerson>>;
+  setPlan(id: string, patch: PlanPatch): Promise<ActionResult<AdminPerson>>;
+  setNotes(id: string, notes: string): Promise<ActionResult<AdminPerson>>;
+  suspend(id: string): Promise<ActionResult<AdminPerson>>;
+  restore(id: string): Promise<ActionResult<AdminPerson>>;
+  /** The typed email must be the person's email; the admin cannot delete their own account. */
+  remove(id: string, typedEmail: string): Promise<ActionResult<{ id: string }>>;
+}
+
+export type Repos = {
+  quizzes: QuizzesRepo;
+  profiles: ProfilesRepo;
+  media: MediaRepo;
+  responses: ResponsesRepo;
+  account: AccountRepo;
+  runner: RunnerRepo;
+  admin: AdminRepo;
+};

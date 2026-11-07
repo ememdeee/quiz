@@ -309,3 +309,28 @@ export const UploadIcon = (p: IconProps) => (
     <path d="M12 15V3M7 8l5-5 5 5M5 21h14" />
   </Svg>
 );
+
+/* Quiz screens */
+export const ClockIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 7v5l3 2" />
+  </Svg>
+);
+export const HistoryIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5" />
+    <path d="M12 8v4l3 2" />
+  </Svg>
+);
+export const CalendarIcon = (p: IconProps) => (
+  <Svg size={22} {...p}>
+    <rect x="3" y="5" width="18" height="16" rx="2" />
+    <path d="M3 10h18M8 3v4M16 3v4" />
+  </Svg>
+);
+export const ArrowUpRightIcon = (p: IconProps) => (
+  <Svg size={16} {...p}>
+    <path d="M7 17 17 7M8 7h9v9" />
+  </Svg>
+);

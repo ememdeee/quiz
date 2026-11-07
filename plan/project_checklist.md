@@ -8,7 +8,7 @@
 ## A. Now (current phase)
 - Current phase: **Phase 3** (database done on `quiz-dev`; the UI work in Phase 2 continues in another session)
 - Next action: owner reviews branch `phase-3-supabase` and says whether to push it. Then Phase 4 (auth) needs a Google Cloud OAuth client and a Mailtrap sandbox from the owner. Owner still answers D1 and D2 (D1 working default 1 hour is set in config).
-- UI track (separate session, can run next to Phase 4): the Dashboard UI. Handover: `docs/handover-dashboard-ui.md` (four slices A to D, start with A).
+- UI track (Phase 2): dashboard (slices A to D), the quiz runtime and the admin area are done. Left in Phase 2: email templates (2.11), the dev session switcher links (2.0b), the link audit spec and fidelity review (2.12), the Vercel preview (2.13), then "UI approved".
 
 ## B. Design (Claude Design artifact: https://claude.ai/artifact/FiiBUq7uJaBcXyeqfTKtTw)
 - [x] All screens designed (158 boards, version 69 on 2026-11-07; v69 = FAQ full width, FAQ phone padding, Copy link spacing on Home and Pricing)
@@ -42,10 +42,10 @@
 - [ ] **Phase 0** Accounts, repo, decisions
 - [ ] **Phase 1** Clean-up and foundation (tooling, tokens, shared logic with unit tests)
 - [ ] **Phase 2** Whole UI with dummy data, all links connected, owner says "UI approved"
-  - [x] UI kit  - [ ] layouts and shared components (site and sign-in done, dashboard/admin/quiz not)  - [x] website  - [x] auth screens  - [x] quiz list and new quiz (Slice A, 2026-11-07; "Full" card state waits for design G8)
+  - [x] UI kit  - [ ] layouts and shared components (site, sign-in, dashboard, quiz and admin done)  - [x] website  - [x] auth screens  - [x] quiz list and new quiz (Slice A, 2026-11-07; "Full" card state waits for design G8)
   - [x] editor (Slices B and C, 2026-11-07: all page types, conditions, publish, share, settings, pictures, Edit with AI)
-  - [ ] quiz runtime
-  - [x] responses (summary, individual, export, delete)  - [x] account  - [ ] admin  - [ ] email templates
+  - [x] quiz runtime (2026-11-07: `/quiz/[slug]` and Try it, all states, resume, save error; wording with no board is G23)
+  - [x] responses (summary, individual, export, delete)  - [x] account  - [x] admin (2026-11-07: Overview, Users, one person, dialogs, no-access; wording with no board is G24)  - [ ] email templates
   - [ ] link audit passes  - [ ] staging preview deployed
 - [ ] **Phase 3** Supabase, database, security rules, tests: database, RLS, storage and 115 tests DONE (2026-11-07, branch `phase-3-supabase`); left: `repos/supabase` skeletons, optional dev seed
 - [ ] **Phase 4** Register, login, accounts base (real auth)

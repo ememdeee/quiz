@@ -13,6 +13,8 @@ const switches: { key: keyof MockFlags; label: string }[] = [
   { key: "offline", label: "Pretend offline (the offline bar)" },
   { key: "suspended", label: "Pretend suspended (“Your account is suspended”)" },
   { key: "loggedOut", label: "Pretend logged out (“You’ve been logged out”)" },
+  { key: "failNextSave", label: "Next quiz answer fails to save (“We couldn’t save your answer”)" },
+  { key: "failNextQuizLoad", label: "Next quiz link fails to open (“Something went wrong”)" },
 ];
 
 /** Dev only: puts the dashboard's dummy data and switches into a known state. Nothing here is saved anywhere real. */

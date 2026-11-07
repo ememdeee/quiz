@@ -135,13 +135,14 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* Quiz Theme Colors */
-  --color-quiz-primary: var(--quiz-primary, #13ecc8);
-  --color-quiz-primary-fg: var(--quiz-primary-fg, #10221f);
-  --color-quiz-bg: var(--quiz-bg, #f6f8f8);
-  --color-quiz-fg: var(--quiz-fg, #0f172a);
-  --color-quiz-muted-fg: var(--quiz-muted-fg, #64748b);
-  --color-quiz-border: var(--quiz-border, #e2e8f0);
+  /* Quiz theme: the six colors every quiz page uses (board FEShell). The runtime sets the --quiz-* variables
+     on the quiz root; these are the default slate set the design shows. */
+  --color-quiz-primary: var(--quiz-primary, #334155);
+  --color-quiz-on-primary: var(--quiz-on-primary, #ffffff);
+  --color-quiz-bg: var(--quiz-bg, #ffffff);
+  --color-quiz-fg: var(--quiz-fg, #1e293b);
+  --color-quiz-muted: var(--quiz-muted, #5b6778);
+  --color-quiz-line: var(--quiz-line, #d5dbe3);
 
   /* Dashboard Colors */
   --color-dashboard-primary: #6467f2;

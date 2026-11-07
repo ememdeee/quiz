@@ -13,6 +13,14 @@ export const errorCodes = [
   "wrong_password",
   "invalid_email",
   "password_short",
+  /** The person's quiz was closed (or filled up) while they were answering */
+  "quiz_closed",
+  /** The admin tried to suspend or delete their own account */
+  "own_account",
+  /** The email typed to confirm a delete is not the person's email */
+  "confirm_mismatch",
+  /** A limit that is not a whole number of 1 or more */
+  "invalid_limit",
 ] as const;
 export type ErrorCode = (typeof errorCodes)[number];
 
