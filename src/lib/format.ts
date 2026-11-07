@@ -21,3 +21,12 @@ export const editedAgo = (date: Date | string | number, now?: Date | number) => 
 
 const numberFormat = new Intl.NumberFormat("en-US");
 export const formatNumber = (n: number) => numberFormat.format(n);
+
+const dateTime = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", hour12: false });
+const shortDate = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" });
+
+/** "Nov 6, 10:42", in the viewer's time zone. */
+export const formatDateTime = (date: Date | string | number) => dateTime.format(new Date(date));
+
+/** "Nov 6". */
+export const formatShortDate = (date: Date | string | number) => shortDate.format(new Date(date));

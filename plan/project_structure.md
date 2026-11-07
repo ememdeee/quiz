@@ -94,6 +94,12 @@ Screens with several states open directly through a query: `/login?state=error|u
 - Edit with AI: `lib/ai/prompt.ts` (field list built from the schema), `export.ts`, `import.ts` (find, check, new ids, left-out pictures, changes), UI in `components/editor/ai/`, words in `content/dashboard/ai.ts`. Applying is one Undo step with a toast.
 - `lib/quiz/diff.ts` compares pages with sorted keys (`stable`), so a page written in another key order is not a change.
 
+## Responses and Account (Slice D, 2026-11-07)
+- `lib/responses/`: `summarize.ts` (funnel, where people leave, a summary per question, removed questions), `individual.ts` (filters, answer rows), `export/` (`table.ts`, `csv.ts`, `json.ts`, `download.ts` with `exceljs` loaded only when Excel is chosen). Answers keep the question text and option texts they had when given.
+- Data: `ResponsesRepo` and `AccountRepo` in `server/repos/ports.ts`, mock in `repos/mock/responses.ts` and `account.ts` (localStorage), made-up people in `data/mock/responses.ts` (seeded random numbers, so the same every reset). Hooks `use-responses.ts` and `use-account.ts`.
+- UI: `components/responses/` (page, summary, individual, export menu, delete dialogs, limit banners) and `components/account/`. Routes `/dashboard/[quizId]/responses` (`?view=individual`) and `/account`. Words in `content/dashboard/responses.ts` and `account.ts`.
+- `/dev` has buttons for 450 and 500 responses and for a Google-only account.
+
 ## What This Is
 
 A **Next.js 15** quiz/assessment platform that sells a personalized health plan (BodyReset). Users complete a multi-step quiz, receive a result page with health insights calculated from their answers, and are presented with a $29 offer. The product name in-code is "quiz" (historical artifact — the project is not Svelte).

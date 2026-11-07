@@ -1,5 +1,6 @@
 import type { ActionResult } from "@/lib/errors";
 import type { QuizDocument } from "@/lib/quiz/schema";
+import type { ResponseSet } from "@/lib/responses/types";
 import type { Profile, QuizBundle, QuizStart, QuizSummary } from "@/lib/quizzes/types";
 
 /**
@@ -24,6 +25,34 @@ export interface QuizzesRepo {
   remove(id: string): Promise<ActionResult<{ id: string }>>;
 }
 
+/** The people who answered one quiz. Only the quiz owner can read them. */
+export interface ResponsesRepo {
+  list(quizId: string): Promise<ActionResult<ResponseSet>>;
+  remove(quizId: string, responseId: string): Promise<ActionResult<{ id: string }>>;
+  removeAll(quizId: string): Promise<ActionResult<{ removed: number }>>;
+}
+
+/** The signed-in person's own details and how they log in (board Account). */
+export type AccountState = {
+  name: string;
+  email: string;
+  /** An address waiting for its confirm link. The old one keeps working until then. */
+  pendingEmail: string | null;
+  hasPassword: boolean;
+  googleConnected: boolean;
+};
+
+export interface AccountRepo {
+  get(): Promise<ActionResult<AccountState>>;
+  updateName(name: string): Promise<ActionResult<AccountState>>;
+  requestEmailChange(email: string): Promise<ActionResult<AccountState>>;
+  resendEmailChange(): Promise<ActionResult<AccountState>>;
+  cancelEmailChange(): Promise<ActionResult<AccountState>>;
+  /** `current` is needed only when a password exists already. */
+  setPassword(input: { current?: string; next: string }): Promise<ActionResult<AccountState>>;
+  connectGoogle(): Promise<ActionResult<AccountState>>;
+}
+
 /** The owner's picture library. Newest first. */
 export type MediaItem = { id: string; src: string; name: string };
 
@@ -36,4 +65,4 @@ export interface ProfilesRepo {
   getCurrent(): Promise<ActionResult<Profile>>;
 }
 
-export type Repos = { quizzes: QuizzesRepo; profiles: ProfilesRepo; media: MediaRepo };
+export type Repos = { quizzes: QuizzesRepo; profiles: ProfilesRepo; media: MediaRepo; responses: ResponsesRepo; account: AccountRepo };

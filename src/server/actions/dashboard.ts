@@ -15,3 +15,9 @@ export async function emailDashboardLinkAction(): Promise<{ ok: true }> {
   await new Promise((resolve) => setTimeout(resolve, 700));
   return { ok: true };
 }
+
+/** "Delete my account": ends the session and says goodbye (mock: Phase 10 deletes the data for real). */
+export async function deleteAccountAction() {
+  await endSession();
+  redirect(routes.goodbye);
+}

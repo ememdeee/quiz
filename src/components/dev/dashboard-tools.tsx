@@ -2,7 +2,7 @@
 
 import { useState, useSyncExternalStore } from "react";
 import { defaultFlags, readFlags, subscribeFlags, writeFlags, type MockFlags } from "@/server/repos/mock/flags";
-import { emptyList, fillToLimit, resetAll } from "@/server/repos/mock/dev";
+import { emptyList, fillToLimit, makeGoogleOnly, resetAll, setBodyResetResponses } from "@/server/repos/mock/dev";
 
 const btn =
   "flex min-h-11 items-center rounded-[10px] border border-line bg-white px-3.5 text-left text-[15px] font-medium text-slate hover:bg-soft focus-visible:outline-[3px] focus-visible:outline-slate";
@@ -32,6 +32,9 @@ export function DashboardDevTools() {
         <button type="button" className={btn} onClick={run("Dummy data reset (3 quizzes, all switches off)", resetAll)}>Reset the dummy data</button>
         <button type="button" className={btn} onClick={run("List is now empty", emptyList)}>Empty list (no quizzes)</button>
         <button type="button" className={btn} onClick={run("List is now full (5 of 5)", fillToLimit)}>Fill to the limit (5 of 5)</button>
+        <button type="button" className={btn} onClick={run("Body Reset has 450 finished responses (almost full banner)", () => setBodyResetResponses(450))}>Body Reset: 450 responses</button>
+        <button type="button" className={btn} onClick={run("Body Reset has 500 finished responses (full banner)", () => setBodyResetResponses(500))}>Body Reset: 500 responses</button>
+        <button type="button" className={btn} onClick={run("The account now logs in with Google only", makeGoogleOnly)}>Account: Google only</button>
       </div>
       <ul className="m-0 grid list-none gap-2 p-0 sm:grid-cols-2">
         {switches.map(({ key, label }) => (

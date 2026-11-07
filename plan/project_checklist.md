@@ -45,7 +45,7 @@
   - [x] UI kit  - [ ] layouts and shared components (site and sign-in done, dashboard/admin/quiz not)  - [x] website  - [x] auth screens  - [x] quiz list and new quiz (Slice A, 2026-11-07; "Full" card state waits for design G8)
   - [x] editor (Slices B and C, 2026-11-07: all page types, conditions, publish, share, settings, pictures, Edit with AI)
   - [ ] quiz runtime
-  - [ ] responses (summary, individual, export, delete)  - [ ] account  - [ ] admin  - [ ] email templates
+  - [x] responses (summary, individual, export, delete)  - [x] account  - [ ] admin  - [ ] email templates
   - [ ] link audit passes  - [ ] staging preview deployed
 - [ ] **Phase 3** Supabase, database, security rules, tests: database, RLS, storage and 115 tests DONE (2026-11-07, branch `phase-3-supabase`); left: `repos/supabase` skeletons, optional dev seed
 - [ ] **Phase 4** Register, login, accounts base (real auth)

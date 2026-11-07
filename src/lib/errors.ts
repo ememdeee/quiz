@@ -10,6 +10,9 @@ export const errorCodes = [
   "slug_invalid",
   "publish_blocked",
   "picture_rejected",
+  "wrong_password",
+  "invalid_email",
+  "password_short",
 ] as const;
 export type ErrorCode = (typeof errorCodes)[number];
 

@@ -88,5 +88,3 @@ export const usageMeter = {
   quizzes: { label: "Quizzes", used: (used: number, max: number) => `${used} of ${max} used`, plan: (plan: string) => `${plan} plan.`, seePlans: "See plans" },
 } as const;
 
-/** The page for one quiz is the editor (next slice); until then it shows only the name and a way back. */
-export const quizPlaceholder = { back: "All quizzes" } as const;

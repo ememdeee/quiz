@@ -15,6 +15,8 @@ export type ToastInput = {
   message: string;
   tone?: "default" | "error";
   action?: { label: string; onSelect: () => void };
+  /** A quieter second line of words on the right ("Gone for good") */
+  note?: string;
   /** Seconds before it goes away. Left out: 5 for a normal one, never for an error. */
   seconds?: number;
 };
@@ -75,6 +77,7 @@ function ToastView({ item, onDone }: { item: ToastItem; onDone: (id: number) => 
         {isError ? <AlertCircleIcon size={22} className="flex-none text-danger" /> : null}
         {item.message}
       </span>
+      {item.note ? <span className="text-sm text-line">{item.note}</span> : null}
       {item.action ? (
         <Button
           shape="box"

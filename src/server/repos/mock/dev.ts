@@ -4,7 +4,10 @@ import { blankQuiz } from "@/lib/quiz/templates";
 import { documentFacts } from "@/lib/quizzes/summary";
 import type { QuizBundle } from "@/lib/quizzes/types";
 import { defaultFlags, writeFlags } from "./flags";
+import { generateResponses } from "@/data/mock/responses";
+import { resetAccount } from "./account";
 import { resetMedia } from "./media";
+import { resetResponses, setForQuiz } from "./responses";
 import { loadBundles, resetBundles } from "./store";
 
 /** Buttons on /dev that put the dummy data into a known state. Mock only. */
@@ -12,6 +15,8 @@ import { loadBundles, resetBundles } from "./store";
 export function resetAll() {
   resetBundles(seedBundles());
   resetMedia();
+  resetResponses();
+  resetAccount();
   writeFlags(defaultFlags);
 }
 
@@ -43,3 +48,14 @@ export function fillToLimit() {
   });
   resetBundles([...bundles, ...extra]);
 }
+
+/** Gives Body Reset exactly this many finished responses, so the 450 and 500 banners can be seen. */
+export function setBodyResetResponses(finished: number) {
+  const bundle = loadBundles().find((b) => b.quiz.id === "quiz-body-reset");
+  if (!bundle) return;
+  const now = Date.now();
+  setForQuiz(bundle.quiz.id, { opened: Math.round(finished * 1.45), responses: generateResponses(bundle.draft, { finished, unfinished: 20, now, seed: 7, removed: { id: "smoke", q: "Do you smoke?" } }) });
+}
+
+/** An account that logs in with Google only (board AccountGoogleOnly). */
+export const makeGoogleOnly = () => resetAccount(true);
