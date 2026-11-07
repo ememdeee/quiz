@@ -1,53 +1,43 @@
 "use server";
 
-import { redirect } from "next/navigation";
-import { checkMockLogin } from "@/data/mock/accounts";
-import { routes, type LoginState } from "@/lib/routes";
-import { isValidEmail, PASSWORD_MIN_LENGTH } from "@/lib/validation";
-import { setPendingEmail, startSession } from "@/server/session";
+import { dataMode } from "@/lib/env";
+import { isValidEmail } from "@/lib/validation";
+import { getPendingEmail } from "@/server/session";
+import { forgotPasswordMock, googleLoginMock, loginMock, registerMock, resetPasswordMock, type LoginFormState } from "@/server/auth/mock";
+import { forgotPasswordReal, googleLoginReal, loginReal, registerReal, resendVerificationReal, resetPasswordReal } from "@/server/auth/real";
 
 /**
- * Sign-in actions for the UI phase. They check the form, pick the screen that should come
- * next and move on. Phase 4 swaps the insides for Supabase Auth; the screens stay the same.
+ * The sign-in actions the screens call. In mock mode they use the dummy accounts; in supabase mode they use Supabase Auth.
+ * The screens do not know which (handover 4.3).
  */
-const text = (formData: FormData, key: string) => String(formData.get(key) ?? "");
+export type { LoginFormState };
 
-export type LoginFormState = { state: LoginState | null; email: string };
+const real = dataMode === "supabase";
 
-export async function loginAction(_previous: LoginFormState, formData: FormData): Promise<LoginFormState> {
-  const email = text(formData, "email");
-  const result = checkMockLogin(email, text(formData, "password"));
-  if (result === "user" || result === "admin") {
-    await startSession(result);
-    redirect(routes.dashboard);
-  }
-  if (result === "unverified") await setPendingEmail(email);
-  return { state: result, email };
+export async function loginAction(previous: LoginFormState, formData: FormData): Promise<LoginFormState> {
+  return real ? loginReal(previous, formData) : loginMock(previous, formData);
 }
 
 export async function googleLoginAction() {
-  await startSession("user");
-  redirect(routes.dashboard);
+  return real ? googleLoginReal() : googleLoginMock();
 }
 
 export async function registerAction(formData: FormData) {
-  const email = text(formData, "email");
-  if (!text(formData, "name").trim() || !isValidEmail(email) || text(formData, "password").length < PASSWORD_MIN_LENGTH) {
-    redirect(routes.register);
-  }
-  await setPendingEmail(email);
-  redirect(routes.verifyEmail);
+  return real ? registerReal(formData) : registerMock(formData);
 }
 
 export async function forgotPasswordAction(formData: FormData) {
-  const email = text(formData, "email");
-  if (!isValidEmail(email)) redirect(routes.forgotPassword);
-  await setPendingEmail(email);
-  redirect(routes.forgotPasswordSent);
+  return real ? forgotPasswordReal(formData) : forgotPasswordMock(formData);
 }
 
 export async function resetPasswordAction(formData: FormData) {
-  const password = text(formData, "password");
-  if (password.length < PASSWORD_MIN_LENGTH || password !== text(formData, "confirm")) redirect(routes.resetPassword);
-  redirect(routes.resetPasswordDone);
+  return real ? resetPasswordReal(formData) : resetPasswordMock(formData);
+}
+
+/** "Send the email again" on the check-your-email screen (60 seconds apart; the wait is enforced by Supabase too). */
+export async function resendVerificationAction(): Promise<{ ok: boolean }> {
+  const email = (await getPendingEmail()) ?? "";
+  if (!isValidEmail(email)) return { ok: false };
+  if (!real) return { ok: true };
+  return resendVerificationReal(email);
 }

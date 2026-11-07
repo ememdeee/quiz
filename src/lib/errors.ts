@@ -21,6 +21,14 @@ export const errorCodes = [
   "confirm_mismatch",
   /** A limit that is not a whole number of 1 or more */
   "invalid_limit",
+  /** The quiz was saved from another tab or window since this copy was loaded */
+  "conflict",
+  /** More pages than the plan allows */
+  "limit_pages",
+  /** A document or picture over the size limit */
+  "too_large",
+  /** Slow down: too many requests in a short time */
+  "rate_limited",
 ] as const;
 export type ErrorCode = (typeof errorCodes)[number];
 

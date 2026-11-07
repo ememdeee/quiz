@@ -46,11 +46,11 @@ describe("person A cannot touch person B's data", () => {
     expect((await A.db.from("quiz_daily_stats").update({ opened: 99 }).eq("quiz_id", quizId)).error).not.toBeNull();
 
     const { data: quiz } = await admin.from("quizzes").select("name").eq("id", quizId).single();
-    expect(quiz.name).toBe("B private quiz");
+    expect(quiz?.name).toBe("B private quiz");
     const { data: media } = await admin.from("media").select("file_name").eq("id", mediaId).single();
-    expect(media.file_name).toBe("b.png");
+    expect(media?.file_name).toBe("b.png");
     const { data: profile } = await admin.from("profiles").select("name").eq("id", B.id).single();
-    expect(profile.name).not.toBe("hacked");
+    expect(profile?.name).not.toBe("hacked");
   });
 
   it("cannot delete B's rows in any table", async () => {

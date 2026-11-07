@@ -1,9 +1,11 @@
 import "server-only";
 import { cookies } from "next/headers";
+import { dataMode } from "@/lib/env";
+import { createClient } from "@/server/supabase/server";
 
 /**
- * Mock session for the UI phase (DATA_MODE=mock). A cookie says who is "logged in".
- * Phase 4 replaces the inside of these functions with Supabase Auth; callers do not change.
+ * Who is logged in. In mock mode a cookie says who (the UI phase); in supabase mode it is the real Supabase session and the
+ * person's profile. Callers do not know the difference.
  */
 export type SessionUser = { name: string; email: string; isAdmin: boolean };
 
@@ -17,8 +19,20 @@ const people = {
 export type MockSessionKind = keyof typeof people;
 
 export async function getSessionUser(): Promise<SessionUser | null> {
+  if (dataMode === "supabase") return getSupabaseUser();
   const value = (await cookies()).get(SESSION_COOKIE)?.value;
   return value && value in people ? people[value as MockSessionKind] : null;
+}
+
+/** The real person: nobody if there is no session, or if the account is suspended. */
+async function getSupabaseUser(): Promise<SessionUser | null> {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getUser();
+  if (!data.user) return null;
+  const { data: profile } = await supabase.from("profiles").select("name, role, status").eq("id", data.user.id).single();
+  if (!profile || profile.status === "suspended") return null;
+  const email = data.user.email ?? "";
+  return { name: profile.name || email.split("@")[0], email, isAdmin: profile.role === "admin" };
 }
 
 export async function startSession(kind: MockSessionKind) {
@@ -26,6 +40,10 @@ export async function startSession(kind: MockSessionKind) {
 }
 
 export async function endSession() {
+  if (dataMode === "supabase") {
+    await (await createClient()).auth.signOut();
+    return;
+  }
   (await cookies()).delete(SESSION_COOKIE);
 }
 

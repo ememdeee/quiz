@@ -18,7 +18,7 @@ const errorStates: LoginState[] = ["error", "too-many", "suspended"];
 const noForgotLink: LoginState[] = ["unverified", "too-many", "suspended", "google-cancelled"];
 
 /** Log in, with every state the design shows (wrong password, not verified, too many tries, ...). */
-export function LoginForm({ initialState, initialEmail }: { initialState: LoginState | null; initialEmail: string }) {
+export function LoginForm({ initialState, initialEmail, next = "" }: { initialState: LoginState | null; initialEmail: string; next?: string }) {
   const [form, formAction] = useActionState(loginAction, { state: initialState, email: initialEmail });
   const { state, email } = form;
   const isError = state !== null && errorStates.includes(state);
@@ -26,6 +26,7 @@ export function LoginForm({ initialState, initialEmail }: { initialState: LoginS
 
   return (
     <form action={formAction} className={authStack}>
+      {next ? <input type="hidden" name="next" value={next} /> : null}
       <AuthHeading title={auth.login.title} sub={auth.login.sub} />
 
       {state ? (

@@ -6,6 +6,7 @@ import { Button, ButtonLink, DisabledButton } from "@/components/ui/button";
 import { RichText } from "@/components/ui/rich-text";
 import { auth, RESEND_WAIT_SECONDS } from "@/content/auth";
 import { routes } from "@/lib/routes";
+import { resendVerificationAction } from "@/server/actions/auth";
 import { AuthHeading, authLink, AuthStack } from "./auth-layout";
 
 /** "Check your email" after sign-up, with the 60 second wait before asking for another email. */
@@ -20,10 +21,9 @@ export function VerifyEmailView({ email, initialResent }: { email: string; initi
     return () => clearTimeout(timer);
   }, [seconds]);
 
-  // Phase 4 asks the server to send the email again here
-  const sendAgain = () => {
-    setResent(true);
+  const sendAgain = async () => {
     setSeconds(RESEND_WAIT_SECONDS);
+    setResent((await resendVerificationAction()).ok);
   };
 
   return (
@@ -34,7 +34,7 @@ export function VerifyEmailView({ email, initialResent }: { email: string; initi
           <RichText text={verify.resentBanner} />
         </Banner>
       ) : null}
-      <ButtonLink href={routes.verifyEmailDone} size="lg" block>
+      <ButtonLink href={routes.dashboard} size="lg" block>
         {verify.done}
       </ButtonLink>
       {seconds > 0 ? (

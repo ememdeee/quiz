@@ -1,0 +1,31 @@
+[WebServer] <w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (115kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+[WebServer] <w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (272kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+[WebServer] <w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (115kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+[WebServer] <w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (272kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+
+Running 1 test using 1 worker
+
+  x  1 [real] › tests\qc\real-auth.spec.ts:130:3 › verifying an email and resetting a password › registering through the website makes an unverified account and says to check the email (9.0s)
+
+
+  1) [real] › tests\qc\real-auth.spec.ts:130:3 › verifying an email and resetting a password › registering through the website makes an unverified account and says to check the email 
+
+    Error: expect(received).toBeNull()
+
+    Received: undefined
+
+      141 |     const made = data.users.find((u) => u.email === email);
+      142 |     expect(made, "the account exists").toBeTruthy();
+    > 143 |     expect(made!.email_confirmed_at).toBeNull();
+          |                                      ^
+      144 |     const { data: profile } = await admin.from("profiles").select("name").eq("id", made!.id).single();
+      145 |     expect(profile?.name).toBe("Register QC");
+      146 |     await removeByEmail(email);
+        at D:\Work-or-ticket\quiz\tests\qc\real-auth.spec.ts:143:38
+
+    Error Context: test-results\real-auth-verifying-an-ema-b1271-and-says-to-check-the-email-real\error-context.md
+
+    Error Context: test-results\real-auth-verifying-an-ema-b1271-and-says-to-check-the-email-real\error-context.md
+
+  1 failed
+    [real] › tests\qc\real-auth.spec.ts:130:3 › verifying an email and resetting a password › registering through the website makes an unverified account and says to check the email 

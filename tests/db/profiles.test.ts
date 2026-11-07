@@ -9,7 +9,7 @@ describe("profiles are protected", () => {
 
   it("a profile row exists with the safe defaults (created by handle_new_user)", async () => {
     const { data } = await A.db.from("profiles").select("*").eq("id", A.id).single();
-    expect(data.role).toBe("user");
+    expect(data?.role).toBe("user");
     expect(data.plan).toBe("free");
     expect(data.status).toBe("active");
     await admin.from("profiles").update({ name: "" }).eq("id", A.id);
@@ -19,7 +19,7 @@ describe("profiles are protected", () => {
     const { error } = await A.db.from("profiles").update({ name: "New Name" }).eq("id", A.id);
     expect(error).toBeNull();
     const { data } = await admin.from("profiles").select("name").eq("id", A.id).single();
-    expect(data.name).toBe("New Name");
+    expect(data?.name).toBe("New Name");
   });
 
   const forbidden: [string, unknown][] = [
@@ -60,7 +60,7 @@ describe("profiles are protected", () => {
       end $$;`;
     await expect(runSql(query)).rejects.toThrow(/RESULT:profile_columns_protected/);
     const { data } = await admin.from("profiles").select("role").eq("id", A.id).single();
-    expect(data.role).toBe("user");
+    expect(data?.role).toBe("user");
   });
 
   it("an admin account gets no extra access from the database (admins use server code)", async () => {
