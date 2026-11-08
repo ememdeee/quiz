@@ -29,6 +29,7 @@ The UI source of truth is the Claude Design artifact: **https://claude.ai/artifa
 
 - Any UI change that is not very minor (typo, a few pixels of spacing, making code match the design) must be **designed in Claude Design first**, approved by the owner, and only then built in code. Never invent a screen, state, field, flow or rule in code.
 - If the code needs something that is not in the design, stop, say what is needed, and ask the owner.
+- **TEMPORARY EXCEPTION (owner decision 2026-11-08):** this Claude account cannot open the design artifact, so Code cannot design there. For anything missing from the design, build the simplest sensible version directly in code, and add it to the "NOT DESIGNED YET" list: `plan/project_checklist.md` section H, `plan/project_handover.md` 13.4 and the dev page `/dev/undesigned` (`src/app/dev/undesigned/page.tsx`). Keep all three in step; never leave an invented screen unlisted. Screens that already have a board are still never changed without the owner. The owner designs the listed items later; then build to the board and delete the row.
 - Keep code DRY: each thing lives in one place (routes, strings, tokens, UI primitives, the page-type registry, the quiz schema). See rule R2 in `project_handover.md`.
 - Nothing goes to production until `npm run release-check` (including the QC scripts) is green.
 

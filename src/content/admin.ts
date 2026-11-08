@@ -1,0 +1,137 @@
+/** Words of the admin area (boards AdminOverview, AdminUsers, AdminUser, AdminDialogs, AdminNoAccess). */
+export const adminNav = {
+  badge: "Admin",
+  sections: "Admin sections",
+  overview: "Overview",
+  users: "Users",
+  myQuizzes: "My quizzes",
+} as const;
+
+export const noAccess = {
+  title: "You don’t have access to this page",
+  text: "This area is only for the people who run Quiz.",
+  button: "Go to my quizzes",
+} as const;
+
+export const overviewPage = {
+  title: "Overview",
+  subtitle: "How many people use Quiz.",
+  stats: {
+    signedUp: "People signed up",
+    week: "New this week",
+    month: "New this month",
+    custom: "On the Custom plan",
+    quizzes: "Quizzes made",
+    responses: "Responses collected",
+  },
+  chartTitle: "New sign-ups, last 30 days",
+  chartSub: "One bar per day",
+  chartStart: "30 days ago",
+  chartEnd: "Today",
+  bar: (count: number, daysAgo: number) => `${count} ${count === 1 ? "sign-up" : "sign-ups"}, ${daysAgo === 0 ? "today" : `${daysAgo} ${daysAgo === 1 ? "day" : "days"} ago`}`,
+  unverified: "Haven’t verified their email",
+  nearLimit: "Close to a Free plan limit",
+  newest: "Newest people",
+  seeEveryone: "See everyone",
+  errorTitle: "We couldn’t load this page",
+  loadFailed: "Please try again in a moment.",
+  tryAgain: "Try again",
+} as const;
+
+export const usersPage = {
+  title: "Users",
+  count: (n: number) => `${n.toLocaleString("en-US")} ${n === 1 ? "person" : "people"}.`,
+  csv: "Download as CSV",
+  search: "Search",
+  searchPlaceholder: "Search by name or email",
+  /** "Near a limit" has no board (gap G7). */
+  filters: { everyone: "Everyone", free: "Free", custom: "Custom", unverified: "Not verified", "near-limit": "Near a limit" },
+  filterLabel: "Show",
+  sortLabel: "Sort",
+  newestFirst: "Newest first",
+  columns: { person: "Person", plan: "Plan", quizzes: "Quizzes", responses: "Responses", signedUp: "Signed up", email: "Email" },
+  verified: "Verified",
+  notVerified: "Not verified",
+  open: "Open",
+  openPerson: (name: string) => `Open ${name}`,
+  showing: (from: number, to: number, total: number) => `Showing ${from.toLocaleString("en-US")}–${to.toLocaleString("en-US")} of ${total.toLocaleString("en-US")}`,
+  previous: "Previous",
+  next: "Next",
+  /** The design shows no empty state for a search with no match (gap G24). */
+  none: "No one matches that.",
+} as const;
+
+export const personPage = {
+  back: "All users",
+  verified: "Email verified",
+  notVerified: "Email not verified",
+  signedUp: (date: string) => `Signed up ${date}`,
+  google: "Signs in with Google",
+  suspendedPill: "Suspended",
+  plan: "Plan",
+  planFree: "Free",
+  planCustom: "Custom",
+  brandColors: "Brand colors unlocked",
+  hidePowered: "Hide “Powered by Quiz”",
+  domain: "Custom domain",
+  domainHint: "Leave empty if they don’t have one.",
+  limits: "Limits",
+  limitQuizzes: "Quizzes",
+  limitPages: "Pages per quiz",
+  limitResponses: "Responses per quiz",
+  freeHint: (n: number) => `Free: ${n.toLocaleString("en-US")}`,
+  /** The design shows only the Custom plan (gap G24): this is the Free state. */
+  freeNote: "The Free plan has the standard limits and shows “Powered by Quiz”.",
+  limitInvalid: "Use a whole number of 1 or more, or leave it empty.",
+  changesRightAway: "Changes apply right away.",
+  savePlan: "Save plan",
+  saved: (first: string) => `Saved. ${first}’s limits apply now.`,
+  saveFailed: "We couldn’t save. Please try again.",
+  tryAgain: "Try again",
+  quizzes: "Their quizzes",
+  noQuizzes: "They haven’t made a quiz yet.",
+  quizColumns: { quiz: "Quiz", status: "Status", responses: "Responses", edited: "Last edited" },
+  status: { open: "Open", closed: "Closed", not_published: "Not published" },
+  notes: "Private notes",
+  notesLabel: "Notes",
+  notesHint: "Only you can see these.",
+  careful: "Careful",
+  suspend: "Suspend account",
+  delete: "Delete account",
+  carefulNote: "Suspending shows people “This quiz is closed” and blocks login. Nothing is deleted.",
+  ownAccount: "This is your own account. Admins can’t suspend or delete themselves, so nobody gets locked out. Delete your account from Account settings like anyone else.",
+  notFoundTitle: "We can’t find this person",
+  notFoundText: "They may have been deleted.",
+  errorTitle: "We couldn’t load this person",
+  loadFailed: "Please try again in a moment.",
+} as const;
+
+export const adminDialogs = {
+  suspend: {
+    title: (name: string) => `Suspend ${name}?`,
+    /** The board writes "She can’t log in"; people’s pronouns are not stored, so the text says "They" (gap G24). */
+    text: (quizzes: number) => `They can’t log in, and their ${quizzes} ${quizzes === 1 ? "quiz shows" : "quizzes show"} “This quiz is closed” to everyone. Nothing is deleted. You can restore them at any time.`,
+    cancel: "Cancel",
+    confirm: "Suspend account",
+    done: (name: string) => `${name} is suspended.`,
+  },
+  banner: {
+    title: "This account is suspended.",
+    text: (date: string) => `Suspended on ${date}. Quizzes are closed and login is blocked.`,
+    restore: "Restore account",
+    restored: (name: string) => `${name} is restored.`,
+  },
+  remove: {
+    title: (name: string) => `Delete ${name}’s account?`,
+    before: "This deletes the account,",
+    quizzes: (n: number) => `${n} ${n === 1 ? "quiz" : "quizzes"}`,
+    and: "and",
+    responses: (n: number) => `${n.toLocaleString("en-US")} ${n === 1 ? "response" : "responses"}`,
+    after: "for good. It can’t be undone. Suspending is safer if you only need them to stop.",
+    label: "Type their email to confirm",
+    cancel: "Cancel",
+    confirm: "Delete account",
+    done: (name: string) => `${name}’s account was deleted.`,
+  },
+  failed: "That didn’t work. Please try again.",
+} as const;

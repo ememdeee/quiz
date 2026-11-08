@@ -1,36 +1,32 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Quiz
 
-## Getting Started
+A simple quiz maker for people who are not technical: build a quiz from pages, share one link, read the answers. Built with Next.js, Supabase and React Email.
 
-First, run the development server:
+The plan, the rules and the status are in `plan/` (start with `plan/project_checklist.md`). Where things are: `plan/project_structure.md`.
+
+## Run it
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev          # http://localhost:3000 with dummy data in the browser (no setup needed)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Test links for every screen: http://localhost:3000/dev (it does not exist in a production build).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### With the real database
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Copy `.env.example` to `.env.local` and fill it in (Supabase keys, Google, Mailtrap). Never commit it.
+2. Set `NEXT_PUBLIC_DATA_MODE=supabase` and run `npm run dev`.
 
-## Learn More
+## Check it
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm test             # unit tests
+npm run lint
+npm run test:db      # database rules, against the dev Supabase project
+npm run qc:links     # every page, link and button
+npm run qc:real      # sign-in, quizzes, answering, account, admin, contact on Supabase
+npm run release-check
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Browser tests use an installed Edge (set `QC_BROWSER=chrome` for Chrome; in CI they use Playwright's own).
