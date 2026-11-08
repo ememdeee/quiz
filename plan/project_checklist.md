@@ -11,6 +11,7 @@
 - Branch `phase-2-ui` holds everything (it already includes the database branch and the Google/Mailtrap branch). Code commits there; **you push** (Vercel then deploys by itself). Code says when a push is worth doing.
 - Done by you: `supabase config push` (verify and reset emails live, "connect Google" on), Vercel account and repo link. **One more `config push` is needed** because the verify email now says "1 hour" (D1; the template file was rebuilt): `node scripts/with-env.mjs npx supabase config push`.
 - **Test status (2026-11-08, after this session's changes):** `npm run release-check` green (194 unit tests, lint, typecheck, production build); `test:db` 118 green; `qc:links` and `qc:a11y` green (63 / 66 / 76 pages as visitor / person / admin); `qc:real` 43 of 43 green on the Supabase dev project (one test, "deleting the account", timed out once on a cold first compile and passed alone; it did not fail again); `qc:prod` 12 of 12 green. New real spec `tests/qc/real-gaps.spec.ts` proves G1 (two windows), G8 and G7 against the real database. Not provable here: G6 with a real Google account, G11's "couldn't send", and everything that needs your phone, Gmail or screen reader (section F "Manual checks").
+- **Working on another computer:** clone the repo, `npm install`, `npx playwright install`, and copy `.env.local` over by a safe way (it is not in git; never through chat or email). The Supabase project, its migrations and its settings live in the cloud, so nothing else moves. Details: `README.md`.
 - Run everything yourself any time: `npm run release-check`, `npm run test:db`, `npm run qc:links`, `npm run qc:a11y`, `npm run qc:real`, `npm run qc:prod`.
 
 ## B. Design (Claude Design artifact: https://claude.ai/artifact/FiiBUq7uJaBcXyeqfTKtTw)
@@ -60,7 +61,7 @@
 - [x] **Phase 11** Admin area (the "Near a limit" filter is built without a board, G7)
 - [ ] **Phase 12** Email for real: code and tests done; needs the owner's Resend account, DNS and `config push`
 - [ ] **Phase 13** Website completion: SEO, icons, share pictures, analytics, placeholders done; final copy and legal need the owner
-- [ ] **Phase 14** Hardening: Turnstile, rate limits, security headers and policy, Sentry (off until its key), accessibility and performance checks done; backups drill, uptime monitor and audit need the owner's accounts
+- [ ] **Phase 14** Hardening: Turnstile, rate limits, security headers and policy, Sentry (off until its key), accessibility and performance checks done; `npm audit` review and secret scan done 2026-11-08 (Next.js bumped to 15.5.29, no secret in the repo or its history; the few findings left are listed in handover Phase 14); backups drill and uptime monitor need the owner's accounts
 - [ ] **Phase 15** Full QC run, bug fixing, cleanup: all scripts written and green on the dev stack; two clean runs on staging, other browsers and real phones remain
 - [ ] **Phase 16** Release to production, first week watch (steps in `docs/runbooks/deploy.md`)
 
