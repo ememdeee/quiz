@@ -38,6 +38,9 @@ How to answer
 - Reply with the WHOLE quiz as data in one code block, in
   exactly the same format. No other text in the code block.
 - Keep everything I did not ask to change exactly as it is.
+- Write every field of every page and answer, even an empty one.
+  An answer always looks like {"id": "...", "text": "...",
+  "picture": null}. Use "" for no text and null for no picture.
 - Keep the "id" of every page and answer you keep. Give new
   pages and answers a new id like "new-1", "new-2".
 - The first page is the "welcome" page and the last page is

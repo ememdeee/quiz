@@ -140,6 +140,28 @@ describe("importAiText", () => {
   });
 });
 
+describe("fields an AI leaves out", () => {
+  it("accepts answers and pages without an empty picture", () => {
+    const doc = JSON.parse(json(current)) as { pages: Record<string, unknown>[] };
+    for (const page of doc.pages) {
+      delete page.picture;
+      if (Array.isArray(page.answers)) for (const answer of page.answers as Record<string, unknown>[]) delete answer.picture;
+    }
+    const result = run(JSON.stringify(doc));
+    expect(result.ok).toBe(true);
+  });
+
+  it("names a wrong field once, not once for every answer", () => {
+    const doc = JSON.parse(json(current)) as { pages: Record<string, unknown>[] };
+    for (const page of doc.pages) if (Array.isArray(page.answers)) for (const answer of page.answers as Record<string, unknown>[]) answer.picture = 5;
+    const result = run(JSON.stringify(doc));
+    const lines = !result.ok && result.reason === "problems" ? result.problems.map((p) => p.text) : [];
+    expect(lines.length).toBeGreaterThan(0);
+    expect(new Set(lines).size).toBe(lines.length);
+    expect(lines[0]).toContain("“answers picture”");
+  });
+});
+
 describe("fixed choices", () => {
   it("tells the AI every allowed word of a text page, a number page and an end page", () => {
     const prompt = buildPrompt("{}", 15);

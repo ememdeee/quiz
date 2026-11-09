@@ -30,6 +30,7 @@ const groups: Group[] = [
     title: "Quiz list",
     items: [
       { id: "G8", title: "Quiz card state “Full”", built: "Grey pill “Full”, the line “It reached 500 responses. People see that it is closed.”, no Copy link and no Open/Close in the menu. Use the dev button “Body Reset: 500 responses” first.", links: [{ label: "Your quizzes (after the dev button)", href: routes.dashboard }, { label: "Dev buttons", href: routes.dev }] },
+      { id: "G31", title: "First web address of a new quiz", built: "The name as a slug and an eight digit number, for example contact-form-89101273 (blank, template and copy alike). The owner can change it in Quiz settings.", links: [{ label: "Your quizzes → New quiz", href: routes.dashboard }] },
       { id: "G13–G16", title: "Rename dialog, copy-a-quiz picker, usage meter popover, toast words", built: "Rename is built like New quiz. “A copy of a quiz I already have” has a dropdown. “3 of 5 quizzes” opens a small meter. Toasts: Link copied, Quiz renamed / duplicated / closed / opened / deleted, a generic error toast, and “Check your email” on the phone gate.", links: [{ label: "Your quizzes", href: routes.dashboard }] },
     ],
   },
@@ -51,6 +52,7 @@ const groups: Group[] = [
     items: [
       { id: "G21", title: "Responses wording", built: "No match in the Individual search, the “Removed questions” group in Summary, and the toast after deleting all responses.", links: [{ label: "Responses: Summary", href: quizHref.responses("quiz-body-reset") }, { label: "Responses: Individual", href: `${quizHref.responses("quiz-body-reset")}?view=individual` }] },
       { id: "G6", title: "Disconnect Google", built: "When Google is connected and the person also has a password, the button says “Disconnect” and opens a “Disconnect Google?” question. A person who started with Google and later set a password cannot disconnect (Supabase keeps an account’s last sign-in method), so the row stays “Connected”.", links: [{ label: "Account (press Connect first in the dummy data)", href: routes.account }] },
+      { id: "G30", title: "Send feedback", built: "Account menu (top right) → “Send feedback”: one message box and a Send button, then “Thank you”. Only for logged-in people. It reaches the owner by email and is kept in the database. Not in the phone menu.", links: [{ label: "Account (open the menu, top right)", href: routes.account }] },
       { id: "G22", title: "Account details", built: "A new email is typed and sent with Enter or by leaving the field; the wrong-email message; “Set a password” for a Google-only account.", links: [{ label: "Account", href: routes.account }] },
     ],
   },

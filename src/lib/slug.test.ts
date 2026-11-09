@@ -39,18 +39,25 @@ describe("checkSlug", () => {
 });
 
 describe("makeSlug", () => {
-  it("uses the plain slug when it is free", () => {
-    expect(makeSlug("Body Reset", () => false)).toBe("body-reset");
+  it("is the name as a slug and an eight digit number", () => {
+    expect(makeSlug("Body Reset", () => false, () => 0)).toBe("body-reset-10000000");
+    expect(makeSlug("Contact Form", () => false)).toMatch(/^contact-form-[1-9]\d{7}$/);
   });
 
-  it("adds a dash and 4 random characters when the slug is taken", () => {
-    const slug = makeSlug("Body Reset", (s) => s === "body-reset", () => 0);
-    expect(slug).toBe("body-reset-aaaa");
+  it("tries another number when one is taken", () => {
+    const numbers = [0, 0.5];
+    const slug = makeSlug("Body Reset", (s) => s === "body-reset-10000000", () => numbers.shift() ?? 0.9);
+    expect(slug).toBe("body-reset-55000000");
   });
 
-  it("falls back to my-quiz when the name gives nothing usable or is reserved", () => {
-    expect(makeSlug("日本語", () => false)).toBe("my-quiz");
-    expect(makeSlug("Admin", () => false)).toBe("my-quiz");
+  it("falls back to my-quiz when the name gives nothing usable", () => {
+    expect(makeSlug("日本語", () => false, () => 0)).toBe("my-quiz-10000000");
+  });
+
+  it("keeps a very long name within the allowed length", () => {
+    const slug = makeSlug("a".repeat(100), () => false) as string;
+    expect(slug.length).toBeLessThanOrEqual(60);
+    expect(checkSlug(slug)).toBeNull();
   });
 
   it("gives up after 5 taken tries", () => {

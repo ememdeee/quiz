@@ -23,6 +23,7 @@ export const accountMenuItems = {
   settings: "Account settings",
   plans: "Plans and pricing",
   help: "Help and contact",
+  feedback: "Send feedback",
   admin: "Admin",
   adminNote: "Only you see this",
   logOut: "Log out",

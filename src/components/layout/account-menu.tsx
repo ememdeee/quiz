@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Avatar } from "@/components/ui/avatar";
-import { HelpIcon, LogoutIcon, ShieldCheckIcon, StarIcon, UserIcon } from "@/components/ui/icons";
+import { HelpIcon, LogoutIcon, MailIcon, ShieldCheckIcon, StarIcon, UserIcon } from "@/components/ui/icons";
 import { softHover } from "@/components/ui/link-styles";
 import { accountMenuItems, siteLabels } from "@/content/site";
 import { cn } from "@/lib/utils";
 import { routes } from "@/lib/routes";
 import { logoutAction } from "@/server/actions/session";
+import { FeedbackDialog } from "./feedback-dialog";
 import type { SessionUser } from "@/server/session";
 
 const item =
@@ -17,6 +18,7 @@ const item =
 /** The round account button in the logged-in navigation, with its dropdown (board "AccountMenu"). */
 export function AccountMenu({ user }: { user: SessionUser }) {
   const [open, setOpen] = useState(false);
+  const [feedback, setFeedback] = useState(false);
   const root = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -72,6 +74,18 @@ export function AccountMenu({ user }: { user: SessionUser }) {
             <HelpIcon />
             {accountMenuItems.help}
           </Link>
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => {
+              setOpen(false);
+              setFeedback(true);
+            }}
+            className={item}
+          >
+            <MailIcon size={20} />
+            {accountMenuItems.feedback}
+          </button>
           {user.isAdmin ? (
             <Link role="menuitem" href={routes.admin} className={cn(item, "bg-soft")}>
               <ShieldCheckIcon />
@@ -88,6 +102,7 @@ export function AccountMenu({ user }: { user: SessionUser }) {
           </form>
         </div>
       ) : null}
+      {feedback ? <FeedbackDialog onClose={() => setFeedback(false)} /> : null}
     </div>
   );
 }

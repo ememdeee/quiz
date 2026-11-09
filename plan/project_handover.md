@@ -1083,6 +1083,8 @@ Built **new** in this session (these were not in the app at all before): G1 conf
 
 - **G27** (2026-11-09) Quiz settings, web address of a live quiz: field locked with a spinner while checking; a free address waits in `pendingSlug` (editor state) until Publish; header counts it as a change; `PublishDialog` has the line `publishDialog.newAddress`; `Editor.publish` calls `setSlug` and then `publish`. A never-published quiz still applies it at once.
 - **G28** (2026-11-09) Defaults of new pages in `lib/quiz/page-types/*.create` and `NUMBER_QUESTIONS` / `questionAfterKindChange` in `lib/quiz/units.ts` (unit tested).
+- **G30** (2026-11-09) "Send feedback" in the account menu: `components/layout/feedback-dialog.tsx`, action `server/actions/feedback.ts` (login required, 5 an hour, saved in `contact_messages` with topic "Feedback", emailed to `CONTACT_EMAIL` with reply-to), words in `content/feedback.ts`.
+- **G31** (2026-11-09) First web address = slug of the name + an eight digit number (`makeSlug` in `lib/slug.ts`, unit tested); the owner can change it.
 - **G29** (2026-11-09) `hooks/use-quiz-runner.ts`: Continue shows the next page at once and saves through a queue in the background; only the last page waits. Quiz buttons and tiles have hover and press effects (`quiz-runtime/blocks.tsx`, `page-views.tsx`).
 
 **Rule for later sessions:** when the owner designs one of these, build it to the board, delete its row from checklist H and this list, and add the board to Appendix A. Do not remove a row because the code "looks fine".
