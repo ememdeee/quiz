@@ -34,8 +34,9 @@ jobs:
   links:
     # Every page, link and button on the dummy-data app, as a visitor, a person and the admin
     runs-on: ubuntu-latest
-    # About 30 minutes on a runner, so not on every pull request: after each merge to main, or by hand (Actions tab, Run workflow)
-    if: github.event_name != 'pull_request'
+    # Too heavy for a free GitHub runner (it takes over an hour there and the dev server there drops connections), and it passes on a PC.
+    # So it only runs by hand (Actions tab, Run workflow). Before a release run `npm run qc:links` on your own computer.
+    if: github.event_name == 'workflow_dispatch'
     timeout-minutes: 75
     needs: checks
     steps:
