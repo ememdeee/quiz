@@ -238,12 +238,12 @@ otp_expiry = 3600
 # Development emails go to a Mailtrap sandbox inbox (decision D20). Production uses Resend (Phase 12).
 [auth.email.smtp]
 enabled = true
-host = "env(MAILTRAP_SMTP_HOST)"
-port = 2525
-user = "env(MAILTRAP_SMTP_USER)"
-pass = "env(MAILTRAP_SMTP_PASS)"
-admin_email = "no-reply@example.test"
-sender_name = "Quiz (dev)"
+host = "smtp.resend.com"
+port = 465
+user = "resend"
+pass = "env(RESEND_API_KEY)"
+admin_email = "hello@quiz.basrh.com"
+sender_name = "Quiz"
 
 # Our own designed emails (React Email, exported by `npm run emails:export`). The links go to /auth/confirm on our site.
 [auth.email.template.confirmation]
