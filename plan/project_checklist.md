@@ -30,7 +30,7 @@
 - [x] Vercel account created, repo connected; the owner pushes (deploys by itself). Set the environment variables first: see `docs/runbooks/deploy.md` (for a test deploy on the dev project: `NEXT_PUBLIC_DATA_MODE=supabase`, `NEXT_PUBLIC_SITE_URL`, the three Supabase keys, `IP_HASH_SALT`, the Mailtrap names), and in Supabase (Authentication, URL Configuration) set **Site URL** to the Vercel address and add `https://<that address>/**` to the redirect URLs, or the email links still point to localhost
 - [ ] Preview checked on the Vercel address (handover 2.13)
 - [ ] DNS access to `basrh.com` for `quiz.basrh.com` and the email records
-- [ ] Resend account + DNS records (SPF, DKIM, DMARC); then `RESEND_API_KEY`
+- [x] Resend account, domain `quiz.basrh.com` verified (2026-11-09), `RESEND_API_KEY` in `.env.local`. Supabase auth emails now use Resend SMTP in `config.toml` (was Mailtrap): **run `config push`**, and add `RESEND_API_KEY` (Secret) and `EMAIL_FROM` in Vercel. Do not run `qc:real` or `test:mail` on this project any more (they would send real emails to fake addresses)
 - [ ] Cloudflare Turnstile keys (site key and secret)
 - [ ] Sentry project (DSN)
 - [ ] Legal details for Terms and Privacy + lawyer review
