@@ -12,7 +12,7 @@
     "test:mail": "node --experimental-strip-types --no-warnings tests/mail/smtp.check.ts",
     "test": "vitest run --config vitest.config.ts",
     "emails:export": "tsx --tsconfig scripts/tsconfig.json scripts/export-auth-emails.tsx",
-    "qc:links": "playwright test link-audit",
+    "qc:links": "playwright test --project=links",
     "typecheck": "tsc --noEmit",
     "qc:real": "playwright test --project=real",
     "release-check": "npm run lint && npm run typecheck && npm test && npm run build",
