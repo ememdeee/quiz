@@ -21,7 +21,8 @@ const needs = (...projects: string[]) => chosen.length === 0 || projects.some((n
 
 export default defineConfig({
   testDir: "tests/qc",
-  timeout: 20 * 60_000,
+  // The two long crawls (a person, the admin) take about 17 minutes on a fast PC and longer on a GitHub runner
+  timeout: (process.env.CI ? 60 : 20) * 60_000,
   fullyParallel: true,
   workers: 3,
   reporter: [["list"]],

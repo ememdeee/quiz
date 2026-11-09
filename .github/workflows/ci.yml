@@ -4,6 +4,7 @@ name: CI
 # (handover 15). The browser tests on the real database need secrets, so they run in their own job and only on main.
 on:
   pull_request:
+  workflow_dispatch:
   push:
     branches: [main]
 
@@ -33,7 +34,9 @@ jobs:
   links:
     # Every page, link and button on the dummy-data app, as a visitor, a person and the admin
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # About 30 minutes on a runner, so not on every pull request: after each merge to main, or by hand (Actions tab, Run workflow)
+    if: github.event_name != 'pull_request'
+    timeout-minutes: 75
     needs: checks
     steps:
       - uses: actions/checkout@v4
