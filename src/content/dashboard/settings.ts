@@ -14,6 +14,9 @@ export const settings = {
     reserved: "That address is kept for the website. Try another one.",
   },
   addressOk: "That address is free.",
+  /** No board (gap G27): a live quiz keeps its old address until Publish. */
+  addressChecking: "Checking if this address is free…",
+  addressPending: "That address is free. It starts working when you publish.",
   accepting: "Accepting responses",
   acceptingNote: "When this is off, people see a message that the quiz is closed.",
   colorsHeading: "Colors and look",

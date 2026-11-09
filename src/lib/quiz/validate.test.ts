@@ -18,9 +18,15 @@ describe("validateQuiz", () => {
     expect(codes(blankQuiz("x"))).toEqual(["-:no_question"]);
   });
 
-  it("flags a fresh, empty question page on every empty field", () => {
+  it("a fresh question page starts with words in it, so nothing is flagged yet", () => {
+    const { doc } = addPage(blankQuiz("x"), "choice");
+    expect(codes(doc)).toEqual([]);
+  });
+
+  it("flags a question page whose fields were all emptied", () => {
     const { doc, page } = addPage(blankQuiz("x"), "choice");
-    expect(codes(doc)).toEqual([`${page.id}:question_missing`, `${page.id}:answers_too_few`, `${page.id}:answer_empty`, `${page.id}:answer_empty`]);
+    const emptied = { ...doc, pages: doc.pages.map((p) => (p.id === page.id && p.type === "choice" ? { ...p, question: "", answers: p.answers.map((answer) => ({ ...answer, text: "" })) } : p)) };
+    expect(codes(emptied)).toEqual([`${page.id}:question_missing`, `${page.id}:answers_too_few`, `${page.id}:answer_empty`, `${page.id}:answer_empty`]);
   });
 
   it("flags a choice page with one real answer", () => {

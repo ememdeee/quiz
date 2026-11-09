@@ -34,3 +34,20 @@ export function defaultsFor(kind: NumberKind, unit?: string): { unit: string | n
   }
   return { unit: null, min: null, max: null };
 }
+
+/**
+ * The question a "Number or date" page starts with for each kind (no board: built by Code, listed in the "not designed yet" list).
+ * The owner can change it. When the kind is switched, the question follows only while it is still one of these.
+ */
+export const NUMBER_QUESTIONS: Record<NumberKind, string> = {
+  age: "How old are you?",
+  height: "How tall are you?",
+  weight: "How much do you weigh?",
+  number: "Enter a number",
+  date: "Pick a date",
+};
+
+/** The question to show after the kind changes: a new default only if the old one was never edited. */
+export function questionAfterKindChange(current: string, oldKind: NumberKind, newKind: NumberKind): string {
+  return current.trim() === "" || current === NUMBER_QUESTIONS[oldKind] ? NUMBER_QUESTIONS[newKind] : current;
+}

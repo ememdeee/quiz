@@ -4,7 +4,7 @@ import { Segmented } from "@/components/ui/controls";
 import { Field, FieldError, FieldHint, Input } from "@/components/ui/field";
 import { panel } from "@/content/dashboard/editor";
 import type { PageOf } from "@/lib/quiz/schema";
-import { defaultsFor, unitChoices, type NumberKind } from "@/lib/quiz/units";
+import { defaultsFor, questionAfterKindChange, unitChoices, type NumberKind } from "@/lib/quiz/units";
 import { useFieldProps, usePageEdit } from "../editor-context";
 import { ChipGroup, RequiredRow, Sub, TextField } from "./fields";
 
@@ -34,7 +34,7 @@ export function NumberPanel({ page }: { page: PageOf<"number"> }) {
         label={words.enter}
         value={page.kind}
         options={kinds}
-        onChange={(kind) => edit(undefined, (d) => void Object.assign(d, { kind }, defaultsFor(kind)))}
+        onChange={(kind) => edit(undefined, (d) => void Object.assign(d, { kind, question: questionAfterKindChange(d.question, page.kind, kind) }, defaultsFor(kind)))}
       />
 
       {page.kind === "age" ? (

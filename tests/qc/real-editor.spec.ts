@@ -120,6 +120,26 @@ test("two people cannot hold the same web address, and the second one is told", 
   await expect.poll(async () => (await admin.from("quizzes").select("slug").eq("id", mine.id).single()).data?.slug, { timeout: 20_000 }).toBe(`free-${slug}`);
 });
 
+test("a new web address of a published quiz waits for Publish, then the link is the new one", async ({ page }) => {
+  const owner = await makePerson();
+  const quiz = await makeQuiz(owner.id, { published: true });
+  await login(page, owner.email);
+  await page.goto(`/dashboard/${quiz.id}/settings`);
+  const address = page.getByLabel("Web address");
+  await expect(address).toBeVisible({ timeout: 30_000 });
+  const fresh = `moved-${Date.now().toString(36)}`;
+  await address.fill(fresh);
+  await expect(page.getByText("That address is free. It starts working when you publish.")).toBeVisible({ timeout: 30_000 });
+  // The shared link still works: nothing changed in the database yet
+  expect((await admin.from("quizzes").select("slug").eq("id", quiz.id).single()).data!.slug).toBe(quiz.slug);
+  await page.getByRole("button", { name: "Close", exact: true }).click();
+  await page.getByRole("button", { name: "Publish changes" }).click();
+  await expect(page.getByRole("dialog").getByText(new RegExp(`/quiz/${fresh}`))).toBeVisible();
+  await page.getByRole("dialog").getByRole("button", { name: "Publish", exact: true }).click();
+  await expect(page.getByRole("dialog").locator("input").first()).toHaveValue(new RegExp(`/quiz/${fresh}$`), { timeout: 30_000 });
+  expect((await admin.from("quizzes").select("slug").eq("id", quiz.id).single()).data!.slug).toBe(fresh);
+});
+
 test("a published quiz has a Share dialog with its real link", async ({ page }) => {
   const owner = await makePerson();
   const quiz = await makeQuiz(owner.id, { published: true });

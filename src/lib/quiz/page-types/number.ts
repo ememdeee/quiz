@@ -1,4 +1,4 @@
-import { AGE } from "../units";
+import { AGE, NUMBER_QUESTIONS } from "../units";
 import { isBlank, type FieldProblem, type PageTypeDefinition } from "./types";
 
 export const number: PageTypeDefinition<"number"> = {
@@ -14,7 +14,7 @@ export const number: PageTypeDefinition<"number"> = {
     return `Number${range}`;
   },
   title: (page) => page.question,
-  create: (id) => ({ id, type: "number", question: "", kind: "age", unit: AGE.unit, min: AGE.min, max: AGE.max, required: true }),
+  create: (id) => ({ id, type: "number", question: NUMBER_QUESTIONS.age, kind: "age", unit: AGE.unit, min: AGE.min, max: AGE.max, required: true }),
   problems: (page) => {
     const problems: FieldProblem[] = [];
     if (isBlank(page.question)) problems.push({ field: "question", code: "question_missing" });

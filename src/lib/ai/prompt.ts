@@ -14,6 +14,18 @@ export function pageFieldList(): { type: PageType; fields: string[] }[] {
   }));
 }
 
+/** The fixed choices of a field (text "input", number "kind", end "style"), read from the schema so they can never drift. */
+export function allowedValues(): { type: PageType; field: string; values: string[] }[] {
+  return pageSchema.options.flatMap((option) =>
+    Object.entries(option.shape).flatMap(([field, definition]) => {
+      const choices = (definition as { options?: unknown }).options;
+      return field !== "type" && Array.isArray(choices) ? [{ type: option.shape.type.value as PageType, field, values: choices.map(String) }] : [];
+    }),
+  );
+}
+
+const valueLines = () => allowedValues().map(({ type, field, values }) => `${type.padEnd(8)} "${field}" is one of: ${values.map((v) => `"${v}"`).join(", ")}`).join("\n");
+
 const fieldLines = () => pageFieldList().map(({ type, fields }) => `${type.padEnd(8)} ${fields.join(", ")}`).join("\n");
 
 export const PAGE_LIMIT_TOKEN = "{PAGE_LIMIT}";
@@ -42,6 +54,11 @@ How to answer
 Page types and their fields
 ${"{FIELDS}"}
 
+Fields with fixed choices (use only these words, never others)
+${"{VALUES}"}
+- A text page that asks for a long answer is still "input": "any".
+- A number page: "age" uses unit "years", "height" uses "cm" or "in", "weight" uses "kg" or "lb". "number" and "date" use null for "unit", "min" and "max" ("min" and "max" may also be null).
+
 My quiz
 ${QUIZ_DATA_TOKEN}
 
@@ -50,5 +67,5 @@ My request
 
 /** The instructions with the person's page limit and the quiz data filled in, ending on an empty "My request". */
 export function buildPrompt(quizData: string, pageLimit: number): string {
-  return promptTemplate.replace("{FIELDS}", fieldLines()).replace(PAGE_LIMIT_TOKEN, String(pageLimit)).replace(QUIZ_DATA_TOKEN, quizData);
+  return promptTemplate.replace("{FIELDS}", fieldLines()).replace("{VALUES}", valueLines()).replace(PAGE_LIMIT_TOKEN, String(pageLimit)).replace(QUIZ_DATA_TOKEN, quizData);
 }

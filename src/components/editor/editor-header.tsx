@@ -19,7 +19,7 @@ import { useEditor, useEditorActions, useEditorUi } from "./editor-context";
 const pillTone = { open: "solid", closed: "neutral", not_published: "outline" } as const;
 
 /** The editor's top bar (boards Main and EditorStates): name, status, what is saved, and the quiz-level actions. */
-export function EditorHeader({ bundle, save, onRetry }: { bundle: QuizBundle; save: SaveState; onRetry: () => void }) {
+export function EditorHeader({ bundle, save, onRetry, pendingSlug }: { bundle: QuizBundle; save: SaveState; onRetry: () => void; pendingSlug: string | null }) {
   const user = useDashUser();
   const doc = useEditor((s) => s.doc);
   const canUndo = useEditor((s) => s.past.length > 0);
@@ -28,7 +28,8 @@ export function EditorHeader({ bundle, save, onRetry }: { bundle: QuizBundle; sa
   const { quiz, published } = bundle;
   const status = quizStatus(quiz);
   const isPublished = status !== "not_published";
-  const waiting = published ? diffQuiz(doc, published).count : 0;
+  // A new web address that is waiting for Publish counts as one change, so Publish can be pressed for it
+  const waiting = (published ? diffQuiz(doc, published).count : 0) + (pendingSlug ? 1 : 0);
   const upToDate = isPublished && waiting === 0;
 
   const saved = isPublished ? `${editorHeader.saved} · ${upToDate ? editorHeader.everythingPublished : editorHeader.notPublished(waiting)}` : editorHeader.saved;

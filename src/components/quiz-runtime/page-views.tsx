@@ -84,7 +84,7 @@ function WelcomeView({ page, ctx }: ViewProps<"welcome">) {
 }
 
 const optionBase =
-  "flex min-h-14 w-full items-center gap-3 rounded-[14px] border-2 bg-quiz-bg px-[18px] text-left text-[17px] font-medium text-quiz-fg focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-quiz-primary";
+  "flex min-h-14 w-full items-center gap-3 rounded-[14px] border-2 bg-quiz-bg px-[18px] text-left text-[17px] font-medium text-quiz-fg transition-colors duration-150 hover:bg-quiz-primary/[0.06] active:scale-[0.99] focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-quiz-primary";
 
 function ChoiceView({ page, ctx }: ViewProps<"choice">) {
   const chosen = (Array.isArray(ctx.answers[page.id]) ? ctx.answers[page.id] : []) as string[];

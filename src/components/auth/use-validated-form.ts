@@ -12,6 +12,9 @@ export function useValidatedForm<Field extends string>(check: (values: Record<Fi
   const [problems, setProblems] = useState<FieldProblems<Field>>({});
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+    // "Continue with Google" lives in the same form but needs none of the fields: let it go straight through
+    const sender = (event.nativeEvent as SubmitEvent).submitter;
+    if (sender?.hasAttribute("formnovalidate")) return;
     const data = new FormData(event.currentTarget);
     const values = Object.fromEntries(fields.map((field) => [field, String(data.get(field) ?? "")])) as Record<Field, string>;
     const found = check(values);

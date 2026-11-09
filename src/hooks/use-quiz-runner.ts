@@ -99,23 +99,50 @@ export function useQuizRunner(source: RunnerSource) {
         lastPageId: currentPage(next).id,
         finished,
       });
-      return saved.ok ? true : failWith(saved.error);
+      if (!saved.ok) return failWith(saved.error);
+      // A save that went through carries all the answers, so it also covers an older one that failed
+      retryWith.current = null;
+      setSaveFailed(false);
+      return true;
     },
     [live],
   );
 
-  /** Continue: check the page, save, then show the next page. */
+  /** Saves go out one after another in the order they were made, so a slow one never overtakes a newer one. */
+  const queue = useRef<Promise<boolean>>(Promise.resolve(true));
+  const enqueue = useCallback(
+    (quiz: PublicQuiz, next: RunState, finished: boolean, retry: () => Promise<void>) => {
+      queue.current = queue.current.then(() => persist(quiz, next, finished, retry));
+      return queue.current;
+    },
+    [persist],
+  );
+
+  /**
+   * Continue: check the page, then show the next one at once. The save runs in the background; if it fails the person sees
+   * "We couldn't save your answer" with Try again (every save carries all the answers, so the newest one is enough).
+   * The last page waits for its save, because "Thank you" must only appear once the answers are really kept.
+   */
   const advance = useCallback(
     async (quiz: PublicQuiz, from: RunState) => {
       const step = goNext(from);
       if (step.state.problem) return setRun(step.state);
-      setSaving(true);
       setSaveFailed(false);
-      const saved = await persist(quiz, step.state, step.finished, () => advance(quiz, from));
+      if (!step.finished) {
+        setRun(step.state);
+        const resend = async () => {
+          setSaveFailed(false);
+          await enqueue(quiz, step.state, false, resend);
+        };
+        void enqueue(quiz, step.state, false, resend);
+        return;
+      }
+      setSaving(true);
+      const saved = await enqueue(quiz, step.state, true, () => advance(quiz, from));
       setSaving(false);
       if (saved) setRun(step.state);
     },
-    [persist, setRun],
+    [enqueue, setRun],
   );
 
   const next = useCallback(() => {

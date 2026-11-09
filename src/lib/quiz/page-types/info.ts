@@ -9,6 +9,6 @@ export const info: PageTypeDefinition<"info"> = {
   listLabel: () => "Info page",
   summaryLabel: () => "Info page",
   title: (page) => page.title,
-  create: (id) => ({ id, type: "info", title: "", text: "", picture: null }),
+  create: (id) => ({ id, type: "info", title: "Good to know", text: "", picture: null }),
   problems: (page) => (isBlank(page.title) ? [{ field: "title", code: "title_missing" }] : []),
 };

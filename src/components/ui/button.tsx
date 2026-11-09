@@ -79,10 +79,13 @@ export function Button({ variant, size, shape, block, loading, className, childr
   );
 }
 
-type ButtonLinkProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href"> & StyleProps & { href: string };
+type ButtonLinkProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href"> & StyleProps & { href: string; reload?: boolean };
 
-/** A link that looks like a button. mailto: links use a plain anchor. */
-export function ButtonLink({ variant, size, shape, block, className, href, children, ...rest }: ButtonLinkProps) {
+/**
+ * A link that looks like a button. mailto: links use a plain anchor, and so does `reload`: a full page load that never uses the
+ * router's remembered answers (needed where the person's login changed while the page was open, for example after verifying an email).
+ */
+export function ButtonLink({ variant, size, shape, block, className, href, reload, children, ...rest }: ButtonLinkProps) {
   const classes = cn(buttonVariants({ variant, size, shape, block }), className);
   const content = (
     <>
@@ -90,7 +93,7 @@ export function ButtonLink({ variant, size, shape, block, className, href, child
       {children}
     </>
   );
-  if (href.startsWith("mailto:")) {
+  if (reload || href.startsWith("mailto:")) {
     return (
       <a href={href} className={classes} {...rest}>
         {content}
