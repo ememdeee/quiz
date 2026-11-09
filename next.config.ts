@@ -38,6 +38,11 @@ const nextConfig: NextConfig = {
     const headers = process.env.NODE_ENV === "production" ? [...securityHeaders, { key: "Content-Security-Policy", value: contentSecurityPolicy }] : securityHeaders;
     return [{ source: "/:path*", headers }];
   },
+  // The share pictures read their fonts from disk (src/lib/og/fonts), so the hosting must ship those files with the routes
+  outputFileTracingIncludes: {
+    "/opengraph-image": ["./src/lib/og/fonts/*.woff"],
+    "/quiz/[slug]/opengraph-image": ["./src/lib/og/fonts/*.woff"],
+  },
   experimental: {
     // Pictures reach the server as shrunk base64 (at most 5 MB of picture)
     serverActions: { bodySizeLimit: "8mb" },

@@ -105,6 +105,7 @@
 | ID | Where to see it | What Code built |
 |---|---|---|
 | G31 NEW | Create a quiz (blank, template or a copy) | The first web address is the name as a slug and an eight digit number, for example `contact-form-89101273`, so it is hard to guess. The owner can change it in Quiz settings |
+| G32 NEW | Share a quiz link (WhatsApp, Telegram, Facebook, X) | The link card shows the quiz's own title and words from its Start page (or "N questions · about 2 minutes. Tap to start." when it has none), and a picture: white card with the title, the length, a "Start the quiz" button and either the Start page's own picture (right side) or a dark panel with the number of questions. The "quiz" wordmark is hidden when the owner's plan hides "Powered by Quiz". The website's own share picture was redone with a small quiz page next to the promise. Built in Inter. WhatsApp remembers a link's preview for days: test with a link it has not seen |
 | G8 NEW | `/dashboard` after the `/dev` button "Body Reset: 500 responses" | Card with a grey pill "Full" and "It reached 500 responses. People see that it is closed." No "Copy link" button and no Open/Close in its menu. "Full" follows the person's plan limit |
 | G13 to G16 GUESS | `/dashboard` | Rename dialog (like New quiz); "A copy of a quiz I already have" has a quiz dropdown; the usage meter is a popover on "3 of 5 quizzes · Free plan"; toasts: Link copied, Quiz renamed / duplicated / closed / opened / deleted, a generic error, "Check your email" on the phone gate |
 
@@ -165,7 +166,7 @@
 - [ ] I7. Take the quiz as a visitor on a **phone** (iPhone Safari and an Android browser): Continue must feel instant, the progress bar, a required question refuses an empty answer, "Welcome back" after closing the tab halfway, "Take it again" after finishing. Also with Wi-Fi turned off on the last page (must say it could not save and offer Try again)
 - [ ] I8. Responses: Summary numbers match what you answered, Individual (search, delete one), download CSV, XLSX and JSON and open them, Delete all (type DELETE)
 - [ ] I9. Emails on a phone and in Gmail: verify, password changed, new address, contact (the layout must look right, the buttons must work, none in spam)
-- [ ] I10. Share a quiz link in WhatsApp or Telegram: the preview card (title and picture) must appear
+- [ ] I10. Share a quiz link in WhatsApp or Telegram: the preview card (title, words, picture) must appear. Use a link WhatsApp has never seen (a new quiz), because it keeps old previews. To force a refresh of an old link, add `?v=2` to it. Also try a quiz whose Start page has a picture
 - [ ] I11. Feedback: Account menu → Send feedback; the message must arrive in your inbox with the sender as reply-to
 - [ ] I12. Keyboard only (Tab, Enter, Space, Esc) through register, a quiz and the editor; screen reader on one quiz if you can
 - [ ] I13. Log in with a wrong password 5 times: the account locks for a while and says so; a suspended account cannot log in
