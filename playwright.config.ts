@@ -11,6 +11,14 @@ const links = 3100;
 const real = 3200;
 const prod = 3300;
 
+/**
+ * Start only the servers the chosen projects need (`--project=links`, `--project real`, ...). Every server used to start for every run:
+ * a links-only run also built the production app and booted the Supabase one, which needs real keys, so it hung in CI and took many
+ * minutes on a PC. A run without `--project` starts all of them, as before.
+ */
+const chosen = [...process.argv.join(" ").matchAll(/--project[= ](\w+)/g)].map((match) => match[1]);
+const needs = (...projects: string[]) => chosen.length === 0 || projects.some((name) => chosen.includes(name));
+
 export default defineConfig({
   testDir: "tests/qc",
   timeout: 20 * 60_000,
@@ -29,20 +37,30 @@ export default defineConfig({
     { name: "prod", testMatch: /prod-.*.spec.ts/, fullyParallel: false, workers: 1, timeout: 120_000, use: { baseURL: `http://localhost:${prod}` } },
   ],
   webServer: [
-    { command: `npx next dev -p ${links}`, url: `http://localhost:${links}`, reuseExistingServer: true, timeout: 5 * 60_000, env: { NEXT_DIST_DIR: ".next-qc-links" } },
-    {
-      command: `npx next dev -p ${real}`,
-      url: `http://localhost:${real}`,
-      reuseExistingServer: true,
-      timeout: 5 * 60_000,
-      env: { NEXT_DIST_DIR: ".next-qc-real", NEXT_PUBLIC_DATA_MODE: "supabase", NEXT_PUBLIC_SITE_URL: `http://localhost:${real}` },
-    },
-    {
-      command: `npx next build && npx next start -p ${prod}`,
-      url: `http://localhost:${prod}`,
-      reuseExistingServer: true,
-      timeout: 10 * 60_000,
-      env: { NEXT_DIST_DIR: ".next-qc-prod", NEXT_PUBLIC_DATA_MODE: "supabase", NEXT_PUBLIC_SITE_URL: `http://localhost:${prod}` },
-    },
+    ...(needs("links", "a11y")
+      ? [{ command: `npx next dev -p ${links}`, url: `http://localhost:${links}`, reuseExistingServer: true, timeout: 5 * 60_000, env: { NEXT_DIST_DIR: ".next-qc-links" } }]
+      : []),
+    ...(needs("real")
+      ? [
+          {
+            command: `npx next dev -p ${real}`,
+            url: `http://localhost:${real}`,
+            reuseExistingServer: true,
+            timeout: 5 * 60_000,
+            env: { NEXT_DIST_DIR: ".next-qc-real", NEXT_PUBLIC_DATA_MODE: "supabase", NEXT_PUBLIC_SITE_URL: `http://localhost:${real}` },
+          },
+        ]
+      : []),
+    ...(needs("prod")
+      ? [
+          {
+            command: `npx next build && npx next start -p ${prod}`,
+            url: `http://localhost:${prod}`,
+            reuseExistingServer: true,
+            timeout: 10 * 60_000,
+            env: { NEXT_DIST_DIR: ".next-qc-prod", NEXT_PUBLIC_DATA_MODE: "supabase", NEXT_PUBLIC_SITE_URL: `http://localhost:${prod}` },
+          },
+        ]
+      : []),
   ],
 });

@@ -53,14 +53,24 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: checks
+    env:
+      # Secrets cannot be tested in a step condition, so the job turns the question into a plain value first
+      HAVE_DB_SECRETS: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY != '' && secrets.NEXT_PUBLIC_SUPABASE_URL != '' }}
     steps:
+      - name: Say when the database tests are skipped
+        if: env.HAVE_DB_SECRETS != 'true'
+        run: echo "::notice::Database tests skipped. Add the five secrets named below in GitHub (Settings, Secrets and variables, Actions) to run them on every merge to main."
       - uses: actions/checkout@v4
+        if: env.HAVE_DB_SECRETS == 'true'
       - uses: actions/setup-node@v4
+        if: env.HAVE_DB_SECRETS == 'true'
         with:
           node-version: 22
           cache: npm
       - run: npm ci
+        if: env.HAVE_DB_SECRETS == 'true'
       - run: npm run db:check && npm run test:db
+        if: env.HAVE_DB_SECRETS == 'true'
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
