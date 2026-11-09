@@ -153,17 +153,41 @@ export function describeChange(before: Page, after: Page): string {
   return [...new Set(details)].slice(0, 2).join(" · ");
 }
 
+const isObject = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null && !Array.isArray(value);
+
+/**
+ * AIs often leave out a field that is empty anyway (a picture that is null, a hint with no words). That is not a mistake worth
+ * sending the person back for, so the empty ones are filled in before the answer is checked. Anything else is still checked.
+ */
+export function fillEmptyFields(value: unknown): unknown {
+  if (!isObject(value) || !Array.isArray(value.pages)) return value;
+  const pages = value.pages.map((page) => {
+    if (!isObject(page)) return page;
+    const filled: Record<string, unknown> = { ...page };
+    if (["welcome", "choice", "info", "end"].includes(String(page.type)) && filled.picture === undefined) filled.picture = null;
+    if (["welcome", "info", "end"].includes(String(page.type)) && filled.text === undefined) filled.text = "";
+    if (page.type === "text" && filled.hint === undefined) filled.hint = "";
+    if (Array.isArray(page.answers)) filled.answers = page.answers.map((answer) => (isObject(answer) && answer.picture === undefined ? { ...answer, picture: null } : answer));
+    return filled;
+  });
+  return { ...value, pages };
+}
+
 /** Check a pasted answer against the quiz as it is now. `mediaIds` are the pictures the person has uploaded. */
 export function importAiText(text: string, context: { current: QuizDocument; maxPages: number; mediaIds: ReadonlySet<string> }): AiImportResult {
   const found = findQuizJson(text);
   if (found.kind !== "found") return { ok: false, reason: found.kind === "cut_off" ? "cut_off" : "no_quiz" };
 
-  const parsed = quizDocumentSchema.safeParse(found.value);
+  const parsed = quizDocumentSchema.safeParse(fillEmptyFields(found.value));
   if (!parsed.success) {
     const problems = parsed.error.issues.map((issue): AiProblem => {
       const index = issue.path[0] === "pages" && typeof issue.path[1] === "number" ? issue.path[1] + 1 : null;
       const where = index ? `Page ${index}` : "The quiz";
-      const field = issue.path.slice(index ? 2 : 0).join(" ");
+      // "answers 0 picture", "answers 1 picture"... say the same thing: name the field once, not once per answer
+      const field = issue.path
+        .slice(index ? 2 : 0)
+        .filter((part) => typeof part !== "number")
+        .join(" ");
       // A field with fixed choices says which ones are allowed, so the AI (and the person) can fix it in one go
       const allowed = issue.code === "invalid_value" && "values" in issue ? ` It must be one of: ${(issue.values as unknown[]).map((v) => `“${String(v)}”`).join(", ")}.` : "";
       const t = index ? `${where}: “${field || "a field"}” isn’t in the right format.${allowed}` : issue.path[0] === "format" ? "The format must be “quiz-v1”." : "The quiz data isn’t in the right format.";

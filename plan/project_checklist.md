@@ -28,15 +28,15 @@
 - [x] Mailtrap sandbox (test inbox), Supabase keys in `.env.local`, Google OAuth dev client
 - [x] `config push` run (2026-11-08): the designed verify and reset emails and "connect Google" are live on the dev project. [ ] **Run it once more** after this session (verify email text changed to 1 hour)
 - [x] Vercel account created, repo connected; the owner pushes (deploys by itself). Set the environment variables first: see `docs/runbooks/deploy.md` (for a test deploy on the dev project: `NEXT_PUBLIC_DATA_MODE=supabase`, `NEXT_PUBLIC_SITE_URL`, the three Supabase keys, `IP_HASH_SALT`, the Mailtrap names), and in Supabase (Authentication, URL Configuration) set **Site URL** to the Vercel address and add `https://<that address>/**` to the redirect URLs, or the email links still point to localhost
-- [ ] Preview checked on the Vercel address (handover 2.13)
-- [ ] DNS access to `basrh.com` for `quiz.basrh.com` and the email records
+- [x] Preview checked on the Vercel address (2026-11-09: the site runs on `https://quiz.basrh.com` on the Supabase dev project; the owner tried it by hand, see section I)
+- [x] DNS for `quiz.basrh.com` and the Resend records (domain verified 2026-11-09)
 - [x] Resend account, domain `quiz.basrh.com` verified (2026-11-09), `RESEND_API_KEY` in `.env.local`. Supabase auth emails now use Resend SMTP in `config.toml` (was Mailtrap): **run `config push`**, and add `RESEND_API_KEY` (Secret) and `EMAIL_FROM` in Vercel. Do not run `qc:real` or `test:mail` on this project any more (they would send real emails to fake addresses)
-- [ ] Cloudflare Turnstile keys (site key and secret)
+- [x] Cloudflare Turnstile keys (2026-11-09: the widget shows on Register; keys are in Vercel)
 - [ ] Sentry project (DSN)
 - [ ] Legal details for Terms and Privacy + lawyer review
 - [ ] Supabase production project on a paid plan (daily backups), then the restore drill
-- [ ] Owner account promoted to admin on production (SQL in `docs/runbooks/admin.md`)
-- [ ] Try Edit with AI with real ChatGPT / Claude / Gemini chats and report what fails
+- [x] Owner account promoted to admin (2026-11-09, `cloudteamize@gmail.com`, done by Code with the service key; the old personal account was deleted). [ ] The owner has not yet opened `/admin` to check (section I)
+- [ ] Try Edit with AI with real ChatGPT / Claude / Gemini chats and report what fails (2026-11-09: one real try, it needed two rounds because the AI left out `"picture": null`; prompt and checker fixed, try again; section I)
 - [ ] A real iPhone and Android look at the public quiz; real Gmail and one more inbox for the five emails
 
 ## D. Decisions (handover section 11)
@@ -50,7 +50,7 @@
 - [x] **Phase 1** Clean-up and foundation (old app removed, tokens, shared logic with unit tests, Vitest and Playwright, CI, `release-check`, structure doc rewritten, architecture lint rules)
 - [ ] **Phase 2** Whole UI with dummy data. **Everything is built and passes the link audit and the accessibility scan.** Left: the Vercel preview (2.13) and the owner saying "UI approved"
   - [x] UI kit  - [x] layouts  - [x] website  - [x] auth screens  - [x] quiz list and new quiz  - [x] editor  - [x] quiz runtime (editor canvas now uses the same views)
-  - [x] responses  - [x] account  - [x] admin  - [x] email templates  - [x] session switcher link  - [x] link audit passes (`npm run qc:links`)  - [ ] staging preview deployed (needs Vercel)
+  - [x] responses  - [x] account  - [x] admin  - [x] email templates  - [x] session switcher link  - [x] link audit passes (`npm run qc:links`)  - [x] preview deployed (Vercel, `quiz.basrh.com`)
 - [x] **Phase 3** Supabase, database, security rules, tests (database tests incl. code-versus-database parity, row-level security check)
 - [x] **Phase 4** Register, login, accounts base (real auth)
 - [x] **Phase 5** Quizzes and editor for real (autosave, publish, slug check, limits; the "changed somewhere else" dialog is built without a board, G1)
@@ -101,9 +101,10 @@
 | G10 NEW | Phone width, logged in, open the menu on any website page | The same four links, then "Account settings" and "Log out" under them, then the big "My quizzes" button |
 | G12 GUESS | 404 page, "Go to my quizzes" | A logged-out person lands on Log in, then on the dashboard |
 
-### H2. Quiz list
+### H2. Quiz list (and the first web address)
 | ID | Where to see it | What Code built |
 |---|---|---|
+| G31 NEW | Create a quiz (blank, template or a copy) | The first web address is the name as a slug and an eight digit number, for example `contact-form-89101273`, so it is hard to guess. The owner can change it in Quiz settings |
 | G8 NEW | `/dashboard` after the `/dev` button "Body Reset: 500 responses" | Card with a grey pill "Full" and "It reached 500 responses. People see that it is closed." No "Copy link" button and no Open/Close in its menu. "Full" follows the person's plan limit |
 | G13 to G16 GUESS | `/dashboard` | Rename dialog (like New quiz); "A copy of a quiz I already have" has a quiz dropdown; the usage meter is a popover on "3 of 5 quizzes · Free plan"; toasts: Link copied, Quiz renamed / duplicated / closed / opened / deleted, a generic error, "Check your email" on the phone gate |
 
@@ -124,6 +125,7 @@
 |---|---|---|
 | G21 GUESS | Responses, Summary and Individual | No match in the Individual search; the "Removed questions" group in Summary; the toast after "Delete all responses" |
 | G6 NEW | `/account` (in the dummy data press Connect first) | When Google is connected and the person has a password: button "Disconnect" and a question "Disconnect Google?" ("From now on you log in with your email and password. You can connect Google again any time."), then the toast "Google disconnected". **Limit:** a person who began with Google and later set a password cannot disconnect (Supabase keeps an account's last sign-in method), so their row stays "Connected" |
+| G30 NEW | Account menu (top right) → "Send feedback" | A dialog with one message box (up to 3000 characters). Only logged-in people can send it. It is saved in `contact_messages` (topic "Feedback") and emailed to the owner with the person as reply-to; at most 5 an hour. After sending the dialog says "Thank you". Not in the phone menu |
 | G22 GUESS | `/account` | A new email is typed and sent with Enter or by leaving the field; a wrong-email message; "Set a password" for a Google-only account |
 
 ### H5. Admin
@@ -144,3 +146,27 @@
 |---|---|---|
 | D1 | Every email link lasts **1 hour** (verify screens and the verify email say so). The email-change link stays 24 hours | `VerifySent`, `VerifyExpired`, `EmailVerify` say 24 hours |
 | D2 | A Google login joins an existing account with the same email. The screen "Log in: Google, account exists" is gone | Two boards `LoginGoogleExists` (desktop, phone) and a rule in `BehaviorRules` |
+
+---
+
+## I. Manual test list for the owner (what Code cannot do for you)
+
+> Test on `https://quiz.basrh.com` after each deploy. Tick a line when it worked. If something is wrong, send Code a screenshot and the number of the line.
+
+**Already tried by the owner on 2026-11-09 (worked):** register with email and password, the verify email arrives in a real inbox and its link works, Cloudflare check shows on Register, log in with Google, set a password on a Google account, create a quiz from a template, publish it and answer it (the response is recorded), the Contact form (the email arrives in the owner's inbox), Edit with AI (worked after a second round; fixed since).
+
+**To test:**
+- [ ] I1. Forgot password: ask for the email, open the link, set a new password, log in with it, and look for the "Your Quiz password was changed" email
+- [ ] I2. Account: change the name; change the password with the current one (a wrong current password must be refused); change the email (the link goes to the NEW address, the old one still works until it is confirmed); delete the account at the end (type DELETE)
+- [ ] I3. Admin: log in as `cloudteamize@gmail.com`, open the menu → Admin: Overview numbers, Users, open a person, change a plan and limits, suspend and restore someone (use a throwaway account), look for "Near a limit"
+- [ ] I4. Quiz list: create 5 quizzes and see the "5 of 5" limit dialog on the sixth; rename, duplicate, close and open, delete; a closed quiz shows the closed message to people
+- [ ] I5. Editor: every page type (welcome, choice with several answers, text with email and phone, number and date, info, loading, end with a button); drag to reorder; a display condition ("show this page only if…"); add a picture to a page and to answers (it must show in the public quiz); undo; Edit with AI again with the new prompt (`Copy for AI`)
+- [ ] I6. Publish flow: publish; change the web address (it must wait for Publish and the old link keeps working until then); the Share dialog shows the new link; "Quiz settings → Accepting responses" off and on
+- [ ] I7. Take the quiz as a visitor on a **phone** (iPhone Safari and an Android browser): Continue must feel instant, the progress bar, a required question refuses an empty answer, "Welcome back" after closing the tab halfway, "Take it again" after finishing. Also with Wi-Fi turned off on the last page (must say it could not save and offer Try again)
+- [ ] I8. Responses: Summary numbers match what you answered, Individual (search, delete one), download CSV, XLSX and JSON and open them, Delete all (type DELETE)
+- [ ] I9. Emails on a phone and in Gmail: verify, password changed, new address, contact (the layout must look right, the buttons must work, none in spam)
+- [ ] I10. Share a quiz link in WhatsApp or Telegram: the preview card (title and picture) must appear
+- [ ] I11. Feedback: Account menu → Send feedback; the message must arrive in your inbox with the sender as reply-to
+- [ ] I12. Keyboard only (Tab, Enter, Space, Esc) through register, a quiz and the editor; screen reader on one quiz if you can
+- [ ] I13. Log in with a wrong password 5 times: the account locks for a while and says so; a suspended account cannot log in
+- [ ] I14. Other browsers: Firefox and Safari on the website and a public quiz (Code can also run Firefox and WebKit with Playwright if you allow the download)
