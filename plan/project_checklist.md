@@ -115,6 +115,8 @@
 | G3 GUESS | Editor, Add a picture | The picture library only grows: no delete or rename (decision: not in v1) |
 | G4 / G17 / G19 GUESS | Editor | Blocked-move toast "That move would make a condition look at a later page."; a page with no title shows its kind; heading "Edit last page"; the Day / Month / Year answer box; field errors for title, message, number range, button text and condition order; web address errors other than "taken"; "Change" and "Remove" on a picture |
 | G26 NEW | Editor, Quiz settings, typing the web address very fast (more than 30 checks in a minute) | The live "is this address free" check stops quietly and the spinner goes away; typing again asks again. No message (decision D11 limit of 30 checks a minute) |
+| G27 NEW | Editor, Quiz settings, typing a new web address in a **published** quiz | While the check runs the field is locked and a spinner says "Checking if this address is free…". A free address does **not** take effect: the line says "That address is free. It starts working when you publish.", the header counts it as a change ("1 change not published") and Publish changes becomes pressable. The Publish dialog adds "The web address changes to /quiz/xxx. Links you already shared will stop working." and, after Publish, the live dialog shows the new link. A quiz that was never published still takes the new address at once. The waiting address is kept in the editor only (lost on reload) |
+| G28 NEW | Editor, Add a page | A new page starts with words so nothing is red: question "Question" with answers "Option 1" and "Option 2"; a text question "Question"; a number page asks "How old are you?" and follows its kind ("How tall are you?", "How much do you weigh?", "Enter a number", "Pick a date") until the owner edits it; Welcome "Welcome", Info "Good to know", Loading "Getting your results ready" with one step |
 | G18 GUESS | Editor of a never-published quiz, Publish | "Publish your quiz?" with "Your quiz has N pages." |
 
 ### H4. Responses and account
@@ -134,6 +136,7 @@
 | ID | Where to see it | What Code built |
 |---|---|---|
 | G23 GUESS | `/quiz/body-reset`, Try it | Messages for a required text, phone and number; the helper line for a number with only a minimum or maximum; a single-choice question that is not required shows Continue; Loading has no Back; a white screen while the quiz opens; "Close preview" goes to the editor; a picture on an End page shows under the text |
+| G29 NEW | `/quiz/<address>`, any quiz | Continue and Start show the next page at once; the answer is saved in the background. If a save fails, "We couldn't save your answer" with Try again appears. The last page still waits for its save before "Thank you". The buttons and answer tiles got a hover and a press effect |
 | G25 GUESS | A quiz changed after someone started; `/maintenance` | No board for "Welcome back" when the quiz changed (answers to removed pages are kept but not shown). The maintenance page is used as is for maintenance mode |
 
 ### H7. Approved by you, not drawn yet

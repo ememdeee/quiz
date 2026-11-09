@@ -164,7 +164,9 @@ export function importAiText(text: string, context: { current: QuizDocument; max
       const index = issue.path[0] === "pages" && typeof issue.path[1] === "number" ? issue.path[1] + 1 : null;
       const where = index ? `Page ${index}` : "The quiz";
       const field = issue.path.slice(index ? 2 : 0).join(" ");
-      const t = index ? `${where}: “${field || "a field"}” isn’t in the right format.` : issue.path[0] === "format" ? "The format must be “quiz-v1”." : "The quiz data isn’t in the right format.";
+      // A field with fixed choices says which ones are allowed, so the AI (and the person) can fix it in one go
+      const allowed = issue.code === "invalid_value" && "values" in issue ? ` It must be one of: ${(issue.values as unknown[]).map((v) => `“${String(v)}”`).join(", ")}.` : "";
+      const t = index ? `${where}: “${field || "a field"}” isn’t in the right format.${allowed}` : issue.path[0] === "format" ? "The format must be “quiz-v1”." : "The quiz data isn’t in the right format.";
       return { text: t, ask: t };
     });
     return { ok: false, reason: "problems", problems: dedupe(problems) };

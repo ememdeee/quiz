@@ -11,7 +11,7 @@ import type { Problem } from "@/lib/quiz/validate";
 import { quizHref } from "@/lib/routes";
 
 /** "Publish your changes?" (board Publish): the last question before people see the new version. */
-export function PublishDialog({ changes, pages, pending, onConfirm, onClose }: { changes: number | null; pages: number; pending: boolean; onConfirm: () => void; onClose: () => void }) {
+export function PublishDialog({ changes, pages, pending, newAddress, onConfirm, onClose }: { changes: number | null; pages: number; pending: boolean; newAddress: string | null; onConfirm: () => void; onClose: () => void }) {
   return (
     <Dialog
       open
@@ -30,7 +30,10 @@ export function PublishDialog({ changes, pages, pending, onConfirm, onClose }: {
         </>
       }
     >
-      <div className="rounded-xl bg-dash px-4 py-3.5 text-[15px] leading-[22px] text-ink-2">{changes === null ? publishDialog.firstTime(pages) : publishDialog.changed(changes)}</div>
+      <div className="flex flex-col gap-2 rounded-xl bg-dash px-4 py-3.5 text-[15px] leading-[22px] text-ink-2">
+        {changes === null ? <span>{publishDialog.firstTime(pages)}</span> : changes > 0 || !newAddress ? <span>{publishDialog.changed(changes)}</span> : null}
+        {newAddress ? <span>{publishDialog.newAddress(newAddress)}</span> : null}
+      </div>
     </Dialog>
   );
 }

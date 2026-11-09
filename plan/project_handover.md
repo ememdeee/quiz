@@ -937,6 +937,8 @@ Build, in this order (each item = its boards, all states, desktop + phone where 
 - [x] **Done when:** QC-02 and QC-03 pass (`tests/qc/real-auth.spec.ts`, 13 scenarios on the dev project); RLS tests still pass; the service key is read only in server code (`import "server-only"`, production bundle checked by QC-20).
 - [ ] **Owner action:** the two auth emails (verify, reset) use our designed templates only after `node scripts/with-env.mjs npx supabase config push` (it changes 4 template fields and `enable_manual_linking`; the CLI asks for consent). Until then Supabase's standard emails are used and the standard `code` link is handled, so nothing breaks.
 
+- [x] **Found in the owner's first real test (2026-11-09), fixed:** "Continue with Google" on Register wrongly checked the empty name, email and password fields (`useValidatedForm` now skips a submit button marked `formnovalidate`); "I've verified my email" opened a blank page (it is now a full page load, `ButtonLink reload`; the cause is likely the router's remembered answer from before the login existed, not yet reproduced).
+
 ### Phase 5 — Quizzes and the editor for real
 - [x] `server/actions/quizzes.ts` with `repos/remote`: list, create (blank, template, copy), duplicate, rename, delete (the database holds the old address 30 days), open/closed, `saveDraft` (versioned in the database), `publish` (strict check first, then the database re-checks the page count), `setSlug`, live address check (`slug_available`), limits (dialog, server, database). The editor, autosave, offline bar, undo and "N changes not published" run unchanged on it. _Done 2026-11-08._
 - [x] `NEXT_PUBLIC_DATA_MODE=supabase` switches every area at once (quizzes, pictures, responses, account, admin, public quiz); the mock stays for the UI phase and the link audit.
@@ -951,6 +953,8 @@ Build, in this order (each item = its boards, all states, desktop + phone where 
 - [x] `GET /api/q/[slug]`, `POST .../open`, `.../start`, `POST /api/r/[id]/answer`, `/finish`, `/resume`: only the published copy leaves the server; secret token per response (only its hash is stored); every answer is checked against the published page and the saved question and option texts come from it (`lib/quiz/progress.ts`, 9 tests); answers of hidden pages are dropped; finishing needs every answer that was shown; rate limits by address hash (`rate_limit_hit`); the 500th slot is taken atomically (`finish_response`); closed, full, suspended owner and not published all look the same to people. OG share picture per quiz (`/quiz/[slug]/opengraph-image`, board SocialQuiz). _Done 2026-11-08._
 - [x] **Done when:** QC-10 passes on a phone-size touch browser; resume, closed, wrong token, made-up answers, wrong quiz's pages and the response limit are tested (`real-quiz.spec.ts`). Offline save failure is covered by the "We couldn't save your answer" screen (mock switch) and the unit tests of the runner.
 
+- [x] **Speed in production (2026-11-09, found by the owner's first real test: every Continue felt slow):** (1) the quiz moves on at once and saves in the background (G29); (2) `vercel.json` sets the functions region to `sin1` (Singapore) to sit next to the Supabase project, because the default region is in the USA and every save makes several database calls; (3) the middleware no longer asks Supabase Auth who is logged in for public quiz traffic (`/quiz/`, `/api/q/`, `/api/r/`, `/api/health`). Measure again on `quiz.basrh.com` after the deploy.
+
 ### Phase 8 — Responses: summary, individual, export, delete
 - [x] `server/actions/responses.ts` reads every page of responses for the owner only (1,000 at a time), delete one and delete all; Summary, Individual and the three exports already ran on the same data shapes. _Done 2026-11-08._
 - [x] **Done when:** QC-11 (CSV downloaded from the Responses page contains the words people chose) and QC-12 pass; the numbers are unit tested (`responses.test.ts`, 17 tests); deleting responses lowers `finished_count` (database trigger test).
@@ -959,6 +963,8 @@ Build, in this order (each item = its boards, all states, desktop + phone where 
 ### Phase 9 — Edit with AI for real
 - [x] The dialog, `lib/ai/*` and the check run on the real draft (the draft goes through `saveDraft` like any edit, as one Undo step); the private name is never changed by the AI. QC-15 passes: sentences instead of a quiz are refused and change nothing; a quiz inside chatter in a code box is checked and applied. _Done 2026-11-08._
 - [ ] **Owner action:** try it with real AI chats (ChatGPT, Claude, Gemini), 5 typical changes each, and tell us what failed so the prompt text can be improved. The prompt is generated from the final schema (`lib/ai/prompt.ts`, unit tested including the unchanged round trip).
+
+- [x] **Edit with AI prompt (2026-11-09):** the prompt now lists the allowed words of every fixed-choice field (text `input` is `any`, `email` or `phone`; number `kind`; end `style`), read from the schema (`allowedValues()`), and a format error says which words are allowed. A real AI had written `input: "text"` and `"textarea"`.
 
 ### Phase 10 — Account settings complete
 - [x] `server/actions/account.ts`: name, email change (our `email_changes` table: link mailed to the NEW address, 24 hours, cancel, resend at most once a minute, `/auth/email-change/confirm`), change password (current password checked on a throwaway client, other devices signed out, "Password changed" email), set password (Google-only), connect Google (needs `enable_manual_linking`, set in `config.toml`, applied by the owner's `config push`), delete account (pictures, then the account; quizzes and answers follow by the database). _Done 2026-11-08._
@@ -1074,6 +1080,10 @@ Built **new** in this session (these were not in the app at all before): G1 conf
 - **G11** `VerifyEmailView`: button spinner while sending; red banner "We couldn't send the email. Please try again in a minute."
 - **G25** `?problem=check|wait|same-password` on the three forms, red banner (`AuthProblemBanner`).
 - **G26** (new id) the live web-address check is limited to 30 a minute per person (D11); when refused the field just stops checking, with no message.
+
+- **G27** (2026-11-09) Quiz settings, web address of a live quiz: field locked with a spinner while checking; a free address waits in `pendingSlug` (editor state) until Publish; header counts it as a change; `PublishDialog` has the line `publishDialog.newAddress`; `Editor.publish` calls `setSlug` and then `publish`. A never-published quiz still applies it at once.
+- **G28** (2026-11-09) Defaults of new pages in `lib/quiz/page-types/*.create` and `NUMBER_QUESTIONS` / `questionAfterKindChange` in `lib/quiz/units.ts` (unit tested).
+- **G29** (2026-11-09) `hooks/use-quiz-runner.ts`: Continue shows the next page at once and saves through a queue in the background; only the last page waits. Quiz buttons and tiles have hover and press effects (`quiz-runtime/blocks.tsx`, `page-views.tsx`).
 
 **Rule for later sessions:** when the owner designs one of these, build it to the board, delete its row from checklist H and this list, and add the board to Appendix A. Do not remove a row because the code "looks fine".
 

@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, type ReactNode } from "react";
-import { Button } from "@/components/ui/button";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { Button, Spinner } from "@/components/ui/button";
 import { Switch } from "@/components/ui/controls";
 import { Drawer } from "@/components/ui/drawer";
 import { Field, FieldError, FieldHint, Input } from "@/components/ui/field";
@@ -17,54 +17,82 @@ import { repos } from "@/server/repos";
 import { useDashEvents } from "@/components/dashboard/dash-events";
 import { useEditor, useEditorActions } from "./editor-context";
 
-type SlugState = { status: "idle" } | { status: "checking" } | { status: "ok" } | { status: "problem"; reason: "taken" | "invalid" | "reserved" };
+/** "checking" is the request itself (the field is locked then); "pending" is a free address of a live quiz that waits for Publish. */
+type SlugState = { status: "idle" } | { status: "checking" } | { status: "ok" } | { status: "pending" } | { status: "problem"; reason: "taken" | "invalid" | "reserved" };
 
 /** The quiz name, web address and the on/off for answers, as a panel from the right (board Settings). */
 export function SettingsDrawer({
   quiz,
   save,
   onQuiz,
+  pendingSlug,
+  onPendingSlug,
   onDelete,
   onClose,
 }: {
   quiz: QuizSummary;
   save: SaveState;
   onQuiz: (quiz: QuizSummary) => void;
+  /** A new address of a live quiz that is waiting for Publish (the quiz itself keeps its old one until then) */
+  pendingSlug: string | null;
+  onPendingSlug: (slug: string | null) => void;
   onDelete: () => void;
   onClose: () => void;
 }) {
   const { reportError } = useDashEvents();
   const name = useEditor((s) => s.doc.name);
   const { setName } = useEditorActions();
-  const [slug, setSlug] = useState(quiz.slug);
-  const [slugState, setSlugState] = useState<SlugState>({ status: "idle" });
+  const [slug, setSlug] = useState(pendingSlug ?? quiz.slug);
+  const [slugState, setSlugState] = useState<SlugState>(pendingSlug ? { status: "pending" } : { status: "idle" });
+  const slugInput = useRef<HTMLInputElement>(null);
   const [switching, setSwitching] = useState(false);
   const published = quizStatus(quiz) !== "not_published";
 
-  // Check the address a moment after typing stops, and use it as soon as it is free
+  // Check the address a moment after typing stops. A live quiz keeps its shared address until Publish (the new one waits in
+  // `pendingSlug`); a quiz that was never published takes the new address at once, because no link to it exists yet.
   useEffect(() => {
-    // Once the new address is saved the field matches the quiz again: keep saying it is free instead of going quiet
-    if (slug === quiz.slug) return setSlugState((current) => (current.status === "ok" ? current : { status: "idle" }));
-    setSlugState({ status: "checking" });
+    const chosen = pendingSlug ?? quiz.slug;
+    if (slug === chosen) {
+      // Nothing new to check: keep what the field already says (free and waiting, or free and saved)
+      return setSlugState((current) => (current.status === "ok" || current.status === "pending" ? current : { status: "idle" }));
+    }
+    if (slug === quiz.slug) {
+      // Typed the live address back: the waiting change is gone
+      onPendingSlug(null);
+      return setSlugState({ status: "idle" });
+    }
     let cancelled = false;
     const timer = setTimeout(async () => {
+      setSlugState({ status: "checking" });
       const check = await repos.quizzes.slugAvailable(quiz.id, slug);
       if (cancelled) return;
       // A check that could not be answered (too many checks in a minute, or the connection) stops the spinner; typing again asks again
       if (!check.ok) return void (reportError(check.error) || setSlugState({ status: "idle" }));
       if (!check.data.available) return setSlugState({ status: "problem", reason: check.data.reason });
+      if (published) {
+        onPendingSlug(slug);
+        return setSlugState({ status: "pending" });
+      }
       const saved = await repos.quizzes.setSlug(quiz.id, slug);
       if (cancelled) return;
       if (saved.ok) {
         onQuiz(saved.data);
         setSlugState({ status: "ok" });
       } else if (!reportError(saved.error)) setSlugState({ status: "problem", reason: saved.error === "slug_taken" ? "taken" : "invalid" });
-    }, 400);
+    }, 500);
     return () => {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [slug, quiz.id, quiz.slug, onQuiz, reportError]);
+  }, [slug, pendingSlug, published, quiz.id, quiz.slug, onQuiz, onPendingSlug, reportError]);
+
+  // The field is locked while the check runs, which takes the cursor away: give it back when the answer is in
+  const checking = slugState.status === "checking";
+  const wasChecking = useRef(false);
+  useEffect(() => {
+    if (wasChecking.current && !checking) slugInput.current?.focus({ preventScroll: true });
+    wasChecking.current = checking;
+  }, [checking]);
 
   const toggleAccepting = async (accepting: boolean) => {
     setSwitching(true);
@@ -112,7 +140,9 @@ export function SettingsDrawer({
           <span className="whitespace-nowrap pl-3.5 text-[15px] text-mute">{settings.addressPrefix}</span>
           <input
             id="settings-slug"
+            ref={slugInput}
             value={slug}
+            disabled={checking}
             onChange={(e) => setSlug(e.target.value.toLowerCase())}
             aria-invalid={problem ? true : undefined}
             aria-describedby="settings-slug-note"
@@ -120,7 +150,20 @@ export function SettingsDrawer({
           />
         </div>
         <div id="settings-slug-note">
-          {problem ? <FieldError>{problem}</FieldError> : slugState.status === "ok" ? <FieldHint>{settings.addressOk}</FieldHint> : <FieldHint>{settings.addressNote}</FieldHint>}
+          {problem ? (
+            <FieldError>{problem}</FieldError>
+          ) : checking ? (
+            <span className="flex items-center gap-2 text-sm text-mute">
+              <Spinner className="size-4" />
+              {settings.addressChecking}
+            </span>
+          ) : slugState.status === "pending" ? (
+            <FieldHint>{settings.addressPending}</FieldHint>
+          ) : slugState.status === "ok" ? (
+            <FieldHint>{settings.addressOk}</FieldHint>
+          ) : (
+            <FieldHint>{settings.addressNote}</FieldHint>
+          )}
         </div>
       </div>
 

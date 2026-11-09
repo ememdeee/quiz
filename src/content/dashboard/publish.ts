@@ -8,6 +8,7 @@ export const publishDialog = {
   titleFirst: "Publish your quiz?",
   text: "Everyone who opens the quiz will see the new version right away.",
   changed: (count: number) => `You changed ${count} ${count === 1 ? "page" : "pages"} since the last time you published.`,
+  newAddress: (slug: string) => `The web address changes to /quiz/${slug}. Links you already shared will stop working.`,
   /** The first publish has nothing to compare with (no board: gap G18). */
   firstTime: (pages: number) => `Your quiz has ${pages} pages.`,
   notYet: "Not yet",

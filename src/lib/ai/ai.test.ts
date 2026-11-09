@@ -4,7 +4,7 @@ import { pageTypes } from "@/lib/quiz/page-types";
 import { quizTemplates } from "@/lib/quiz/templates";
 import { buildAiExport } from "./export";
 import { askAgain, findQuizJson, importAiText } from "./import";
-import { pageFieldList } from "./prompt";
+import { allowedValues, buildPrompt, pageFieldList } from "./prompt";
 
 const current = quizTemplates[1].document;
 const media = new Set<string>();
@@ -137,5 +137,21 @@ describe("importAiText", () => {
     const doc = edit((pages) => pages.map((p) => (p.id === "more" ? { id: "more", type: "info" as const, title: "Thanks", text: "", picture: null } : p)));
     const result = run(json(doc));
     expect(result.ok && result.counts).toMatchObject({ added: 1, removed: 1 });
+  });
+});
+
+describe("fixed choices", () => {
+  it("tells the AI every allowed word of a text page, a number page and an end page", () => {
+    const prompt = buildPrompt("{}", 15);
+    expect(allowedValues().find((v) => v.type === "text" && v.field === "input")?.values).toEqual(["any", "email", "phone"]);
+    expect(prompt).toContain('"input" is one of: "any", "email", "phone"');
+    expect(prompt).toContain('"kind" is one of: "age", "height", "weight", "number", "date"');
+    expect(prompt).toContain('"style" is one of: "thanks", "button", "offer"');
+  });
+
+  it("says which words are allowed when the AI made one up", () => {
+    const doc = edit((pages) => pages.map((p) => (p.type === "text" ? ({ ...p, input: "textarea" } as unknown as typeof p) : p)));
+    const result = run(json(doc));
+    expect(!result.ok && result.reason === "problems" && result.problems[0].ask).toMatch(/It must be one of: “any”, “email”, “phone”./);
   });
 });

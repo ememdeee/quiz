@@ -11,7 +11,7 @@ export const loading: PageTypeDefinition<"loading"> = {
   listLabel: () => "Loading screen",
   summaryLabel: () => "Loading screen",
   title: (page) => page.message,
-  create: (id) => ({ id, type: "loading", message: "", steps: [""], seconds: DEFAULT_LOADING_SECONDS }),
+  create: (id) => ({ id, type: "loading", message: "Getting your results ready", steps: ["Checking your answers"], seconds: DEFAULT_LOADING_SECONDS }),
   problems: (page) => {
     const problems: FieldProblem[] = [];
     if (isBlank(page.message)) problems.push({ field: "message", code: "message_missing" });

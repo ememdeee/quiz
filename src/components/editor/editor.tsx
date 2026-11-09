@@ -60,6 +60,8 @@ export function Editor({ bundle: initial, openSettings = false }: { bundle: Quiz
   const router = useRouter();
   const [dialog, setDialog] = useState<DialogState>(openSettings ? { kind: "settings" } : null);
   const [publishing, setPublishing] = useState(false);
+  // A new web address of a live quiz waits here until Publish, so the shared link keeps working until then (gap G27)
+  const [pendingSlug, setPendingSlug] = useState<string | null>(null);
 
   const { syncVersion } = save;
   const setQuiz = useCallback(
@@ -132,6 +134,16 @@ export function Editor({ bundle: initial, openSettings = false }: { bundle: Quiz
 
   const publish = async () => {
     setPublishing(true);
+    if (pendingSlug) {
+      const moved = await repos.quizzes.setSlug(bundle.quiz.id, pendingSlug);
+      setPendingSlug(null);
+      if (!moved.ok) {
+        setPublishing(false);
+        if (!reportError(moved.error)) show({ message: moved.error === "slug_taken" ? editorToasts.addressTaken : dashErrors.generic, tone: "error" });
+        return closeDialog();
+      }
+      setQuiz(moved.data);
+    }
     const result = await repos.quizzes.publish(bundle.quiz.id, store.getState().doc);
     setPublishing(false);
     if (!result.ok) {
@@ -165,7 +177,7 @@ export function Editor({ bundle: initial, openSettings = false }: { bundle: Quiz
         <MediaProvider>
           <ProblemsProvider maxPages={maxPages}>
             <div className="flex min-h-dvh flex-col">
-              <EditorHeader bundle={bundle} save={save.state} onRetry={save.retry} />
+              <EditorHeader bundle={bundle} save={save.state} onRetry={save.retry} pendingSlug={pendingSlug} />
               <div className="flex flex-wrap items-start gap-6 p-6">
                 <PageList maxPages={maxPages} />
                 <Canvas />
@@ -200,6 +212,7 @@ export function Editor({ bundle: initial, openSettings = false }: { bundle: Quiz
             {dialog?.kind === "publish" ? (
               <PublishDialog
                 changes={bundle.published ? diffQuiz(store.getState().doc, bundle.published).count : null}
+                newAddress={pendingSlug}
                 pages={store.getState().doc.pages.length}
                 pending={publishing}
                 onConfirm={() => void publish()}
@@ -219,7 +232,7 @@ export function Editor({ bundle: initial, openSettings = false }: { bundle: Quiz
             {dialog?.kind === "noQuestion" ? <NoQuestionDialog onAdd={() => ui.requestAddPage()} onClose={closeDialog} /> : null}
             {dialog?.kind === "share" ? <ShareDialog slug={bundle.quiz.slug} live={dialog.live} onClose={closeDialog} /> : null}
             {dialog?.kind === "settings" ? (
-              <SettingsDrawer quiz={bundle.quiz} save={save.state} onQuiz={setQuiz} onDelete={() => setDialog({ kind: "deleteQuiz" })} onClose={closeDialog} />
+              <SettingsDrawer quiz={bundle.quiz} save={save.state} onQuiz={setQuiz} pendingSlug={pendingSlug} onPendingSlug={setPendingSlug} onDelete={() => setDialog({ kind: "deleteQuiz" })} onClose={closeDialog} />
             ) : null}
             {dialog?.kind === "deleteQuiz" ? <DeleteDialog quiz={bundle.quiz} onConfirm={removeQuiz} onClose={() => setDialog({ kind: "settings" })} /> : null}
             {dialog?.kind === "picture" ? (

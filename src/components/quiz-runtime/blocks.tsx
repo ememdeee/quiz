@@ -71,11 +71,11 @@ export const Footer = ({ children, className }: { children: ReactNode; className
   <div className={cn("flex flex-col gap-3 px-6 pb-7 pt-3", className)}>{children}</div>
 );
 
-const buttonBase = "flex min-h-14 w-full items-center justify-center rounded-[14px] px-6 text-lg font-semibold no-underline disabled:cursor-default";
+const buttonBase = "flex min-h-14 w-full items-center justify-center rounded-[14px] px-6 text-lg font-semibold no-underline transition-[filter,transform,background-color] duration-150 active:scale-[0.985] disabled:cursor-default";
 
 export function MainButton({ children, onClick, type = "button", className }: { children: ReactNode; onClick?: () => void; type?: "button" | "submit"; className?: string }) {
   return (
-    <button type={type} onClick={onClick} className={cn(buttonBase, "bg-quiz-primary text-quiz-on-primary", focus, className)}>
+    <button type={type} onClick={onClick} className={cn(buttonBase, "bg-quiz-primary text-quiz-on-primary hover:brightness-110 active:brightness-95", focus, className)}>
       {children}
     </button>
   );
@@ -84,7 +84,7 @@ export function MainButton({ children, onClick, type = "button", className }: { 
 export function MainLink({ href, children, className }: { href: string; children: ReactNode; className?: string }) {
   return (
     // The owner's own link, opened in a new tab (handover 8.7)
-    <a href={href} target="_blank" rel="noopener noreferrer" className={cn(buttonBase, "bg-quiz-primary text-quiz-on-primary", focus, className)}>
+    <a href={href} target="_blank" rel="noopener noreferrer" className={cn(buttonBase, "bg-quiz-primary text-quiz-on-primary hover:brightness-110 active:brightness-95", focus, className)}>
       {children}
     </a>
   );
@@ -92,7 +92,7 @@ export function MainLink({ href, children, className }: { href: string; children
 
 export function OutlineButton({ children, onClick }: { children: ReactNode; onClick: () => void }) {
   return (
-    <button type="button" onClick={onClick} className={cn(buttonBase, "border-2 border-quiz-line bg-quiz-bg text-quiz-fg", focus)}>
+    <button type="button" onClick={onClick} className={cn(buttonBase, "border-2 border-quiz-line bg-quiz-bg text-quiz-fg hover:bg-quiz-primary/[0.06]", focus)}>
       {children}
     </button>
   );

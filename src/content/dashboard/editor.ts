@@ -96,6 +96,7 @@ export const editorToasts = {
   undo: "Undo",
   /** The design has no text for a blocked move yet (gap G4). */
   moveBlocked: "That move would make a condition look at a later page.",
+  addressTaken: "Someone just took that web address, so it was not changed. Pick another one in Quiz settings.",
 } as const;
 
 export const panel = {

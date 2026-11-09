@@ -47,7 +47,7 @@ export function VerifyEmailView({ email, initialResent }: { email: string; initi
           <RichText text={verify.resentBanner} />
         </Banner>
       ) : null}
-      <ButtonLink href={routes.dashboard} size="lg" block>
+      <ButtonLink href={routes.dashboard} reload size="lg" block>
         {verify.done}
       </ButtonLink>
       {seconds > 0 ? (

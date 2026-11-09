@@ -17,10 +17,10 @@ export const choice: PageTypeDefinition<"choice"> = {
   create: (id) => ({
     id,
     type: "choice",
-    question: "",
+    question: "Question",
     answers: [
-      { id: newId(), text: "", picture: null },
-      { id: newId(), text: "", picture: null },
+      { id: newId(), text: "Option 1", picture: null },
+      { id: newId(), text: "Option 2", picture: null },
     ],
     multiple: false,
     required: true,
