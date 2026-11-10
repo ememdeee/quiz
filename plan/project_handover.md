@@ -1,5 +1,5 @@
 # Handover: building the Quiz platform
-> Last Updated: 2026-11-08
+> Last Updated: 2026-11-10
 > Status: **Design is finished** (Claude Design artifact, 158 boards). **Website tab UI built 2026-11-07** (Phase 2.3 and 2.4, on mock data; the rest of the UI and the whole backend are not built). **Update 2026-11-08:** all code is built (UI on the mock, the whole backend on Supabase, tests, runbooks). Every design gap (G1 to G25) is also built, as a simple version **without a board** (owner decision, see R1 and 13.4); the owner designs them later. What is left is mostly the owner's: accounts, the Vercel preview check, designing what is in 13.4, legal text. The list that matters most is `project_checklist.md`, sections A and H.
 > Owner: Muhammad Basurah (contact: basurah@basrh.com). Talk to the owner in Indonesian. All UI text is English.
 > At the start of every session read sections 0, 1 and 12 (summary, rules, master checklist); read the other sections when you work on that area. Update the checklist in section 12 as work is done.
@@ -751,7 +751,7 @@ The repo is a copy of an older app (a health-plan quiz with JSON files on disk, 
 
 **Root files to review with the owner (do not delete without asking):** `AGENTS.md` (a mirror of `CLAUDE.md` for another tool; keep in sync or remove), `README.md` (rewrite for the new product), `dev.txt`, `ignore_dev.md`, `prd.md`, `prd-result.md`, `style_1.txt` (old notes).
 
-**Plan files:** `project_structure.md` (rewrite for the new architecture at the end of Phase 1 and keep updating), `project_tracking.md` (old GTM/Pixel, delete when tracking is removed), `project_business.md` (old health-plan business; rewrite for the new product), `marketing_*.md` (old ad material; owner decides).
+**Plan files:** `project_structure.md` (rewrite for the new architecture at the end of Phase 1 and keep updating), `project_tracking.md` (old GTM/Pixel, delete when tracking is removed). `project_business.md` and `marketing_*.md` (old health-plan business and ad material) were deleted on 2026-11-10 as no longer relevant.
 
 **New dependencies (add in the phase that needs them, not all at once):** `@supabase/supabase-js`, `@supabase/ssr`, `nanoid`, `exceljs`, `resend`, `@react-email/components`, `@sentry/nextjs`, Radix primitives actually used, dev: `vitest`, `@vitest/coverage-v8`, `@playwright/test`, `@axe-core/playwright`, `supabase` (CLI), `prettier`, `husky` + `lint-staged` (optional).
 
