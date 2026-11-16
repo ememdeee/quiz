@@ -3,20 +3,12 @@
 
 ## Plan Folder — Naming Convention
 
-Files in `plan/` are prefixed by purpose:
-- `project_*` — development-relevant (structure, tracking, business/brand reference). Always read on start.
-- `marketing_*` — marketing copy / ad setup reference. Not relevant to development, excluded from auto-read.
+Files in `plan/` are prefixed `project_*` — development-relevant (structure, tracking, handover, checklist). Always read on start. (The old Body Reset business and marketing docs were deleted on 2026-11-10; they no longer apply.)
 
 ## Plan Folder — Always Read on Start
 
-At the start of every session, read all `.md` files inside the `plan/` folder EXCEPT the ones listed below.
-
-**Excluded files (do not read):**
-- `marketing_content.md` — marketing copy, not relevant to development
-- `marketing_meta.md` — Facebook ads setup reference, not relevant to development
-
-**Files to always read:**
-- Everything else in `plan/` — currently: `project_structure.md`, `project_tracking.md`, `project_business.md`, `project_handover.md`, `project_checklist.md` (short status list, read it fully)
+At the start of every session, read all `.md` files inside the `plan/` folder:
+- Currently: `project_structure.md`, `project_tracking.md`, `project_handover.md`, `project_checklist.md` (short status list, read it fully)
 - `project_handover.md` is very large. At the start of a session read its sections **0, 1 and 12** (summary, the rules, and the master checklist with the current phase). Read the other sections when you work on that area (the section numbers are in the file). Appendix A lists every design board.
 
 > The project is being rebuilt from a new design. `project_handover.md` is the plan for that. `project_structure.md` and `project_tracking.md` still describe the OLD app until Phase 1 rewrites them.
@@ -43,7 +35,6 @@ After every session where code or logic changed, update the relevant file in `pl
 |---|---|
 | Project structure, routes, stores, libs, step types | `project_structure.md` |
 | Tracking events, pixel setup, GA4, GTM | `project_tracking.md` |
-| Business info, brand, audience, funnel links | `project_business.md` |
 | A phase or task finished, a decision made, a new gap or requirement found, the design changed | `project_handover.md` (tick the checklist in section 12, update sections 11 and 13) **and** `project_checklist.md` (tick the same item). Always update both in the same session |
 
 Always update the `Last Updated` date at the top of any file you modify.
