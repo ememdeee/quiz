@@ -1,5 +1,5 @@
 # Project Structure
-> Last Updated: 2026-11-08 (later the same day: conflict check on saves, disconnect Google, sign-in field errors and banners, `/dev/undesigned`)
+> Last Updated: 2026-11-16 (added `/api/health/db`, the Supabase keep-alive, run daily by a Vercel Cron in `vercel.json`; skill `.claude/skills/keepalive`)
 > Rewritten for the redesigned product. The old app (BodyReset, GTM and Meta Pixel, timed pages, Gumroad) is gone from the code; only git history keeps it.
 > The plan and the rules live in `project_handover.md`. This file says **where things are**.
 
@@ -42,6 +42,7 @@ src/app/
   auth/                  confirm (email links), callback (Google), email-change/confirm
   api/q/*, api/r/*       Public endpoints for answering a quiz (no account, secret token per response)
   api/health             Uptime check
+  api/health/db          Supabase keep-alive: one tiny query so the free project does not pause (7 days idle). Run by the `keepalive` skill and daily at 03:00 UTC by the cron in `vercel.json`
   dev/                   Test links, UI kit, templates, emails preview. Does not exist in a production build
 src/components/
   ui/                    The UI kit (Button, Field, Dialog, Menu, Table, Toast, Pill, ...)
@@ -83,7 +84,7 @@ Sign-in screens also take `?problem=check|wait|same-password` (banner) and `/ver
 Signed in: `/dashboard`, `/dashboard/[quizId]` (editor), `/dashboard/[quizId]/responses`, `/dashboard/[quizId]/settings`, `/dashboard/[quizId]/preview`, `/account`.
 Admin: `/admin`, `/admin/users`, `/admin/users/[userId]`.
 People answering: `/quiz/[slug]`.
-Server routes: `/auth/confirm`, `/auth/callback`, `/auth/email-change/confirm`, `/api/q/[slug]` (+ `/open`, `/start`), `/api/r/[id]/answer`, `/finish`, `/resume`, `/api/health`.
+Server routes: `/auth/confirm`, `/auth/callback`, `/auth/email-change/confirm`, `/api/q/[slug]` (+ `/open`, `/start`), `/api/r/[id]/answer`, `/finish`, `/resume`, `/api/health`, `/api/health/db`.
 Every URL string lives in `src/lib/routes.ts`.
 
 ## Rules that keep it clean
